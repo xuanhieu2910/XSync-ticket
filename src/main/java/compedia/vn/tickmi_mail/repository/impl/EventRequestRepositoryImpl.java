@@ -1,11 +1,11 @@
-package compedia.vn.tickmi_mail.repository;
+package compedia.vn.tickmi_mail.repository.impl;
 
 import compedia.vn.tickmi_mail.entity.EventRequest;
+import compedia.vn.tickmi_mail.repository.EventRequestRepositoryCustom;
 import compedia.vn.tickmi_mail.utils.ValueUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityManager;

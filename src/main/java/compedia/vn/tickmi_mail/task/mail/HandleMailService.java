@@ -82,9 +82,9 @@ public class HandleMailService {
 
 
 
-    public void generateQRPathImage () {
-
-    }
+//    public void generateQRPathImage () {
+//
+//    }
     // Get n object
     // Create path image
     // Success : Update  Path + flat -> Update event request
