@@ -20,4 +20,17 @@ public class DbConstant {
     public final static Integer INIT_RETRY = 0;
     public final static Integer STATUS_EVENT_REQUEST = 1;
     public final static Integer STATUS_NEW_EVENT_REQUEST = -1;
+    public final static Integer STATUS_READY_SEND = 2;
+    public final static Integer STATUS_FALSE = 3;
+    public final static Integer STATUS_DONE = 4;
+    // event request detail
+    public final static Integer MAX_RETRY_DETAIL = 3;
+    public final static Integer INIT_RETRY_DETAIL = 0;
+    public final static Integer STATUS_EVENT_REQUEST_DETAIL = 1;
+    public final static Integer STATUS_EVENT_REQUEST_DETAIL_FLAT = 2;
+    public final static Integer STATUS_EVENT_REQUEST_DETAIL_DONE = 3;
+    public final static Integer STATUS_NEW_EVENT_REQUEST_DETAIL = -1;
+    // Event mail
+    public final static Integer EVENT_MAIL_NEW = -1;
+    public final static Integer EVENT_MAIL_RETRY_DETAIL = 0;
 }

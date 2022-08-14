@@ -20,9 +20,47 @@ public class EventMail {
     private Integer status;
     @Column(name = "RETRY")
     private Integer retry;
-    @Column(name = "TICKET_ID")
-    private Long ticketId;
     @Column(name =  "PROVIDER_ID")
     private Long providerId;
+    @Column(name = "TICK_EVENT_ID")
+    private Long tickEventId;
+    @Column(name = "EVENT_ID")
+    private Long eventId;
+    @Column(name = "GUEST_ID")
+    private Long guestId;
+    @Column(name = "CODE_TICKET")
+    private String codeTicket;
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public void setRetry(Integer retry) {
+        this.retry = retry;
+    }
+
+
+    public void setProviderId(Long providerId) {
+        this.providerId = providerId;
+    }
+
+    public void setTickEventId(Long tickEventId) {
+        this.tickEventId = tickEventId;
+    }
+
+    public void setEventId(Long eventId) {
+        this.eventId = eventId;
+    }
+
+    public void setGuestId(Long guestId) {
+        this.guestId = guestId;
+    }
+
+    public void setCodeTicket(String codeTicket) {
+        this.codeTicket = codeTicket;
+    }
 }

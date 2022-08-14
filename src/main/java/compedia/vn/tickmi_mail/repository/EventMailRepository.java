@@ -1,9 +1,9 @@
 package compedia.vn.tickmi_mail.repository;
 
-import compedia.vn.tickmi_mail.entity.EventRequest;
+import compedia.vn.tickmi_mail.entity.EventMail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public interface EventRequestRepository extends JpaRepository<EventRequest,Long>, EventRequestRepositoryCustom{
+public interface EventMailRepository extends JpaRepository<EventMail,Long> {
 }

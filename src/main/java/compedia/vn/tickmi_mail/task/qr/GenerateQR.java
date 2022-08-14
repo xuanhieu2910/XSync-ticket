@@ -24,12 +24,18 @@ public class GenerateQR {
     private final static Logger logger = LoggerFactory.getLogger(GenerateQR.class);
 
 
-    private String handlerGeneratePathQR (Long eventId, Long tickEventId, Long guestId, Integer countTicket) {
+    public static String handlerGeneratePathQR (Long eventId, Long tickEventId, Long guestId, Integer countTicket) {
         return FilesUtils.createFilePathQR(eventId, tickEventId, guestId, countTicket, DbConstant.EXTENSION_GENERATE_QR[0]);
     }
 
 
-    private void handleImageGenerateQR (String content, String pathQR, String nameTicket) {
+    /**
+     *  1. Content : Code ticket
+     *  2. PathQR : This have been generate from method handlerGeneratePathQR(params...)
+     *  3. NameTicket : index of ticket in Guest
+     *
+     * */
+    public static void handleImageGenerateQR (String content, String pathQR, String nameTicket) {
         try {
             logger.info("---------------------------- GENERATE QR ----------------------");
             logger.info("Content :" + content + ", pathQR: " + pathQR + ", nameTicket:" + nameTicket);
@@ -48,7 +54,7 @@ public class GenerateQR {
     }
 
 
-    private BufferedImage renderQRImage(QRCode code, int width, int height, int quietZone, String nameTicket) {
+    private static BufferedImage renderQRImage(QRCode code, int width, int height, int quietZone, String nameTicket) {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -96,7 +102,7 @@ public class GenerateQR {
         return image;
     }
 
-    private void drawFinderPatternCircleStyle(Graphics2D graphics, int x, int y, int circleDiameter) {
+    private  static void drawFinderPatternCircleStyle(Graphics2D graphics, int x, int y, int circleDiameter) {
         final int WHITE_CIRCLE_DIAMETER = circleDiameter * 5 / 7;
         final int WHITE_CIRCLE_OFFSET = circleDiameter / 7;
         final int MIDDLE_DOT_DIAMETER = circleDiameter * 3 / 7;

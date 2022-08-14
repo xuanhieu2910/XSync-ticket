@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface EventRequestRepositoryDetailCustom {
 
-    List<EventRequestDetail> getAllEventRequestDetailByStatus (Integer limits, Integer status);
+    List<EventRequestDetail> getAllEventRequestDetailCustom (Integer limits, Integer status,Integer status2,Integer retry);
+
+    List<EventRequestDetail> getAllEventRequestByIdEventRequest (Long eventRequestId);
 
 }

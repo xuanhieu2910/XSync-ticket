@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface EventRequestRepositoryCustom {
 
-        void deleteEventsRequest (List<Long> eventRequestIds);
         List<EventRequest> getEventRequestByStatus (Integer status, Integer limit);
+        Optional<EventRequest> findEventRequestById (Long id,Integer status);
 }

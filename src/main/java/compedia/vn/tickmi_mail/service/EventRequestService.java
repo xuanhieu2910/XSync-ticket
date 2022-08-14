@@ -1,13 +1,14 @@
-package compedia.vn.tickmi_mail.service.ticket;
+package compedia.vn.tickmi_mail.service;
 
 import compedia.vn.tickmi_mail.entity.EventRequest;
 import compedia.vn.tickmi_mail.repository.EventRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
-@Service
+@Component
 public class EventRequestService {
 
 
@@ -25,4 +26,16 @@ public class EventRequestService {
         return eventRequestRepository.saveAll(eventRequests);
     }
 
+    public Optional<EventRequest> findEventRequestById (Long id, Integer status) {
+        return eventRequestRepository.findEventRequestById(id,status);
+    }
+
+    public void updateEventRequest (EventRequest eventRequest) {
+        eventRequestRepository.save(eventRequest);
+        return;
+    }
+
+    public void deleteEventRequest (EventRequest eventRequest) {
+        eventRequestRepository.delete(eventRequest);
+    }
 }
