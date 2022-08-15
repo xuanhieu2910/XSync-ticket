@@ -1,22 +1,22 @@
 package compedia.vn.tickmi_mail.service;
 
 import compedia.vn.tickmi_mail.entity.EventRequestDetail;
-import compedia.vn.tickmi_mail.repository.EventRequestRepositoryDetail;
+import compedia.vn.tickmi_mail.repository.EventRequestDetailRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class EventRequestDetailService {
 
     private final static Logger logger = LoggerFactory.getLogger(EventRequestDetailService.class);
 
 
     @Autowired
-    EventRequestRepositoryDetail eventRequestRepositoryDetail;
+    EventRequestDetailRepository eventRequestRepositoryDetail;
 
     public List<EventRequestDetail> getAllEventRequestDetailLimit (Integer limit,Integer status, Integer status_2, Integer retry) {
      logger.debug("Service start get all event request detail limit");

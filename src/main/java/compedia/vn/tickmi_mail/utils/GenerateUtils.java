@@ -13,4 +13,9 @@ public class GenerateUtils {
         logger.debug("Generate code ticket");
         return UUID.randomUUID().toString();
     }
+
+
+    public static String genNameTicket (int index) {
+        return String.format("EV_%07d",index);
+    }
 }

@@ -48,7 +48,9 @@ public class GenerateQR {
             byte[] bytes = baos.toByteArray();
             FileOutputStream stream = new FileOutputStream(pathQR);
             stream.write(bytes);
+            logger.info("---------------------------GENERATE FINISHED----------------------");
         } catch (WriterException | IOException e) {
+            logger.error("LỖI KHI MÀ TẠO QR NÈ =============================>>>>>" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -115,5 +117,10 @@ public class GenerateQR {
         graphics.fillRect(x + MIDDLE_DOT_OFFSET, y + MIDDLE_DOT_OFFSET, MIDDLE_DOT_DIAMETER, MIDDLE_DOT_DIAMETER);
     }
 
+
+
+    private String genNameTicket (int index) {
+        return String.format("EV_%07d",index);
+    }
 
 }

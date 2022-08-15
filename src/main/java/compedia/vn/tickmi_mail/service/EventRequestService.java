@@ -3,12 +3,12 @@ package compedia.vn.tickmi_mail.service;
 import compedia.vn.tickmi_mail.entity.EventRequest;
 import compedia.vn.tickmi_mail.repository.EventRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 public class EventRequestService {
 
 
@@ -35,7 +35,4 @@ public class EventRequestService {
         return;
     }
 
-    public void deleteEventRequest (EventRequest eventRequest) {
-        eventRequestRepository.delete(eventRequest);
-    }
 }

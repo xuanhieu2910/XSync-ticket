@@ -5,10 +5,11 @@ import compedia.vn.tickmi_mail.repository.EventMailRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-@Component
+@Service
 public class EventMailService {
 
     private final static Logger logger = LoggerFactory.getLogger(EventMailService.class);

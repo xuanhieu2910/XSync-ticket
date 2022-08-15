@@ -36,10 +36,10 @@ public class HandleTicketService {
     private static final Queue<EventRequest>queueEventToMai = new ArrayDeque<>();
 
     @Autowired
-    private EventRequestService eventRequestService;
+    EventRequestService eventRequestService;
 
     @Autowired
-    private EventRequestDetailService eventRequestDetailService;
+    EventRequestDetailService eventRequestDetailService;
 
     @Autowired
     EventMailService eventMailService;
@@ -158,7 +158,7 @@ public class HandleTicketService {
             String pathQr = GenerateQR.handlerGeneratePathQR(detail.getEventId(),detail.getTicketEventId(),detail.getGuestId(),detail.getIndexTicket());
             boolean checkEventRequest = true;
             try {
-                GenerateQR.handleImageGenerateQR(detail.getCodeTicket(),pathQr,String.valueOf(detail.getIndexTicket()));
+                GenerateQR.handleImageGenerateQR(detail.getCodeTicket(),pathQr,GenerateUtils.genNameTicket(detail.getIndexTicket()));
                 // Success
                 // Update status
                 detail.setStatus(DbConstant.STATUS_EVENT_REQUEST_DETAIL_DONE);
@@ -176,14 +176,13 @@ public class HandleTicketService {
                  *
                  * */
                 if (eventRequest.isPresent()) {
-                    eventRequest.get().setQuantityGen(eventRequest.get().getQuantityGen().intValue() + 1);
+                    int quantityGen = eventRequest.get().getQuantityGen() + 1;
+                    eventRequest.get().setQuantityGen(quantityGen);
                     // update status or quantity gen event request
-                    if (eventRequest.get().getQuantity().equals(eventRequest.get().getQuantityGen())) {
+                    if (eventRequest.get().getQuantity().intValue() == eventRequest.get().getQuantityGen().intValue()) {
                         eventRequest.get().setStatus(DbConstant.STATUS_READY_SEND);
                     }
-                    else {
-                        eventRequestService.updateEventRequest(eventRequest.get());
-                    }
+                    eventRequestService.updateEventRequest(eventRequest.get());
                 }
                 else {
                     eventRequestDetailService.deleteEventRequestDetail(detail);
@@ -217,7 +216,6 @@ public class HandleTicketService {
                     detail.setTimeGenerate(new Timestamp(now.getTime()));
                 }
                 eventRequestDetailService.saveEventRequestDetail(detail);
-                logger.error("Lỗi tạo QR rồi này =========>>> " + e.getMessage());
             }
         }
         else {
@@ -232,13 +230,15 @@ public class HandleTicketService {
      *
      * */
     @Async
-    @Scheduled(fixedDelay =  1000)
+    @Scheduled(fixedRate =  1000)
     public void getEventRequestSuccess () {
             // Get event request
             List<EventRequest> eventRequests = eventRequestService.getEventRequestList(DbConstant.STATUS_READY_SEND, DbConstant.SIZE_LIMIT);
             if (!CollectionUtils.isEmpty(eventRequests)){
                 try {
                     queueEventToMai.addAll(eventRequests);
+                    // update eventRequest
+                    eventRequestService.updateEventRequestByStatus(eventRequests,DbConstant.STATUS_DONE);
                 }catch (Exception e) {
                     logger.error("Lỗi này ==============>>>> " + e.getMessage());
                 }
@@ -246,12 +246,13 @@ public class HandleTicketService {
     }
 
     @Async
-    @Scheduled(fixedDelay =  100)
+    @Scheduled(fixedRate = 500)
     public void insertToEventMail () {
         try {
             if (!queueEventToMai.isEmpty()) {
                 // Get event request detail
                 EventRequest eventRequest = queueEventToMai.poll();
+                logger.info(eventRequest.toString());
                 List<EventRequestDetail> details = eventRequestDetailService.requestDetails(eventRequest.getId());
                 List<EventMail> eventMails = new ArrayList<>();
                 for (EventRequestDetail dto : details) {
@@ -268,10 +269,10 @@ public class HandleTicketService {
                 eventMailService.saveEventMails(eventMails);
                 // remove event detail
                 eventRequestDetailService.deleteEventRequestDetails(details);
-                // update event request
-                eventRequest.setStatus(DbConstant.STATUS_DONE);
-                // update eventRequest
-                eventRequestService.updateEventRequest(eventRequest);
+                logger.info("INSERT TO MAIL SUCCESS");
+            }
+            else {
+                logger.info("Queue Mail is empty!");
             }
         }catch (Exception e){
             logger.error("Lỗi insert to event mail ===>>> " + e.getMessage());

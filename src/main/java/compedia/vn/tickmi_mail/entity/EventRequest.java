@@ -1,6 +1,7 @@
 package compedia.vn.tickmi_mail.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import java.sql.Timestamp;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "EVENT_REQUEST")
 public class EventRequest {
@@ -36,83 +38,20 @@ public class EventRequest {
     @Column(name = "QUANTITY_GEN")
     private Integer quantityGen;
 
-    public Long getId() {
-        return Id;
-    }
 
-    public void setId(Long id) {
-        Id = id;
-    }
-
-    public Long getGuestId() {
-        return guestId;
-    }
-
-    public void setGuestId(Long guestId) {
-        this.guestId = guestId;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Timestamp getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Timestamp createTime) {
-        this.createTime = createTime;
-    }
-
-    public Timestamp getModifiedTime() {
-        return modifiedTime;
-    }
-
-    public void setModifiedTime(Timestamp modifiedTime) {
-        this.modifiedTime = modifiedTime;
-    }
-
-    public Long getProviderId() {
-        return providerId;
-    }
-
-    public void setProviderId(Long providerId) {
-        this.providerId = providerId;
-    }
-
-    public Integer getQuantityGen() {
-        return quantityGen;
-    }
-
-    public void setQuantityGen(Integer quantityGen) {
-        this.quantityGen = quantityGen;
-    }
-
-    public Long getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Long quantity) {
-        this.quantity = quantity;
-    }
-
-    public Long getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(Long eventId) {
-        this.eventId = eventId;
-    }
-
-    public Long getTicketEventId() {
-        return ticketEventId;
-    }
-
-    public void setTicketEventId(Long ticketEventId) {
-        this.ticketEventId = ticketEventId;
+    @Override
+    public String toString() {
+        return "EventRequest{" +
+                "Id=" + Id +
+                ", guestId=" + guestId + "\n" +
+                ", status=" + status + "\n" +
+                ", createTime=" + createTime + "\n" +
+                ", modifiedTime=" + modifiedTime + "\n" +
+                ", providerId=" + providerId + "\n" +
+                ", quantity=" + quantity + "\n" +
+                ", eventId=" + eventId + "\n" +
+                ", ticketEventId=" + ticketEventId + "\n" +
+                ", quantityGen=" + quantityGen + "\n" +
+                '}';
     }
 }

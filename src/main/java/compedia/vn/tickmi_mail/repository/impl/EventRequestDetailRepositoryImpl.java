@@ -23,10 +23,13 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
     public List<EventRequestDetail> getAllEventRequestDetailCustom(Integer limits, Integer status,Integer status2,Integer retry) {
         logger.debug("Start query find event request detail");
         StringBuilder sb = new StringBuilder();
-        sb.append(" SELECT details.*" +
+        sb.append("SELECT details.*" +
                 " FROM EVENT_REQUEST_DETAILS details" +
-                " WHERE ((details.STATUS = :status_1 AND RETRY <= :sizeRetry) OR (details = :status_2 AND RETRY <= :sizeRetry))" +
-                "  AND ROWNUM < :limit");
+                " WHERE (" +
+                "        (details.STATUS = :status_1 AND details.RETRY <= :sizeRetry) OR" +
+                "        (details.STATUS = :status_2 AND details.RETRY <= :sizeRetry)" +
+                "      )" +
+                "  AND ROWNUM < :limit ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("status_1",status);
         query.setParameter("status_2",status2);
@@ -63,9 +66,9 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
         sb.append("SELECT detail.* " +
                 " FROM EVENT_REQUEST eventRequest" +
                 "      inner join EVENT_REQUEST_DETAILS detail on eventRequest.ID_EVENT_REQUEST = detail.ID_EVENT_REQUEST" +
-                " WHERE eventRequest.ID_EVENT_REQUEST = :id ");
+                " WHERE eventRequest.ID_EVENT_REQUEST = :idEventRequest ");
         Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("id",eventRequestId);
+        query.setParameter("idEventRequest",eventRequestId);
         List<Object[]> result = query.getResultList();
         List<EventRequestDetail> response = new ArrayList<>();
         if (!CollectionUtils.isEmpty(result)) {
