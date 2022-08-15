@@ -10,4 +10,7 @@ public interface EventRequestRepositoryDetailCustom {
 
     List<EventRequestDetail> getAllEventRequestByIdEventRequest (Long eventRequestId);
 
+    List<EventRequestDetail> getAllEventRequestByIdEventRequestAndStatus (Long eventRequestId, Integer status);
+
+
 }

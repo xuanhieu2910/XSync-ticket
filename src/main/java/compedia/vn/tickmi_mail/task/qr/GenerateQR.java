@@ -119,8 +119,4 @@ public class GenerateQR {
 
 
 
-    private String genNameTicket (int index) {
-        return String.format("EV_%07d",index);
-    }
-
 }

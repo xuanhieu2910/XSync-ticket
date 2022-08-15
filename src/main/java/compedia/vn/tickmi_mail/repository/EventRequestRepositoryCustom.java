@@ -8,5 +8,8 @@ import java.util.Optional;
 public interface EventRequestRepositoryCustom {
 
         List<EventRequest> getEventRequestByStatus (Integer status, Integer limit);
-        Optional<EventRequest> findEventRequestById (Long id,Integer status);
+        Optional<EventRequest> findEventRequestByIdAndStatus (Long id,Integer status);
+        Optional<EventRequest> findEventRequestById (Long id);
+
+        void updateEventRequestById (Long id, Integer status);
 }

@@ -46,4 +46,9 @@ public class EventRequestDetailService {
     public List<EventRequestDetail> requestDetails (Long eventRequestId) {
         return eventRequestRepositoryDetail.getAllEventRequestByIdEventRequest(eventRequestId);
     }
+
+    public List<EventRequestDetail> getAllEventRequestByIdEventRequestAndStatus (Long eventRequestId, Integer status) {
+        return eventRequestRepositoryDetail.getAllEventRequestByIdEventRequest(eventRequestId);
+    }
+
 }

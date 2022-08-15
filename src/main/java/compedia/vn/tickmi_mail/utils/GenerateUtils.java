@@ -15,7 +15,7 @@ public class GenerateUtils {
     }
 
 
-    public static String genNameTicket (int index) {
-        return String.format("EV_%07d",index);
+    public static String genNameTicket (long guestId,int index) {
+        return String.format("EV_%07d",guestId,index);
     }
 }

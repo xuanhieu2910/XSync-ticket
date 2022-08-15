@@ -23,4 +23,9 @@ public class EventMailService {
         logger.debug("Service Event mail save all event mail");
         eventMailRepository.saveAll(eventMailList);
     }
+
+    public void saveEventMail (EventMail eventMail) {
+        logger.debug("Service  Event Mail save");
+        eventMailRepository.save(eventMail);
+    }
 }

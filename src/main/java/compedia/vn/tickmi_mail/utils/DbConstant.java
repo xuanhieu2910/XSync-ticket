@@ -2,6 +2,9 @@ package compedia.vn.tickmi_mail.utils;
 
 public class DbConstant {
 
+    // Retry
+    public final static Integer INIT_RETRY = 0;
+
     // Limit size to query db get value
     public static final Integer SIZE_LIMIT = 10;
 
@@ -17,12 +20,10 @@ public class DbConstant {
 
     // event request
     public final static Integer MAX_RETRY = 3;
-    public final static Integer INIT_RETRY = 0;
     public final static Integer STATUS_EVENT_REQUEST = 1;
     public final static Integer STATUS_NEW_EVENT_REQUEST = -1;
     public final static Integer STATUS_READY_SEND = 2;
     public final static Integer STATUS_FALSE = 3;
-    public final static Integer STATUS_DONE = 4;
     // event request detail
     public final static Integer MAX_RETRY_DETAIL = 3;
     public final static Integer INIT_RETRY_DETAIL = 0;
@@ -33,4 +34,7 @@ public class DbConstant {
     // Event mail
     public final static Integer EVENT_MAIL_NEW = -1;
     public final static Integer EVENT_MAIL_RETRY_DETAIL = 0;
+
+    // MailRoot
+    public final static Integer MAIL_ROOT_NEW = -1;
 }

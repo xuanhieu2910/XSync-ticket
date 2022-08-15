@@ -1,11 +1,7 @@
 package compedia.vn.tickmi_mail.task.ticket;
 
-import compedia.vn.tickmi_mail.entity.EventMail;
-import compedia.vn.tickmi_mail.entity.EventRequest;
-import compedia.vn.tickmi_mail.entity.EventRequestDetail;
-import compedia.vn.tickmi_mail.service.EventMailService;
-import compedia.vn.tickmi_mail.service.EventRequestDetailService;
-import compedia.vn.tickmi_mail.service.EventRequestService;
+import compedia.vn.tickmi_mail.entity.*;
+import compedia.vn.tickmi_mail.service.*;
 import compedia.vn.tickmi_mail.task.mail.HandleMailService;
 import compedia.vn.tickmi_mail.task.qr.GenerateQR;
 import compedia.vn.tickmi_mail.utils.DbConstant;
@@ -33,7 +29,7 @@ public class HandleTicketService {
     private static final Queue<EventRequestDetail> queueEventRequestDetails = new ArrayDeque<>();
     private static final Queue<EventRequest> queueEventRequest = new ArrayDeque<>();
 
-    private static final Queue<EventRequest>queueEventToMai = new ArrayDeque<>();
+    private static final Queue<List<EventRequestDetail>>queueEventDetailsToMai = new ArrayDeque<>();
 
     @Autowired
     EventRequestService eventRequestService;
@@ -43,6 +39,12 @@ public class HandleTicketService {
 
     @Autowired
     EventMailService eventMailService;
+
+    @Autowired
+    TicketService ticketService;
+
+    @Autowired
+    MailRootService mailRootService;
 
     /**
      *
@@ -97,6 +99,8 @@ public class HandleTicketService {
                     dto.setTicketEventId(eventRequest.getTicketEventId());
                     dto.setGuestId(eventRequest.getGuestId());
                     dto.setProviderId(eventRequest.getProviderId());
+                    dto.setUserId(eventRequest.getUserId());
+                    dto.setGuestCode(eventRequest.getGuestCode());
                     details.add(dto);
                 }
                 eventRequestDetailService.saveEventRequestDetails(details);
@@ -149,6 +153,7 @@ public class HandleTicketService {
     @Async
     @Scheduled(fixedRate = 500)
     public void generateQRPathImage () {
+        logger.info("===================================== START HANDLE GEN QR =============================================");
             //Get n object
             //Create path image
             //Success : Update  Path + flat -> Update event request
@@ -158,7 +163,8 @@ public class HandleTicketService {
             String pathQr = GenerateQR.handlerGeneratePathQR(detail.getEventId(),detail.getTicketEventId(),detail.getGuestId(),detail.getIndexTicket());
             boolean checkEventRequest = true;
             try {
-                GenerateQR.handleImageGenerateQR(detail.getCodeTicket(),pathQr,GenerateUtils.genNameTicket(detail.getIndexTicket()));
+                logger.info("================================== START HANDLE JOB 1 =================================================");
+                GenerateQR.handleImageGenerateQR(detail.getCodeTicket(),pathQr,GenerateUtils.genNameTicket(detail.getGuestId().longValue(),detail.getIndexTicket()));
                 // Success
                 // Update status
                 detail.setStatus(DbConstant.STATUS_EVENT_REQUEST_DETAIL_DONE);
@@ -169,7 +175,7 @@ public class HandleTicketService {
                 eventRequestDetailService.saveEventRequestDetail(detail);
                 // Update event root
                 Optional<EventRequest> eventRequest = eventRequestService.
-                        findEventRequestById(detail.getEventRequestId(),DbConstant.STATUS_EVENT_REQUEST);
+                        findEventRequestByIdAndStatus(detail.getEventRequestId(),DbConstant.STATUS_EVENT_REQUEST);
                 /**
                  * Nếu tồn tại event request -> Update
                  * Không tồn tại -> xóa ở bảng detail (loại bỏ dư thừa dữ liệu)
@@ -180,13 +186,21 @@ public class HandleTicketService {
                     eventRequest.get().setQuantityGen(quantityGen);
                     // update status or quantity gen event request
                     if (eventRequest.get().getQuantity().intValue() == eventRequest.get().getQuantityGen().intValue()) {
-                        eventRequest.get().setStatus(DbConstant.STATUS_READY_SEND);
+                        List<EventRequestDetail> requestDetails = eventRequestDetailService.requestDetails(eventRequest.get().getId());
+                        if (!CollectionUtils.isEmpty(requestDetails)){
+                            try {
+                                queueEventDetailsToMai.add(requestDetails);
+                            }catch (Exception e) {
+                                logger.error("Lỗi này ==============>>>> " + e.getMessage());
+                            }
+                        }
                     }
                     eventRequestService.updateEventRequest(eventRequest.get());
                 }
                 else {
                     eventRequestDetailService.deleteEventRequestDetail(detail);
                 }
+                logger.info("================================== END HANDLE JOB 1 =================================================");
             }catch (Exception e) {
                 // False
                 // update retry + status
@@ -196,7 +210,7 @@ public class HandleTicketService {
                     eventRequestDetailService.deleteEventRequestDetail(detail);
                     // update event request
                     Optional<EventRequest> eventRequest = eventRequestService.
-                            findEventRequestById(detail.getEventRequestId(),DbConstant.STATUS_EVENT_REQUEST);
+                            findEventRequestByIdAndStatus(detail.getEventRequestId(),DbConstant.STATUS_EVENT_REQUEST);
                     /**
                      * Nếu tồn tại event request -> Update
                      * Không tồn tại -> xóa ở bảng detail (loại bỏ dư thừa dữ liệu)
@@ -221,55 +235,29 @@ public class HandleTicketService {
         else {
             logger.debug("Queue event request detail is empty!");
         }
+        logger.info("======================================= END HANDLE PROCESS HANDLE QR =======================================");
     }
 
 
-    /**
-     *
-     * Handle to get data from EVENT_REQUEST -> push to queue -> handle process
-     *
-     * */
-    @Async
-    @Scheduled(fixedRate =  1000)
-    public void getEventRequestSuccess () {
-            // Get event request
-            List<EventRequest> eventRequests = eventRequestService.getEventRequestList(DbConstant.STATUS_READY_SEND, DbConstant.SIZE_LIMIT);
-            if (!CollectionUtils.isEmpty(eventRequests)){
-                try {
-                    queueEventToMai.addAll(eventRequests);
-                    // update eventRequest
-                    eventRequestService.updateEventRequestByStatus(eventRequests,DbConstant.STATUS_DONE);
-                }catch (Exception e) {
-                    logger.error("Lỗi này ==============>>>> " + e.getMessage());
-                }
-            }
-    }
 
     @Async
-    @Scheduled(fixedRate = 500)
+    @Scheduled(fixedRate = 1000)
     public void insertToEventMail () {
         try {
-            if (!queueEventToMai.isEmpty()) {
+            if (!queueEventDetailsToMai.isEmpty()) {
                 // Get event request detail
-                EventRequest eventRequest = queueEventToMai.poll();
-                logger.info(eventRequest.toString());
-                List<EventRequestDetail> details = eventRequestDetailService.requestDetails(eventRequest.getId());
-                List<EventMail> eventMails = new ArrayList<>();
-                for (EventRequestDetail dto : details) {
-                    EventMail eventMail = new EventMail();
-                    eventMail.setStatus(DbConstant.EVENT_MAIL_NEW);
-                    eventMail.setRetry(DbConstant.EVENT_MAIL_RETRY_DETAIL);
-                    eventMail.setProviderId(dto.getProviderId());
-                    eventMail.setTickEventId(dto.getTicketEventId());
-                    eventMail.setEventId(dto.getEventId());
-                    eventMail.setGuestId(dto.getGuestId());
-                    eventMail.setCodeTicket(dto.getCodeTicket());
-                    eventMails.add(eventMail);
-                }
-                eventMailService.saveEventMails(eventMails);
+                List<EventRequestDetail> eventRequestDetails = queueEventDetailsToMai.poll();
+                // create email
+                eventMailService.saveEventMails(createEventMail(eventRequestDetails));
+                // send to ticket
+                ticketService.saveAllTickets(createTicket(eventRequestDetails));
+                // update eventRequest
+                eventRequestService.updateEventRequestByIdAndStatus(eventRequestDetails.get(0).getEventRequestId(),DbConstant.STATUS_READY_SEND);
+                // create mail root
+                mailRootService.saveMailRoot(createMailRoot(eventRequestDetails.get(0)));
                 // remove event detail
-                eventRequestDetailService.deleteEventRequestDetails(details);
-                logger.info("INSERT TO MAIL SUCCESS");
+                eventRequestDetailService.deleteEventRequestDetails(eventRequestDetails);
+                logger.info("-----------------------MAIL SUCCESS------------------------");
             }
             else {
                 logger.info("Queue Mail is empty!");
@@ -277,6 +265,53 @@ public class HandleTicketService {
         }catch (Exception e){
             logger.error("Lỗi insert to event mail ===>>> " + e.getMessage());
         }
+    }
 
+
+    private List<EventMail> createEventMail (List<EventRequestDetail> eventRequestDetails) {
+        List<EventMail> eventMails = new ArrayList<>();
+        for (EventRequestDetail dto: eventRequestDetails) {
+            EventMail eventMail = new EventMail();
+            eventMail.setStatus(DbConstant.EVENT_MAIL_NEW);
+            eventMail.setRetry(DbConstant.EVENT_MAIL_RETRY_DETAIL);
+            eventMail.setProviderId(dto.getProviderId());
+            eventMail.setTickEventId(dto.getTicketEventId());
+            eventMail.setEventId(dto.getEventId());
+            eventMail.setGuestId(dto.getGuestId());
+            eventMail.setCodeTicket(dto.getCodeTicket());
+            eventMails.add(eventMail);
+        }
+        return eventMails;
+    }
+
+
+    private List<Ticket> createTicket (List<EventRequestDetail> eventRequestDetails) {
+        List<Ticket> tickets = new ArrayList<>();
+        for (EventRequestDetail dto: eventRequestDetails) {
+            Ticket ticket = new Ticket();
+            ticket.setTicketEventId(dto.getTicketEventId());
+            ticket.setEventId(dto.getEventId());
+            ticket.setGuestId(dto.getGuestId());
+            ticket.setPathQr(dto.getPathImage());
+            ticket.setTIME_GENERATE(dto.getTimeGenerate());
+            ticket.setIndexQr(dto.getIndexTicket());
+            ticket.setTicketCode(dto.getCodeTicket());
+            ticket.setGuestCode(dto.getGuestCode());
+            ticket.setGuestId(dto.getGuestId());
+            tickets.add(ticket);
+        }
+        return tickets;
+    }
+
+    private MailRoot createMailRoot (EventRequestDetail eventRequestDetail) {
+        MailRoot mailRoot = new MailRoot();
+        mailRoot.setGuestId(eventRequestDetail.getGuestId());
+        mailRoot.setStatus(DbConstant.MAIL_ROOT_NEW);
+        mailRoot.setRetry(DbConstant.INIT_RETRY);
+        Date now = new Date();
+        mailRoot.setCreateTime(new Timestamp(now.getTime()));
+        mailRoot.setModifiedTime(new Timestamp(now.getTime()));
+        mailRoot.setProviderId(eventRequestDetail.getProviderId());
+        return mailRoot;
     }
 }

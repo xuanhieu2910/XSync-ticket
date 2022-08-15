@@ -45,6 +45,9 @@ public class EventRequestDetail {
     private Timestamp modifiedTime;
     @Column(name = "PROVIDER_ID")
     private Long providerId;
-
+    @Column(name = "USER_ID")
+    private Long userId;
+    @Column(name = "GUEST_CODE")
+    private String guestCode;
 
 }

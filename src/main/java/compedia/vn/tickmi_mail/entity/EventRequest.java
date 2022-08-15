@@ -37,7 +37,10 @@ public class EventRequest {
     private Long ticketEventId;
     @Column(name = "QUANTITY_GEN")
     private Integer quantityGen;
-
+    @Column(name = "GUEST_CODE")
+    private String guestCode;
+    @Column(name = "USER_ID")
+    private Long userId;
 
     @Override
     public String toString() {
