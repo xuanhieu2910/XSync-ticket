@@ -79,7 +79,7 @@ public class HandleMailService {
             }
             else {
                 if (mailRoot.getRetry().equals(DbConstant.MAX_RETRY_DETAIL)) {
-                    createMailHisFalse(dto.get());
+                    createMailHis(dto.get(),DbConstant.MAIL_HIS_STATUS_FALSE);
                     // remove mail root
                     mailRootService.deleteMailRoot(mailRoot);
                 } else {
@@ -90,6 +90,8 @@ public class HandleMailService {
                         dto.get().setContent(result);
                         // send email
                         sendEmail(dto.get());
+                        // remove mail root
+//                        mailRootService.deleteMailRoot(mailRoot);
                     }
                 }
             }
@@ -119,12 +121,19 @@ public class HandleMailService {
             customerEmailDto.setHost(mailDto.getEmailHost());
             customerEmailDto.setPort(mailDto.getEmailPort());
         }
-        MailUtils.getInstance().sendTicketEmail(mailDto.getEmailTo(), mailDto.getContent(), mailDto.getGuestName(), customerEmailDto);
+        try {
+            MailUtils.getInstance().sendTicketEmail(mailDto.getEmailTo(), mailDto.getContent(), mailDto.getGuestName(), customerEmailDto);
+            createMailHis(mailDto,DbConstant.MAIL_HIS_STATUS_SUCCESS);
+            // remove
+        }
+        catch (Exception e) {
+            createMailHis(mailDto,DbConstant.MAIL_HIS_STATUS_FALSE);
+        }
     }
 
 
 
-    private void createMailHisFalse (InformationMailDto mailDto) {
+    private void createMailHis (InformationMailDto mailDto, Integer status) {
         MailDetailHis mailDetailHis = new MailDetailHis();
         if (mailDto.getEmailUser() == null) {
             mailDetailHis.setMailFrom(PropertiesUtil.getEmailProperty("mail.user"));
@@ -137,7 +146,7 @@ public class HandleMailService {
         Date now = new Date();
         mailDetailHis.setCreateDate(new Timestamp(now.getTime()));
         mailDetailHis.setUpdateDate(new Timestamp(now.getTime()));
-        mailDetailHis.setStatus(DbConstant.MAIL_HIS_STATUS_FALSE);
+        mailDetailHis.setStatus(status);
         detailHisService.updateMailDetailHis(mailDetailHis);
     }
 }
