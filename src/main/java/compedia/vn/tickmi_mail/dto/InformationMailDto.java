@@ -1,0 +1,20 @@
+package compedia.vn.tickmi_mail.dto;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class InformationMailDto {
+    private String emailUser;
+    private String emailPassword;
+    private String emailHost;
+    private String emailPort;
+    private String html;
+    private List<String> pathQr;
+    private Long guestId;
+}

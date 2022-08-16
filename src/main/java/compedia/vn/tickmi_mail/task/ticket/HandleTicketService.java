@@ -38,9 +38,6 @@ public class HandleTicketService {
     EventRequestDetailService eventRequestDetailService;
 
     @Autowired
-    EventMailService eventMailService;
-
-    @Autowired
     TicketService ticketService;
 
     @Autowired
@@ -247,8 +244,6 @@ public class HandleTicketService {
             if (!queueEventDetailsToMai.isEmpty()) {
                 // Get event request detail
                 List<EventRequestDetail> eventRequestDetails = queueEventDetailsToMai.poll();
-                // create email
-                eventMailService.saveEventMails(createEventMail(eventRequestDetails));
                 // send to ticket
                 ticketService.saveAllTickets(createTicket(eventRequestDetails));
                 // update eventRequest
@@ -268,22 +263,6 @@ public class HandleTicketService {
     }
 
 
-    private List<EventMail> createEventMail (List<EventRequestDetail> eventRequestDetails) {
-        List<EventMail> eventMails = new ArrayList<>();
-        for (EventRequestDetail dto: eventRequestDetails) {
-            EventMail eventMail = new EventMail();
-            eventMail.setStatus(DbConstant.EVENT_MAIL_NEW);
-            eventMail.setRetry(DbConstant.EVENT_MAIL_RETRY_DETAIL);
-            eventMail.setProviderId(dto.getProviderId());
-            eventMail.setTickEventId(dto.getTicketEventId());
-            eventMail.setEventId(dto.getEventId());
-            eventMail.setGuestId(dto.getGuestId());
-            eventMail.setCodeTicket(dto.getCodeTicket());
-            eventMails.add(eventMail);
-        }
-        return eventMails;
-    }
-
 
     private List<Ticket> createTicket (List<EventRequestDetail> eventRequestDetails) {
         List<Ticket> tickets = new ArrayList<>();
@@ -297,7 +276,9 @@ public class HandleTicketService {
             ticket.setIndexQr(dto.getIndexTicket());
             ticket.setTicketCode(dto.getCodeTicket());
             ticket.setGuestCode(dto.getGuestCode());
+            ticket.setUserId(dto.getUserId());
             ticket.setGuestId(dto.getGuestId());
+            ticket.setStatus(DbConstant.TICKET_NOT_CHECKIN);
             tickets.add(ticket);
         }
         return tickets;

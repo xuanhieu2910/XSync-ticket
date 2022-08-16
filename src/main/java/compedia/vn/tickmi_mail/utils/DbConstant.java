@@ -37,4 +37,9 @@ public class DbConstant {
 
     // MailRoot
     public final static Integer MAIL_ROOT_NEW = -1;
+    public final static Integer MAIL_ROOT_LIMIT = 10;
+
+    // Ticket
+    public final static Integer TICKET_NOT_CHECKIN = 0;
+    public final static Integer TICKET_CHECKIN = 1;
 }
