@@ -46,7 +46,7 @@ public class MailRootService {
         mailRootRepository.delete(root);
     }
 
-    public Optional<InformationMailDto> getInformationMailDtoByGuestId ( Long guestId) throws IOException, SQLException {
+    public Optional<InformationMailDto> getInformationMailDtoByGuestId (Long guestId) throws IOException, SQLException {
         logger.info("Service start get information mail root by guest id : " + guestId);
         return mailRootRepository.getInformationMailDtos(guestId);
     }

@@ -43,4 +43,8 @@ public class DbConstant {
     // Ticket
     public final static Integer TICKET_NOT_CHECKIN = 0;
     public final static Integer TICKET_CHECKIN = 1;
+
+    // Ticket mail his
+    public final static Integer MAIL_HIS_STATUS_FALSE = 0;
+    public final static Integer MAIL_HIS_STATUS_SUCCESS = 1;
 }

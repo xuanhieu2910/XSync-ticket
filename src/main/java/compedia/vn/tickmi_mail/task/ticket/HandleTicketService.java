@@ -1,6 +1,8 @@
 package compedia.vn.tickmi_mail.task.ticket;
 
 import compedia.vn.tickmi_mail.entity.*;
+import compedia.vn.tickmi_mail.repository.ProviderRepository;
+import compedia.vn.tickmi_mail.repository.TicketEventRepository;
 import compedia.vn.tickmi_mail.service.*;
 import compedia.vn.tickmi_mail.task.mail.HandleMailService;
 import compedia.vn.tickmi_mail.task.qr.GenerateQR;
@@ -16,6 +18,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -42,6 +46,12 @@ public class HandleTicketService {
 
     @Autowired
     MailRootService mailRootService;
+
+    @Autowired
+    TicketEventRepository ticketEventRepository;
+
+    @Autowired
+    ProviderRepository providerRepository;
 
     /**
      *
@@ -150,7 +160,6 @@ public class HandleTicketService {
     @Async
     @Scheduled(fixedRate = 500)
     public void generateQRPathImage () {
-        logger.info("===================================== START HANDLE GEN QR =============================================");
             //Get n object
             //Create path image
             //Success : Update  Path + flat -> Update event request
@@ -160,7 +169,6 @@ public class HandleTicketService {
             String pathQr = GenerateQR.handlerGeneratePathQR(detail.getEventId(),detail.getTicketEventId(),detail.getGuestId(),detail.getIndexTicket());
             boolean checkEventRequest = true;
             try {
-                logger.info("================================== START HANDLE JOB 1 =================================================");
                 GenerateQR.handleImageGenerateQR(detail.getCodeTicket(),pathQr,GenerateUtils.genNameTicket(detail.getGuestId().longValue(),detail.getIndexTicket()));
                 // Success
                 // Update status
@@ -187,6 +195,8 @@ public class HandleTicketService {
                         if (!CollectionUtils.isEmpty(requestDetails)){
                             try {
                                 queueEventDetailsToMai.add(requestDetails);
+                                // update Ticket
+                                updateTicket(requestDetails);
                             }catch (Exception e) {
                                 logger.error("Lỗi này ==============>>>> " + e.getMessage());
                             }
@@ -197,7 +207,6 @@ public class HandleTicketService {
                 else {
                     eventRequestDetailService.deleteEventRequestDetail(detail);
                 }
-                logger.info("================================== END HANDLE JOB 1 =================================================");
             }catch (Exception e) {
                 // False
                 // update retry + status
@@ -232,7 +241,6 @@ public class HandleTicketService {
         else {
             logger.debug("Queue event request detail is empty!");
         }
-        logger.info("======================================= END HANDLE PROCESS HANDLE QR =======================================");
     }
 
 
@@ -246,13 +254,13 @@ public class HandleTicketService {
                 List<EventRequestDetail> eventRequestDetails = queueEventDetailsToMai.poll();
                 // send to ticket
                 ticketService.saveAllTickets(createTicket(eventRequestDetails));
+
                 // update eventRequest
                 eventRequestService.updateEventRequestByIdAndStatus(eventRequestDetails.get(0).getEventRequestId(),DbConstant.STATUS_READY_SEND);
                 // create mail root
                 mailRootService.saveMailRoot(createMailRoot(eventRequestDetails.get(0)));
                 // remove event detail
                 eventRequestDetailService.deleteEventRequestDetails(eventRequestDetails);
-                logger.info("-----------------------MAIL SUCCESS------------------------");
             }
             else {
                 logger.info("Queue Mail is empty!");
@@ -262,7 +270,38 @@ public class HandleTicketService {
         }
     }
 
+    private void updateTicket (List<EventRequestDetail> detail) throws IOException, SQLException {
+        // update registered
+        updateRegisterService(detail.get(0).getUserId(),detail.size());
+        // update ticket event
+        updateTicketEvent(detail.get(0).getTicketEventId(),detail.size());
+    }
 
+    private void updateRegisterService (Long userId, Integer sizeTicket) {
+        // Update lại số vé còn lại trong tài khoản đăng ký
+        Optional<Provider> provider = providerRepository.findProviderByUserId(userId);
+        if (provider.isPresent()) {
+            Integer tmpTicket = provider.get().getTotalTicket() - sizeTicket;
+            provider.get().setTotalTicket(tmpTicket);
+            providerRepository.save(provider.get());
+        }
+        else {
+            logger.error("LỖI ======>>> Provider is not exits");
+        }
+    }
+
+    private void updateTicketEvent (Long ticketEventId, int sizeTicket) throws IOException, SQLException {
+        // Update lại số vé theo từng loại vé
+        Optional<TicketEvent> ticketEvent = ticketEventRepository.findTicketsEventById(ticketEventId);
+        if (ticketEvent.isPresent()) {
+            Long tmpTicket = ticketEvent.get().getQuantity() - sizeTicket;
+            ticketEvent.get().setQuantity(tmpTicket);
+            ticketEventRepository.save(ticketEvent.get());
+        }
+        else {
+            logger.error("LỖI ======>>> Ticket Event is not exits");
+        }
+    }
 
     private List<Ticket> createTicket (List<EventRequestDetail> eventRequestDetails) {
         List<Ticket> tickets = new ArrayList<>();

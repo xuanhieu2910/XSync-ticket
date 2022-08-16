@@ -16,5 +16,8 @@ public class InformationMailDto {
     private String emailPort;
     private String html;
     private List<String> pathQr;
+    private String emailTo;
     private Long guestId;
+    private String guestName;
+    private String content;
 }

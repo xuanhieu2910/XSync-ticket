@@ -54,14 +54,16 @@ public class MailRootRepositoryImpl implements MailRootRepositoryCustom {
     @Override
     public Optional<InformationMailDto> getInformationMailDtos(Long guestId) throws IOException, SQLException {
         StringBuilder sb = new StringBuilder();
-        sb.append(" SELECT case when configMail.EMAIL_USER is null then null else configMail.EMAIL_USER end         EMAIL_USER," +
+        sb.append("SELECT case when configMail.EMAIL_USER is null then null else configMail.EMAIL_USER end         EMAIL_USER," +
                 "       case when configMail.EMAIL_PASSWORD is null then null else configMail.EMAIL_PASSWORD end EMAIL_PASSWORD," +
                 "       case when configMail.EMAIL_HOST is null then null else configMail.EMAIL_HOST end         EMAIL_HOST," +
                 "       case when configMail.EMAIL_PORT is null then null else configMail.EMAIL_PORT end         EMAIL_PORT," +
                 "       ticketEvent.HTML," +
                 "       ticket.PATH_QR," +
                 "       guest.GUEST_ID," +
-                "       ticket.INDEX_QR" +
+                "       ticket.INDEX_QR," +
+                "       guest.EMAIL                                                                              emailTo," +
+                "       guest.NAME                                                                               nameGuest" +
                 " FROM MAIL_ROOT mailRoot" +
                 "         inner join GUEST guest on mailRoot.GUEST_ID = guest.GUEST_ID" +
                 "         inner join TICKET_EVENT ticketEvent on guest.TICKET_EVENT_ID = ticketEvent.TICKET_EVENT_ID" +
@@ -88,6 +90,8 @@ public class MailRootRepositoryImpl implements MailRootRepositoryCustom {
             informationMailDto.setEmailPort(ValueUtil.getStringByObject(common[3]) == null ? null : ValueUtil.getStringByObject(common[3]));
             informationMailDto.setHtml(ValueUtil.getClobString((Clob) common[4]));
             informationMailDto.setGuestId(ValueUtil.getLongByObject(common[6]));
+            informationMailDto.setEmailTo(ValueUtil.getStringByObject(common[8]));
+            informationMailDto.setGuestName(ValueUtil.getStringByObject(common[9]));
             // Detail
             List<String> pathQr = new ArrayList<>();
             for (Object[] obj : result) {
