@@ -45,8 +45,10 @@ public class HandleMailService {
     public void processGetRootMail () {
         try {
             logger.info("========================== START PROCESS GET ROOT MAIL ============================");
-            List<MailRoot> mailRootList = mailRootService.findAllMailRoot(DbConstant.MAIL_ROOT_NEW, DbConstant.MAX_RETRY, DbConstant.SIZE_LIMIT);
+            List<MailRoot> mailRootList = mailRootService.findAllMailRoot(DbConstant.MAIL_ROOT_STATUS_NEW, DbConstant.MAX_RETRY, DbConstant.SIZE_LIMIT);
             if (!CollectionUtils.isEmpty(mailRootList)) {
+                mailRootList.stream().forEach(x->x.setStatus(DbConstant.MAIL_ROOT_STATUS_SEND));
+                mailRootService.updateMailRoots(mailRootList);
                 queueRootMail.addAll(mailRootList);
             } else {
                 logger.info("Mail root is empty!");
@@ -64,8 +66,8 @@ public class HandleMailService {
      * */
     @Scheduled(fixedDelay = 1000)
     public void processGenerateContentToSendEmail () {
-        logger.info("========================= START PROCESS GENERATE CONTENT ===============================");
         if (!queueRootMail.isEmpty()) {
+            logger.info("========================= START PROCESS GENERATE CONTENT ===============================");
             MailRoot mailRoot = queueRootMail.poll();
             // Get all information
             try {
@@ -73,7 +75,7 @@ public class HandleMailService {
                 // success
                 if (dto.isPresent()) {
                     String replaceTmp = TemplateEmailUtils.replaceTemplateEmail(dto.get().getPathQr());
-                    String result = TemplateEmailUtils.replaceTag(dto.get().getHtml(),TemplateEmailUtils.TAG_IMAGE_TEMPLATE,replaceTmp);
+                    String result = TemplateEmailUtils.replaceTag(dto.get().getHtml(),replaceTmp);
                     logger.info("RESULT NÈ ============================= : " + result);
                 }
             } catch (IOException e) {
@@ -82,8 +84,8 @@ public class HandleMailService {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            logger.info("========================= END PROCESS GENERATE CONTENT ===============================");
         }
-        logger.info("========================= END PROCESS GENERATE CONTENT ===============================");
     }
 
 

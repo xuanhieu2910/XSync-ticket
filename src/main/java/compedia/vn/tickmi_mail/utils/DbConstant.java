@@ -36,7 +36,8 @@ public class DbConstant {
     public final static Integer EVENT_MAIL_RETRY_DETAIL = 0;
 
     // MailRoot
-    public final static Integer MAIL_ROOT_NEW = -1;
+    public final static Integer MAIL_ROOT_STATUS_NEW = -1;
+    public final static Integer MAIL_ROOT_STATUS_SEND = 1;
     public final static Integer MAIL_ROOT_LIMIT = 10;
 
     // Ticket

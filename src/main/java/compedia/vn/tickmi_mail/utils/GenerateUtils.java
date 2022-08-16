@@ -16,6 +16,6 @@ public class GenerateUtils {
 
 
     public static String genNameTicket (long guestId,int index) {
-        return String.format("EV_%07d",guestId,index);
+        return String.format("EV_%07d",Integer.valueOf(guestId + "" + index));
     }
 }

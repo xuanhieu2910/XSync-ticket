@@ -287,7 +287,7 @@ public class HandleTicketService {
     private MailRoot createMailRoot (EventRequestDetail eventRequestDetail) {
         MailRoot mailRoot = new MailRoot();
         mailRoot.setGuestId(eventRequestDetail.getGuestId());
-        mailRoot.setStatus(DbConstant.MAIL_ROOT_NEW);
+        mailRoot.setStatus(DbConstant.MAIL_ROOT_STATUS_NEW);
         mailRoot.setRetry(DbConstant.INIT_RETRY);
         Date now = new Date();
         mailRoot.setCreateTime(new Timestamp(now.getTime()));

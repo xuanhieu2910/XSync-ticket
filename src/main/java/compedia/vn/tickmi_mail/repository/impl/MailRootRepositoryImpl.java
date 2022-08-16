@@ -26,7 +26,7 @@ public class MailRootRepositoryImpl implements MailRootRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT root.*" +
                 " FROM MAIL_ROOT root" +
-                " WHERE root.STATUS != :status" +
+                " WHERE root.STATUS = :status" +
                 "  AND root.RETRY <= :retry" +
                 "  AND ROWNUM <= :limit");
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -54,24 +54,27 @@ public class MailRootRepositoryImpl implements MailRootRepositoryCustom {
     @Override
     public Optional<InformationMailDto> getInformationMailDtos(Long guestId) throws IOException, SQLException {
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT case when configMail.EMAIL_USER is null then null else configMail.EMAIL_USER end         EMAIL_USER," +
+        sb.append(" SELECT case when configMail.EMAIL_USER is null then null else configMail.EMAIL_USER end         EMAIL_USER," +
                 "       case when configMail.EMAIL_PASSWORD is null then null else configMail.EMAIL_PASSWORD end EMAIL_PASSWORD," +
                 "       case when configMail.EMAIL_HOST is null then null else configMail.EMAIL_HOST end         EMAIL_HOST," +
                 "       case when configMail.EMAIL_PORT is null then null else configMail.EMAIL_PORT end         EMAIL_PORT," +
                 "       ticketEvent.HTML," +
                 "       ticket.PATH_QR," +
-                "       guest.GUEST_ID" +
+                "       guest.GUEST_ID," +
+                "       ticket.INDEX_QR" +
                 " FROM MAIL_ROOT mailRoot" +
                 "         inner join GUEST guest on mailRoot.GUEST_ID = guest.GUEST_ID" +
                 "         inner join TICKET_EVENT ticketEvent on guest.TICKET_EVENT_ID = ticketEvent.TICKET_EVENT_ID" +
-                "         inner join TICKET ticket on guest.GUEST_ID = ticket.GUEST_ID and ticketEvent.TICKET_EVENT_ID = ticket.TICKET_EVENT_ID" +
+                "         inner join TICKET ticket" +
+                "                    on guest.GUEST_ID = ticket.GUEST_ID and ticketEvent.TICKET_EVENT_ID = ticket.TICKET_EVENT_ID" +
                 "         left join (select configMail.*" +
                 "                    from CONFIG_EMAIL configMail" +
                 "                    where configMail.IS_USED = 1) configMail" +
                 "                   on mailRoot.PROVIDER_ID = configMail.PROVIDER_ID" +
                 " where mailRoot.GUEST_ID = :guestId" +
                 "  and guest.STATUS = 0" +
-                "  and ticket.STATUS = 0");
+                "  and ticket.STATUS = 0" +
+                " ORDER BY ticket.INDEX_QR");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("guestId", guestId);
         List<Object[]> result = query.getResultList();
@@ -90,6 +93,7 @@ public class MailRootRepositoryImpl implements MailRootRepositoryCustom {
             for (Object[] obj : result) {
                 pathQr.add(ValueUtil.getStringByObject(obj[5]));
             }
+            informationMailDto.setPathQr(pathQr);
             return Optional.of(informationMailDto);
         }
         return Optional.empty();
