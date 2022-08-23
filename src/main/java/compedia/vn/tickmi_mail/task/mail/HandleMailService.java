@@ -11,8 +11,7 @@ import compedia.vn.tickmi_mail.utils.DbConstant;
 import compedia.vn.tickmi_mail.utils.MailUtils;
 import compedia.vn.tickmi_mail.utils.PropertiesUtil;
 import compedia.vn.tickmi_mail.utils.TemplateEmailUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -29,9 +28,9 @@ import java.util.*;
 @Component
 @EnableScheduling
 @EnableAsync
+@Log4j2
 public class HandleMailService {
 
-    private final static Logger logger = LoggerFactory.getLogger(HandleMailService.class);
 
     private static Queue<MailRoot> queueRootMail = new ArrayDeque<>();
 
@@ -55,10 +54,10 @@ public class HandleMailService {
                 mailRootService.updateMailRoots(mailRootList);
                 queueRootMail.addAll(mailRootList);
             } else {
-                logger.info("Mail root is empty!");
+                log.info("Mail root is empty!");
             }
         }catch (Exception e) {
-            logger.error("Lỗi này ROOT MAIL =====================>" + e.getMessage());
+            log.error("Error to process get root mail",e);
         }
     }
 
@@ -75,7 +74,7 @@ public class HandleMailService {
             // Get information
             Optional<InformationMailDto> dto = mailRootService.getInformationMailDtoByGuestId(mailRoot.getGuestId());
             if (!dto.isPresent()) {
-                logger.error("Lỗi rồi : Information không giá trị -> trace lại điiii" );
+                log.error("Error information mail dto empty!" );
             }
             else {
                 if (mailRoot.getRetry().equals(DbConstant.MAX_RETRY_DETAIL)) {
@@ -100,9 +99,9 @@ public class HandleMailService {
                 mailRoot.setRetry(mailRoot.getRetry() + 1);
                 mailRoot.setStatus(DbConstant.MAIL_ROOT_STATUS_NEW);
                 mailRootService.updateMailRoot(mailRoot);
-                logger.error("Lỗi process generate content to send email ===>>> " + e.getMessage());
+                log.error("Error process generate content to send email",e);
             } catch (SQLException e) {
-                logger.error("Lỗi process generate content to send email ===>>> " + e.getMessage());
+                log.error("Error process generate content to send email",e);
             }
         }
     }

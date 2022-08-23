@@ -4,12 +4,10 @@ import compedia.vn.tickmi_mail.entity.*;
 import compedia.vn.tickmi_mail.repository.ProviderRepository;
 import compedia.vn.tickmi_mail.repository.TicketEventRepository;
 import compedia.vn.tickmi_mail.service.*;
-import compedia.vn.tickmi_mail.task.mail.HandleMailService;
 import compedia.vn.tickmi_mail.task.qr.GenerateQR;
 import compedia.vn.tickmi_mail.utils.DbConstant;
 import compedia.vn.tickmi_mail.utils.GenerateUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -26,9 +24,8 @@ import java.util.*;
 @Component
 @EnableScheduling
 @EnableAsync
+@Log4j2
 public class HandleTicketService {
-
-    private final static Logger logger = LoggerFactory.getLogger(HandleMailService.class);
 
     private static final Queue<EventRequestDetail> queueEventRequestDetails = new ArrayDeque<>();
     private static final Queue<EventRequest> queueEventRequest = new ArrayDeque<>();
@@ -71,10 +68,10 @@ public class HandleTicketService {
                 // Push n object to queue
                 queueEventRequest.addAll(eventRequestList);
             } else {
-                logger.info("Data Event request is empty!");
+                log.info("Data Event request is empty!");
             }
         }catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            log.error("Error to get event request",e);
         }
     }
 
@@ -112,7 +109,7 @@ public class HandleTicketService {
                 }
                 eventRequestDetailService.saveEventRequestDetails(details);
             } catch (Exception e) {
-                logger.error("Lỗi nè:" + e.getMessage());
+                log.error("Error to insert cache event request detail",e);
             }
         }
     }
@@ -143,10 +140,10 @@ public class HandleTicketService {
                 queueEventRequestDetails.addAll(eventRequestDetails);
             }
             else {
-                logger.info("Data Event request detail is empty!");
+                log.info("Data Event request detail is empty!");
             }
         }catch (Exception e) {
-            logger.error("Lỗi nè =======>>>>> " + e.getMessage());
+            log.error("Error to get event request detail",e);
         }
     }
 
@@ -197,8 +194,8 @@ public class HandleTicketService {
                                 queueEventDetailsToMai.add(requestDetails);
                                 // update Ticket
                                 updateTicket(requestDetails);
-                            }catch (Exception e) {
-                                logger.error("Lỗi này ==============>>>> " + e.getMessage());
+                            } catch (Exception e) {
+                                log.error("Error to  update ticket after generate ticket success",e);
                             }
                         }
                     }
@@ -239,7 +236,7 @@ public class HandleTicketService {
             }
         }
         else {
-            logger.debug("Queue event request detail is empty!");
+            log.debug("Queue event request detail is empty!");
         }
     }
 
@@ -263,10 +260,10 @@ public class HandleTicketService {
                 eventRequestDetailService.deleteEventRequestDetails(eventRequestDetails);
             }
             else {
-                logger.info("Queue Mail is empty!");
+                log.info("Queue Mail is empty!");
             }
         }catch (Exception e){
-            logger.error("Lỗi insert to event mail ===>>> " + e.getMessage());
+            log.error("Error to insert to event mail",e);
         }
     }
 
@@ -286,7 +283,7 @@ public class HandleTicketService {
             providerRepository.save(provider.get());
         }
         else {
-            logger.error("LỖI ======>>> Provider is not exits");
+            log.error("Provider is not exits!");
         }
     }
 
@@ -299,7 +296,7 @@ public class HandleTicketService {
             ticketEventRepository.save(ticketEvent.get());
         }
         else {
-            logger.error("LỖI ======>>> Ticket Event is not exits");
+            log.error("Error Ticket Event is not exits");
         }
     }
 

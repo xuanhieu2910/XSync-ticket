@@ -8,8 +8,8 @@ import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
 import compedia.vn.tickmi_mail.utils.DbConstant;
 import compedia.vn.tickmi_mail.utils.FilesUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
+
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,10 +19,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+@Log4j2
 public class GenerateQR {
-
-    private final static Logger logger = LoggerFactory.getLogger(GenerateQR.class);
-
 
     public static String handlerGeneratePathQR (Long eventId, Long tickEventId, Long guestId, Integer countTicket) {
         return FilesUtils.createFilePathQR(eventId, tickEventId, guestId, countTicket, DbConstant.EXTENSION_GENERATE_QR[0]);
@@ -30,15 +28,15 @@ public class GenerateQR {
 
 
     /**
-     *  1. Content : Code ticket
-     *  2. PathQR : This have been generate from method handlerGeneratePathQR(params...)
-     *  3. NameTicket : index of ticket in Guest
+     *  @param content Code ticket
+     *  @param pathQR This have been generate from method handlerGeneratePathQR(params...)
+     *  @param  nameTicket : index of ticket in Guest
      *
      * */
     public static void handleImageGenerateQR (String content, String pathQR, String nameTicket) {
         try {
-            logger.info("---------------------------- GENERATE QR ----------------------");
-            logger.info("Content :" + content + ", pathQR: " + pathQR + ", nameTicket:" + nameTicket);
+            log.info("---------------------------- GENERATE QR ----------------------");
+            log.info("Content :" + content + ", pathQR: " + pathQR + ", nameTicket:" + nameTicket);
             Map<EncodeHintType, Object> encodeHintTypeObjectMap = new HashMap<>();
             encodeHintTypeObjectMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
             QRCode code = Encoder.encode(content, ErrorCorrectionLevel.H, encodeHintTypeObjectMap);
@@ -48,10 +46,9 @@ public class GenerateQR {
             byte[] bytes = baos.toByteArray();
             FileOutputStream stream = new FileOutputStream(pathQR);
             stream.write(bytes);
-            logger.info("---------------------------GENERATE FINISHED----------------------");
+            log.info("---------------------------GENERATE FINISHED----------------------");
         } catch (WriterException | IOException e) {
-            logger.error("LỖI KHI MÀ TẠO QR NÈ =============================>>>>>" + e.getMessage());
-            e.printStackTrace();
+            log.error("Error generate QR ",e);
         }
     }
 

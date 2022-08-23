@@ -219,12 +219,14 @@ public class FilesUtils {
     public static String createFilePathQR(Long eventId, Long ticketEventId, Long guestId, int index, String extension) {
         String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
         String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
+        String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
         String filePathQrGen = root + File.separator + todayFolder + File.separator + eventId;
         File file = new File(filePathQrGen);
         if (!file.exists() && !file.mkdirs()) {
             logger.error("Can't create folder");
         } else {
             filePathQrGen = filePathQrGen + File.separator + guestId + "_" + ticketEventId + "_" + index + "." + extension;
+            filePathOutPut = File.separator + todayFolder + File.separator + eventId + File.separator + guestId + "_" + ticketEventId + "_" + index + "." + extension;
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(filePathQrGen);
                 logger.debug("Create file success");
@@ -232,7 +234,7 @@ public class FilesUtils {
                 throw new RuntimeException(e);
             }
         }
-        return filePathQrGen;
+        return filePathOutPut;
     }
 
     public static String getFolderInfo() {
