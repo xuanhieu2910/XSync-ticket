@@ -267,6 +267,13 @@ public class HandleTicketService {
         }
     }
 
+    /**
+     * Method will update ........
+     * @param detail list of event
+     * @throws IOException when .....
+     * @throws SQLException ....
+     * @return list of id that updated.....
+     */
     private void updateTicket (List<EventRequestDetail> detail) throws IOException, SQLException {
         // update registered
         updateRegisterService(detail.get(0).getUserId(),detail.size());

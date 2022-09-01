@@ -18,9 +18,9 @@ public class EventRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_EVENT_REQUEST")
-    private Long Id;
+    private Integer Id;
     @Column(name = "GUEST_ID")
-    private Long guestId;
+    private Integer guestId;
     @Column(name = "STATUS")
     private Integer status;
     @Column(name = "CREATE_TIME")
@@ -28,19 +28,19 @@ public class EventRequest {
     @Column(name = "MODIFIED_TIME")
     private Timestamp modifiedTime;
     @Column(name = "PROVIDER_ID")
-    private Long providerId;
+    private Integer providerId;
     @Column(name = "QUANTITY")
-    private Long quantity;
+    private Integer quantity;
     @Column(name = "EVENT_ID")
-    private Long eventId;
+    private Integer eventId;
     @Column(name = "TICKET_EVENT_ID")
-    private Long ticketEventId;
+    private Integer ticketEventId;
     @Column(name = "QUANTITY_GEN")
     private Integer quantityGen;
     @Column(name = "GUEST_CODE")
     private String guestCode;
     @Column(name = "USER_ID")
-    private Long userId;
+    private Integer userId;
 
     @Override
     public String toString() {

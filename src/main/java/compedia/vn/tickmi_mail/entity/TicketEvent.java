@@ -17,23 +17,23 @@ public class TicketEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "TICKET_EVENT_ID")
-    private Long ticketEventId;
+    private Integer ticketEventId;
     @Column(name = "CODE_TICKET_EVENT")
     private String codeTicketEvent;
     @Column(name = "NAME_TICKET")
     private String nameTicket;
     @Column(name = "EVENT_ID")
-    private Long eventId;
+    private Integer eventId;
     @Column(name = "TYPE_TICKET")
     private Integer typeTicket;
     @Column(name = "PRICE")
     private Double price;
     @Column(name = "TEMPLATE_TICKET_ID")
-    private Long templateTicketId;
+    private Integer templateTicketId;
     @Column(name = "QUANTITY")
-    private Long quantity;
+    private Integer quantity;
     @Column(name = "LIMIT_AMOUNT")
-    private Long limitAmount;
+    private Integer limitAmount;
     @Column(name = "STATUS")
     private Integer status;
     @Column(name = "REGISTER_START_DATE")
@@ -47,7 +47,7 @@ public class TicketEvent {
     @Column(name = "MODIFIED_DATE")
     private Date modifiedDate;
     @Column(name = "CREATE_BY")
-    private Long createBy;
+    private Integer createBy;
     @Column(name = "DESCRIPTION")
     private String description;
 

@@ -21,7 +21,7 @@ public class MailDetailHis {
     @Column(name = "MAIL_TO")
     private String mailTo;
     @Column(name = "GUEST_ID")
-    private Long guestId;
+    private Integer guestId;
     @Column(name = "CREATE_DATE")
     private Timestamp createDate;
     @Column(name = "UPDATE_DATE")

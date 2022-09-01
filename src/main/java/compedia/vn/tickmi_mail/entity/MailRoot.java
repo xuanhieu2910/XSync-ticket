@@ -15,9 +15,9 @@ public class MailRoot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private Long id;
+    private Integer id;
     @Column(name = "GUEST_ID")
-    private Long guestId;
+    private Integer guestId;
     @Column(name = "STATUS")
     private Integer status;
     @Column(name = "RETRY")
@@ -27,5 +27,5 @@ public class MailRoot {
     @Column(name = "MODIFIED_TIME")
     private Timestamp modifiedTime;
     @Column(name = "PROVIDER_ID")
-    private Long providerId;
+    private Integer providerId;
 }

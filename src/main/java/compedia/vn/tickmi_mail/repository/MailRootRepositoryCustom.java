@@ -12,5 +12,5 @@ public interface MailRootRepositoryCustom {
 
     List<MailRoot> findAllMailRoot (Integer status, Integer retry , Integer limit);
 
-    Optional<InformationMailDto> getInformationMailDtos (Long guestId) throws IOException, SQLException;
+    Optional<InformationMailDto> getInformationMailDtos (Integer guestId) throws IOException, SQLException;
 }

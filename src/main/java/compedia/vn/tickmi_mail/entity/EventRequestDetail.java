@@ -18,7 +18,7 @@ public class EventRequestDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_DETAILS")
-    private Long id;
+    private Integer id;
     @Column(name = "PATH_IMAGE")
     private String pathImage;
     @Column(name = "INDEX_TICKET")
@@ -32,21 +32,21 @@ public class EventRequestDetail {
     @Column(name = "OBJECT_CONTENT")
     private String objectContent;
     @Column(name = "ID_EVENT_REQUEST")
-    private Long eventRequestId;
+    private Integer eventRequestId;
     @Column(name = "EVENT_ID")
-    private Long eventId;
+    private Integer eventId;
     @Column(name = "TICKET_EVENT_ID")
-    private Long ticketEventId;
+    private Integer ticketEventId;
     @Column(name = "GUEST_ID")
-    private Long guestId;
+    private Integer guestId;
     @Column(name = "TIME_GENERATE")
     private Timestamp timeGenerate;
     @Column(name = "MODIFIED_TIME")
     private Timestamp modifiedTime;
     @Column(name = "PROVIDER_ID")
-    private Long providerId;
+    private Integer providerId;
     @Column(name = "USER_ID")
-    private Long userId;
+    private Integer userId;
     @Column(name = "GUEST_CODE")
     private String guestCode;
 

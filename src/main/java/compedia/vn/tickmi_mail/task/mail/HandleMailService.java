@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
 
 @Component
 @EnableScheduling
@@ -33,6 +34,7 @@ public class HandleMailService {
 
 
     private static Queue<MailRoot> queueRootMail = new ArrayDeque<>();
+
 
     @Autowired
     MailRootService mailRootService;
@@ -90,6 +92,7 @@ public class HandleMailService {
                         // send email
                         sendEmail(dto.get());
                         // remove mail root
+                        //TODO: Comment tam de test
 //                        mailRootService.deleteMailRoot(mailRoot);
                     }
                 }
@@ -101,7 +104,7 @@ public class HandleMailService {
                 mailRootService.updateMailRoot(mailRoot);
                 log.error("Error process generate content to send email",e);
             } catch (SQLException e) {
-                log.error("Error process generate content to send email",e);
+                log.error("Error process generate content to send email", e);
             }
         }
     }

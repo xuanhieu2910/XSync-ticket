@@ -15,19 +15,19 @@ public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "TICKET_ID")
-    private Long ticketId;
+    private Integer ticketId;
 
     @Column(name = "USER_ID")
-    private Long userId;
+    private Integer userId;
 
     @Column(name = "TICKET_EVENT_ID")
-    private Long ticketEventId;
+    private Integer ticketEventId;
 
     @Column(name = "EVENT_ID")
-    private Long eventId;
+    private Integer eventId;
 
     @Column(name = "GUEST_ID")
-    private Long guestId;
+    private Integer guestId;
 
     @Column(name = "PATH_QR")
     private String pathQr;

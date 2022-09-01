@@ -19,7 +19,7 @@ public class Provider {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "PROVIDER_ID")
-    private Long providerId;
+    private Integer providerId;
 
     @Column(name = "NAME")
     private String name;
@@ -37,7 +37,7 @@ public class Provider {
     private Timestamp createTime;
 
     @Column(name = "REGISTER_PACKAGE_ID")
-    private Long registerPackageId;
+    private Integer registerPackageId;
 
     @Column(name = "FACEBOOK_LINK")
     private String facebookLink;
