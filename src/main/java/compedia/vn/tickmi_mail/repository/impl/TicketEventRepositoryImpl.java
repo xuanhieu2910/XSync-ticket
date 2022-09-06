@@ -21,7 +21,7 @@ public class TicketEventRepositoryImpl implements TicketEventRepositoryCustom {
     EntityManager entityManager;
 
     @Override
-    public Optional<TicketEvent> findTicketsEventById(Long id) throws IOException, SQLException {
+    public Optional<TicketEvent> findTicketsEventById(Integer id) throws IOException, SQLException {
         Query query = entityManager.createNativeQuery(SQL_findTicketsEventById);
         query.setParameter("id",id);
         List<Object[]> resultList = query.getResultList();

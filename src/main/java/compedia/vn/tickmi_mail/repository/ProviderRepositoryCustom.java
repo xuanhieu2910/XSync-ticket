@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface ProviderRepositoryCustom {
 
-    Optional<Provider> findProviderByUserId(Long userId);
+    Optional<Provider> findProviderByUserId(Integer userId);
 }

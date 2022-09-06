@@ -53,7 +53,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
     }
 
     @Override
-    public Optional<EventRequest> findEventRequestByIdAndStatus(Long id, Integer status) {
+    public Optional<EventRequest> findEventRequestByIdAndStatus(Integer id, Integer status) {
         log.debug("Query start query find event request by id");
         Query query = entityManager.createNativeQuery(SQL_findEventRequestByIdAndStatus);
         query.setParameter("id",id);
@@ -80,7 +80,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
     }
 
     @Override
-    public Optional<EventRequest> findEventRequestById(Long id) {
+    public Optional<EventRequest> findEventRequestById(Integer id) {
         log.debug("Query start query find event request by id");
         Query query = entityManager.createNativeQuery(SQL_findEventRequestById);
         query.setParameter("id",id);
@@ -107,7 +107,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
 
     @Transactional
     @Override
-    public void updateEventRequestById(Long id,Integer status) {
+    public void updateEventRequestById(Integer id,Integer status) {
         Query query = entityManager.createNativeQuery(SQL_updateEventRequestById);
         query.setParameter("status", status);
         query.setParameter("id",id);

@@ -281,7 +281,7 @@ public class HandleTicketService {
         updateTicketEvent(detail.get(0).getTicketEventId(),detail.size());
     }
 
-    private void updateRegisterService (Long userId, Integer sizeTicket) {
+    private void updateRegisterService (Integer userId, Integer sizeTicket) {
         // Update lại số vé còn lại trong tài khoản đăng ký
         Optional<Provider> provider = providerRepository.findProviderByUserId(userId);
         if (provider.isPresent()) {
@@ -294,11 +294,11 @@ public class HandleTicketService {
         }
     }
 
-    private void updateTicketEvent (Long ticketEventId, int sizeTicket) throws IOException, SQLException {
+    private void updateTicketEvent (Integer ticketEventId, int sizeTicket) throws IOException, SQLException {
         // Update lại số vé theo từng loại vé
         Optional<TicketEvent> ticketEvent = ticketEventRepository.findTicketsEventById(ticketEventId);
         if (ticketEvent.isPresent()) {
-            Long tmpTicket = ticketEvent.get().getQuantity() - sizeTicket;
+            Integer tmpTicket = ticketEvent.get().getQuantity() - sizeTicket;
             ticketEvent.get().setQuantity(tmpTicket);
             ticketEventRepository.save(ticketEvent.get());
         }

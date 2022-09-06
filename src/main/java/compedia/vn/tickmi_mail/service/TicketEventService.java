@@ -19,7 +19,7 @@ public class TicketEventService {
     @Autowired
     TicketEventRepository ticketEventRepository;
 
-    public Optional<TicketEvent> findTicketEventById (Long ticketEventId) throws IOException, SQLException {
+    public Optional<TicketEvent> findTicketEventById (Integer ticketEventId) throws IOException, SQLException {
         return ticketEventRepository.findTicketsEventById(ticketEventId);
     }
 }

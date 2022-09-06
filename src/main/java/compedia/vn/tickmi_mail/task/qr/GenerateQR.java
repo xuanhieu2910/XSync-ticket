@@ -22,7 +22,7 @@ import java.util.*;
 @Log4j2
 public class GenerateQR {
 
-    public static String handlerGeneratePathQR (Long eventId, Long tickEventId, Long guestId, Integer countTicket) {
+    public static String handlerGeneratePathQR (Integer eventId, Integer tickEventId, Integer guestId, Integer countTicket) {
         return FilesUtils.createFilePathQR(eventId, tickEventId, guestId, countTicket, DbConstant.EXTENSION_GENERATE_QR[0]);
     }
 

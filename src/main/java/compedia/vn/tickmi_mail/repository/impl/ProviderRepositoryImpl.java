@@ -21,7 +21,7 @@ public class ProviderRepositoryImpl implements ProviderRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public Optional<Provider> findProviderByUserId(Long userId) {
+    public Optional<Provider> findProviderByUserId(Integer userId) {
         log.debug("Start query find provider by user id");
         Query query = entityManager.createNativeQuery(SQL_findProviderByUserId);
         query.setParameter("userId", userId);

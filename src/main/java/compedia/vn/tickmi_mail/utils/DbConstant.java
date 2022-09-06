@@ -47,4 +47,7 @@ public class DbConstant {
     // Ticket mail his
     public final static Integer MAIL_HIS_STATUS_FALSE = 0;
     public final static Integer MAIL_HIS_STATUS_SUCCESS = 1;
+
+
+
 }

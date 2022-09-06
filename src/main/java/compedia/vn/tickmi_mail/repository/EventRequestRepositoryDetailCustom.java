@@ -8,9 +8,9 @@ public interface EventRequestRepositoryDetailCustom {
 
     List<EventRequestDetail> getAllEventRequestDetailCustom (Integer limits, Integer status,Integer status2,Integer retry);
 
-    List<EventRequestDetail> getAllEventRequestByIdEventRequest (Long eventRequestId);
+    List<EventRequestDetail> getAllEventRequestByIdEventRequest (Integer eventRequestId);
 
-    List<EventRequestDetail> getAllEventRequestByIdEventRequestAndStatus (Long eventRequestId, Integer status);
+    List<EventRequestDetail> getAllEventRequestByIdEventRequestAndStatus (Integer eventRequestId, Integer status);
 
 
 }

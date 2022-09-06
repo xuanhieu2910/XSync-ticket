@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface TicketEventRepositoryCustom {
 
-    Optional<TicketEvent> findTicketsEventById(Long id) throws IOException, SQLException;
+    Optional<TicketEvent> findTicketsEventById(Integer id) throws IOException, SQLException;
 }

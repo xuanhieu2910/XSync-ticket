@@ -26,7 +26,7 @@ public class EventRequestService {
         return eventRequestRepository.saveAll(eventRequests);
     }
 
-    public Optional<EventRequest> findEventRequestByIdAndStatus (Long id, Integer status) {
+    public Optional<EventRequest> findEventRequestByIdAndStatus (Integer id, Integer status) {
         return eventRequestRepository.findEventRequestByIdAndStatus(id,status);
     }
 
@@ -35,11 +35,11 @@ public class EventRequestService {
         return;
     }
 
-    public Optional<EventRequest> findEventRequestById (Long id) {
+    public Optional<EventRequest> findEventRequestById (Integer id) {
         return eventRequestRepository.findEventRequestById(id);
     }
 
-    public void updateEventRequestByIdAndStatus (Long id, Integer status) {
+    public void updateEventRequestByIdAndStatus (Integer id, Integer status) {
         eventRequestRepository.updateEventRequestById(id,status);
     }
 

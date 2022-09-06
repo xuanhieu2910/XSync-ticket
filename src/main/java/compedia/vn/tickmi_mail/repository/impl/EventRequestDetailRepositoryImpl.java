@@ -55,7 +55,7 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
 
 
     @Override
-    public List<EventRequestDetail> getAllEventRequestByIdEventRequest(Long eventRequestId) {
+    public List<EventRequestDetail> getAllEventRequestByIdEventRequest(Integer eventRequestId) {
         log.debug("Start to query get all event request by id event request");
         Query query = entityManager.createNativeQuery(SQL_GetAllEventRequestByIdEventRequest);
         query.setParameter("idEventRequest",eventRequestId);
@@ -87,7 +87,7 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
     }
 
     @Override
-    public List<EventRequestDetail> getAllEventRequestByIdEventRequestAndStatus(Long eventRequestId, Integer status) {
+    public List<EventRequestDetail> getAllEventRequestByIdEventRequestAndStatus(Integer eventRequestId, Integer status) {
         log.debug("get all event request by id event request and status");
         Query query = entityManager.createNativeQuery(SQL_GetAllEventRequestByIdEventRequestAndStatus);
         query.setParameter("idEventRequest",eventRequestId);

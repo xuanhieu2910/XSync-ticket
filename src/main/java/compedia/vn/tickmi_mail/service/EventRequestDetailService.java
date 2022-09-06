@@ -43,11 +43,11 @@ public class EventRequestDetailService {
         eventRequestRepositoryDetail.deleteAll(eventRequestDetails);
     }
 
-    public List<EventRequestDetail> requestDetails (Long eventRequestId) {
+    public List<EventRequestDetail> requestDetails (Integer eventRequestId) {
         return eventRequestRepositoryDetail.getAllEventRequestByIdEventRequest(eventRequestId);
     }
 
-    public List<EventRequestDetail> getAllEventRequestByIdEventRequestAndStatus (Long eventRequestId, Integer status) {
+    public List<EventRequestDetail> getAllEventRequestByIdEventRequestAndStatus (Integer eventRequestId, Integer status) {
         return eventRequestRepositoryDetail.getAllEventRequestByIdEventRequest(eventRequestId);
     }
 

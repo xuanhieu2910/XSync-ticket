@@ -216,7 +216,7 @@ public class FilesUtils {
 
 
     // Create folder upload qr
-    public static String createFilePathQR(Long eventId, Long ticketEventId, Long guestId, int index, String extension) {
+    public static String createFilePathQR(Integer eventId, Integer ticketEventId, Integer guestId, int index, String extension) {
         String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
         String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
         String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
