@@ -16,7 +16,7 @@ public class MailRoot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Integer id;
-    @Column(name = "GUEST_ID")
+    @Column(name = "OBJECT_ID")
     private Integer guestId;
     @Column(name = "STATUS")
     private Integer status;

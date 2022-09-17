@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface EventRequestRepositoryCustom {
 
-        List<EventRequest> getEventRequestByStatus (Integer status, Integer limit);
+        List<EventRequest> getEventRequestByStatus ();
         Optional<EventRequest> findEventRequestByIdAndStatus (Integer id,Integer status);
         Optional<EventRequest> findEventRequestById (Integer id);
 

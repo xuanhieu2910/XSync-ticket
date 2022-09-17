@@ -17,8 +17,8 @@ public class Ticket {
     @Column(name = "TICKET_ID")
     private Integer ticketId;
 
-    @Column(name = "USER_ID")
-    private Integer userId;
+    @Column(name = "PROVIDER_ID")
+    private Integer providerId;
 
     @Column(name = "TICKET_EVENT_ID")
     private Integer ticketEventId;
@@ -26,24 +26,27 @@ public class Ticket {
     @Column(name = "EVENT_ID")
     private Integer eventId;
 
-    @Column(name = "GUEST_ID")
-    private Integer guestId;
-
     @Column(name = "PATH_QR")
     private String pathQr;
 
     @Column(name = "TIME_GENERATE")
-    private Timestamp TIME_GENERATE;
+    private Timestamp timeGenerate;
+
+    @Column(name = "MODIFIED_TIME")
+    private Timestamp modifiedTime;
 
     @Column(name = "INDEX_QR")
     private Integer indexQr;
-
-    @Column(name = "GUEST_CODE")
-    private String guestCode;
 
     @Column(name = "TICKET_CODE")
     private String ticketCode;
 
     @Column(name = "STATUS")
     private Integer status;
+
+    @Column(name = "OBJECT_ID")
+    private Integer objectId;
+
+    @Column(name = "TYPE")
+    private Integer type;
 }

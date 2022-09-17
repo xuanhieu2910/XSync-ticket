@@ -16,8 +16,8 @@ public class EventRequestService {
     EventRequestRepository eventRequestRepository;
 
 
-    public List<EventRequest> getEventRequestList (Integer status, Integer limit) {
-        List<EventRequest>eventRequests = eventRequestRepository.getEventRequestByStatus(status,limit);
+    public List<EventRequest> getEventRequestList () {
+        List<EventRequest>eventRequests = eventRequestRepository.getEventRequestByStatus();
         return eventRequests;
     }
 

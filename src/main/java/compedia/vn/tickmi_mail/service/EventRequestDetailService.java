@@ -18,9 +18,9 @@ public class EventRequestDetailService {
     @Autowired
     EventRequestDetailRepository eventRequestRepositoryDetail;
 
-    public List<EventRequestDetail> getAllEventRequestDetailLimit (Integer limit,Integer status, Integer status_2, Integer retry) {
+    public List<EventRequestDetail> getAllEventRequestDetailLimit () {
      logger.debug("Service start get all event request detail limit");
-     return eventRequestRepositoryDetail.getAllEventRequestDetailCustom(limit,status,status_2,retry);
+     return eventRequestRepositoryDetail.getAllEventRequestDetailCustom();
     }
 
     public void saveEventRequestDetails (List<EventRequestDetail> eventRequestDetails) {

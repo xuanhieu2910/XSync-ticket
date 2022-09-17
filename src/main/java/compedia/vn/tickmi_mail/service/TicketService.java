@@ -18,9 +18,9 @@ public class TicketService {
     @Autowired
     TicketRepository ticketRepository;
 
-    public List<Ticket> saveAllTickets (List<Ticket> ticketList) {
+    public Ticket saveTicket (Ticket ticket) {
         logger.info("Service start save all ticket!");
-        return ticketRepository.saveAll(ticketList);
+        return ticketRepository.save(ticket);
     }
 
 }

@@ -1,9 +1,15 @@
 package compedia.vn.tickmi_mail.task.ticket;
 
-import compedia.vn.tickmi_mail.entity.*;
+import compedia.vn.tickmi_mail.entity.EventRequest;
+import compedia.vn.tickmi_mail.entity.EventRequestDetail;
+import compedia.vn.tickmi_mail.entity.MailRoot;
+import compedia.vn.tickmi_mail.entity.Ticket;
 import compedia.vn.tickmi_mail.repository.ProviderRepository;
 import compedia.vn.tickmi_mail.repository.TicketEventRepository;
-import compedia.vn.tickmi_mail.service.*;
+import compedia.vn.tickmi_mail.service.EventRequestDetailService;
+import compedia.vn.tickmi_mail.service.EventRequestService;
+import compedia.vn.tickmi_mail.service.MailRootService;
+import compedia.vn.tickmi_mail.service.TicketService;
 import compedia.vn.tickmi_mail.task.qr.GenerateQR;
 import compedia.vn.tickmi_mail.utils.DbConstant;
 import compedia.vn.tickmi_mail.utils.GenerateUtils;
@@ -16,8 +22,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -57,26 +61,24 @@ public class HandleTicketService {
      *
      * */
     @Async
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 3000)
     public void getEventRequestsLoop() {
         try {
-            List<EventRequest> eventRequestList = eventRequestService.getEventRequestList(
-                    DbConstant.STATUS_NEW_EVENT_REQUEST, DbConstant.SIZE_LIMIT);
+            log.info("EVENT_REQUEST =>>>>Start to get event request with limit");
+            List<EventRequest> eventRequestList = eventRequestService.getEventRequestList();
             if (!CollectionUtils.isEmpty(eventRequestList)) {
                 // Update n object
                 eventRequestService.updateEventRequestByStatus(eventRequestList, DbConstant.STATUS_EVENT_REQUEST);
                 // Push n object to queue
                 queueEventRequest.addAll(eventRequestList);
+                log.info("EVENT_REQUEST =>>>> Push event request list success!");
             } else {
-                log.info("Data Event request is empty!");
+                log.info("EVENT_REQUEST =>>>> Data Event request is empty!");
             }
         }catch (Exception e) {
             log.error("Error to get event request",e);
         }
     }
-
-
-
 
 
 
@@ -86,8 +88,9 @@ public class HandleTicketService {
      *
      * */
     @Async
-    @Scheduled(fixedRate = 500)
+    @Scheduled(fixedRate = 1000)
     public void insertCacheEventRequestDetail() {
+        log.info("INSERT EVENT REQUEST DETAIL DB =>>> Get data from queue event request to create event request detail");
         if (!queueEventRequest.isEmpty()) {
             EventRequest eventRequest = queueEventRequest.poll();
             List<EventRequestDetail> details = new ArrayList<>();
@@ -96,24 +99,25 @@ public class HandleTicketService {
                     EventRequestDetail dto = new EventRequestDetail();
                     dto.setIndexTicket(i);
                     dto.setCodeTicket(GenerateUtils.generateCodeTicket());
-                    dto.setStatus(DbConstant.STATUS_NEW_EVENT_REQUEST);
+                    dto.setStatus(DbConstant.STATUS_NEW_EVENT_REQUEST_DETAIL);
                     dto.setRetry(DbConstant.INIT_RETRY);
-                    dto.setEventRequestId(eventRequest.getId());
                     dto.setEventId(eventRequest.getEventId());
                     dto.setTicketEventId(eventRequest.getTicketEventId());
-                    dto.setGuestId(eventRequest.getGuestId());
                     dto.setProviderId(eventRequest.getProviderId());
-                    dto.setUserId(eventRequest.getUserId());
-                    dto.setGuestCode(eventRequest.getGuestCode());
+                    dto.setObjectId(eventRequest.getObjectId());
+                    dto.setType(eventRequest.getType());
                     details.add(dto);
                 }
                 eventRequestDetailService.saveEventRequestDetails(details);
+                log.info("INSERT EVENT REQUEST DETAIL DB =>>>  Push event request detail success!");
             } catch (Exception e) {
                 log.error("Error to insert cache event request detail",e);
             }
         }
+        else {
+            log.info("INSERT EVENT REQUEST DETAIL DB =>>> DATA EMPTY!");
+        }
     }
-
 
 
 
@@ -125,22 +129,22 @@ public class HandleTicketService {
      *
      */
     @Async
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 5000)
     public void getEventRequestDetailLoop () {
         try {
+            log.info("GET EVENT REQUEST DETAIL =>>>> Get all event request detail limit");
             // Get n object
-            List<EventRequestDetail> eventRequestDetails = eventRequestDetailService.
-                    getAllEventRequestDetailLimit(DbConstant.SIZE_LIMIT, DbConstant.STATUS_NEW_EVENT_REQUEST_DETAIL,
-                            DbConstant.STATUS_EVENT_REQUEST_DETAIL, DbConstant.MAX_RETRY_DETAIL);
+            List<EventRequestDetail> eventRequestDetails = eventRequestDetailService.getAllEventRequestDetailLimit();
             // update object
             if (!CollectionUtils.isEmpty(eventRequestDetails)) {
-                eventRequestDetails.stream().forEach(x -> x.setStatus(DbConstant.STATUS_EVENT_REQUEST_DETAIL_FLAT));
+                // create event request details
+                eventRequestDetails.stream().forEach(x -> x.setStatus(DbConstant.STATUS_EVENT_REQUEST_DETAIL));
                 eventRequestDetailService.saveEventRequestDetails(eventRequestDetails);
                 // Insert queue
                 queueEventRequestDetails.addAll(eventRequestDetails);
             }
             else {
-                log.info("Data Event request detail is empty!");
+                log.info("GET EVENT REQUEST DETAIL =>>>> Data Event request detail is empty!");
             }
         }catch (Exception e) {
             log.error("Error to get event request detail",e);
@@ -149,187 +153,95 @@ public class HandleTicketService {
 
 
 
-
     /**
      *  Handle to get data from event_request_detail -> process -> generate path QR
      *
      * */
     @Async
-    @Scheduled(fixedRate = 500)
+    @Scheduled(fixedRate = 1000)
     public void generateQRPathImage () {
-            //Get n object
-            //Create path image
-            //Success : Update  Path + flat -> Update event request
-            //False : Update flat
+        log.info("GENERATE PATH QR ==>>>>>>> START");
         if (!queueEventRequestDetails.isEmpty()) {
             EventRequestDetail detail = queueEventRequestDetails.poll();
-            String pathQr = GenerateQR.handlerGeneratePathQR(detail.getEventId(),detail.getTicketEventId(),detail.getGuestId(),detail.getIndexTicket());
-            boolean checkEventRequest = true;
-            try {
-                GenerateQR.handleImageGenerateQR(detail.getCodeTicket(),pathQr,GenerateUtils.genNameTicket(detail.getGuestId().longValue(),detail.getIndexTicket()));
-                // Success
-                // Update status
-                detail.setStatus(DbConstant.STATUS_EVENT_REQUEST_DETAIL_DONE);
-                detail.setPathImage(pathQr);
-                Date now = new Date();
-                detail.setTimeGenerate(new Timestamp(now.getTime()));
-                detail.setModifiedTime(new Timestamp(now.getTime()));
-                eventRequestDetailService.saveEventRequestDetail(detail);
-                // Update event root
-                Optional<EventRequest> eventRequest = eventRequestService.
-                        findEventRequestByIdAndStatus(detail.getEventRequestId(),DbConstant.STATUS_EVENT_REQUEST);
-                /**
-                 * Nếu tồn tại event request -> Update
-                 * Không tồn tại -> xóa ở bảng detail (loại bỏ dư thừa dữ liệu)
-                 *
-                 * */
-                if (eventRequest.isPresent()) {
-                    int quantityGen = eventRequest.get().getQuantityGen() + 1;
-                    eventRequest.get().setQuantityGen(quantityGen);
-                    // update status or quantity gen event request
-                    if (eventRequest.get().getQuantity().intValue() == eventRequest.get().getQuantityGen().intValue()) {
-                        List<EventRequestDetail> requestDetails = eventRequestDetailService.requestDetails(eventRequest.get().getId());
-                        if (!CollectionUtils.isEmpty(requestDetails)){
-                            try {
-                                queueEventDetailsToMai.add(requestDetails);
-                                // update Ticket
-                                updateTicket(requestDetails);
-                            } catch (Exception e) {
-                                log.error("Error to  update ticket after generate ticket success",e);
-                            }
-                        }
-                    }
-                    eventRequestService.updateEventRequest(eventRequest.get());
-                }
-                else {
-                    eventRequestDetailService.deleteEventRequestDetail(detail);
-                }
-            }catch (Exception e) {
-                // False
-                // update retry + status
-                detail.setStatus(DbConstant.STATUS_EVENT_REQUEST_DETAIL);
-                if (detail.getRetry().equals(DbConstant.MAX_RETRY_DETAIL)) {
-                    // delete event request detail
-                    eventRequestDetailService.deleteEventRequestDetail(detail);
-                    // update event request
-                    Optional<EventRequest> eventRequest = eventRequestService.
-                            findEventRequestByIdAndStatus(detail.getEventRequestId(),DbConstant.STATUS_EVENT_REQUEST);
-                    /**
-                     * Nếu tồn tại event request -> Update
-                     * Không tồn tại -> xóa ở bảng detail (loại bỏ dư thừa dữ liệu)
-                     *
-                     * */
-                    if (eventRequest.isPresent()) {
-                        eventRequest.get().setStatus(DbConstant.STATUS_FALSE);
-                        eventRequestService.updateEventRequest(eventRequest.get());
-                    }
-                    else {
+            String pathQr = null;
+            for (int i = 0; i < DbConstant.MAX_RETRY; i++) {
+                // Retry < 3
+                if (detail.getRetry() < DbConstant.MAX_RETRY) {
+                    try {
+                        pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(),detail.getEventId(), detail.getTicketEventId(),
+                                detail.getObjectId(), detail.getType(), detail.getIndexTicket(),detail.getGuestName());
+                        // Success
+                        // Remove in event detail
                         eventRequestDetailService.deleteEventRequestDetail(detail);
+                        log.info("Delete event request detail");
+                        // Insert to ticket
+                        ticketService.saveTicket(createTicket(detail,pathQr,DbConstant.TICKET_NOT_CHECKIN));
+                        log.info("Ticket save ticket");
+                        break;
+                    } catch (Exception e) {
+                        // False
+                        int retryBefore = detail.getRetry() + 1;
+                        detail.setRetry(retryBefore);
+                        log.error(e.getMessage(), e);
                     }
+                } else {
+                    // Delete in ticket request detail
+                    eventRequestDetailService.deleteEventRequestDetail(detail);
+                    // Insert into ticket
+                    ticketService.saveTicket(createTicket(detail,pathQr,DbConstant.TICKET_FALSE));
                 }
-                else {
-                    detail.setRetry(detail.getRetry().intValue() + 1);
-                    Date now = new Date();
-                    detail.setTimeGenerate(new Timestamp(now.getTime()));
-                }
-                eventRequestDetailService.saveEventRequestDetail(detail);
+                log.info("GENERATE PATH QR ==>>>>>>> END");
             }
-        }
-        else {
-            log.debug("Queue event request detail is empty!");
-        }
-    }
-
-
-
-    @Async
-    @Scheduled(fixedRate = 1000)
-    public void insertToEventMail () {
-        try {
-            if (!queueEventDetailsToMai.isEmpty()) {
-                // Get event request detail
-                List<EventRequestDetail> eventRequestDetails = queueEventDetailsToMai.poll();
-                // send to ticket
-                ticketService.saveAllTickets(createTicket(eventRequestDetails));
-
-                // update eventRequest
-                eventRequestService.updateEventRequestByIdAndStatus(eventRequestDetails.get(0).getEventRequestId(),DbConstant.STATUS_READY_SEND);
-                // create mail root
-                mailRootService.saveMailRoot(createMailRoot(eventRequestDetails.get(0)));
-                // remove event detail
-                eventRequestDetailService.deleteEventRequestDetails(eventRequestDetails);
-            }
-            else {
-                log.info("Queue Mail is empty!");
-            }
-        }catch (Exception e){
-            log.error("Error to insert to event mail",e);
+        } else {
+            log.debug(" GENERATE PATH QR ==>>>>>>> Queue event request detail is empty!");
         }
     }
 
-    /**
-     * Method will update ........
-     * @param detail list of event
-     * @throws IOException when .....
-     * @throws SQLException ....
-     * @return list of id that updated.....
-     */
-    private void updateTicket (List<EventRequestDetail> detail) throws IOException, SQLException {
-        // update registered
-        updateRegisterService(detail.get(0).getUserId(),detail.size());
-        // update ticket event
-        updateTicketEvent(detail.get(0).getTicketEventId(),detail.size());
+    private Ticket createTicket(EventRequestDetail detail,String pathQR,Integer status){
+        Ticket ticket = new Ticket();
+        ticket.setProviderId(detail.getProviderId());
+        ticket.setTicketEventId(detail.getTicketEventId());
+        ticket.setEventId(detail.getEventId());
+        ticket.setPathQr(pathQR);
+        Date now = new Date();
+        ticket.setTimeGenerate(new Timestamp(now.getTime()));
+        ticket.setModifiedTime(new Timestamp(now.getTime()));
+        ticket.setIndexQr(detail.getIndexTicket());
+        ticket.setTicketCode(detail.getCodeTicket());
+        ticket.setStatus(status);
+        ticket.setObjectId(detail.getObjectId());
+        ticket.setType(detail.getType());
+        return ticket;
     }
 
-    private void updateRegisterService (Integer userId, Integer sizeTicket) {
-        // Update lại số vé còn lại trong tài khoản đăng ký
-        Optional<Provider> provider = providerRepository.findProviderByUserId(userId);
-        if (provider.isPresent()) {
-            Integer tmpTicket = provider.get().getTotalTicket() - sizeTicket;
-            provider.get().setTotalTicket(tmpTicket);
-            providerRepository.save(provider.get());
-        }
-        else {
-            log.error("Provider is not exits!");
-        }
-    }
-
-    private void updateTicketEvent (Integer ticketEventId, int sizeTicket) throws IOException, SQLException {
-        // Update lại số vé theo từng loại vé
-        Optional<TicketEvent> ticketEvent = ticketEventRepository.findTicketsEventById(ticketEventId);
-        if (ticketEvent.isPresent()) {
-            Integer tmpTicket = ticketEvent.get().getQuantity() - sizeTicket;
-            ticketEvent.get().setQuantity(tmpTicket);
-            ticketEventRepository.save(ticketEvent.get());
-        }
-        else {
-            log.error("Error Ticket Event is not exits");
-        }
-    }
-
-    private List<Ticket> createTicket (List<EventRequestDetail> eventRequestDetails) {
-        List<Ticket> tickets = new ArrayList<>();
-        for (EventRequestDetail dto: eventRequestDetails) {
-            Ticket ticket = new Ticket();
-            ticket.setTicketEventId(dto.getTicketEventId());
-            ticket.setEventId(dto.getEventId());
-            ticket.setGuestId(dto.getGuestId());
-            ticket.setPathQr(dto.getPathImage());
-            ticket.setTIME_GENERATE(dto.getTimeGenerate());
-            ticket.setIndexQr(dto.getIndexTicket());
-            ticket.setTicketCode(dto.getCodeTicket());
-            ticket.setGuestCode(dto.getGuestCode());
-            ticket.setUserId(dto.getUserId());
-            ticket.setGuestId(dto.getGuestId());
-            ticket.setStatus(DbConstant.TICKET_NOT_CHECKIN);
-            tickets.add(ticket);
-        }
-        return tickets;
-    }
+//    @Async
+//    @Scheduled(fixedRate = 1000)
+//    public void insertToEventMail () {
+//        try {
+//            if (!queueEventDetailsToMai.isEmpty()) {
+//                // Get event request detail
+//                List<EventRequestDetail> eventRequestDetails = queueEventDetailsToMai.poll();
+//                // send to ticket
+//                ticketService.saveAllTickets(createTicket(eventRequestDetails));
+//
+//                // update eventRequest
+//                eventRequestService.updateEventRequestByIdAndStatus(eventRequestDetails.get(0).getEventRequestId(),DbConstant.STATUS_READY_SEND);
+//                // create mail root
+//                mailRootService.saveMailRoot(createMailRoot(eventRequestDetails.get(0)));
+//                // remove event detail
+//                eventRequestDetailService.deleteEventRequestDetails(eventRequestDetails);
+//            }
+//            else {
+//                log.info("Queue Mail is empty!");
+//            }
+//        }catch (Exception e){
+//            log.error("Error to insert to event mail",e);
+//        }
+//    }
 
     private MailRoot createMailRoot (EventRequestDetail eventRequestDetail) {
         MailRoot mailRoot = new MailRoot();
-        mailRoot.setGuestId(eventRequestDetail.getGuestId());
+//        mailRoot.setGuestId(eventRequestDetail.getGuestId());
         mailRoot.setStatus(DbConstant.MAIL_ROOT_STATUS_NEW);
         mailRoot.setRetry(DbConstant.INIT_RETRY);
         Date now = new Date();

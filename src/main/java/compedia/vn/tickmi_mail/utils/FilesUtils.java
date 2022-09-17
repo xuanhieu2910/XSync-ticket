@@ -1,5 +1,6 @@
 package compedia.vn.tickmi_mail.utils;
 
+import compedia.vn.tickmi_mail.task.qr.GenerateQR;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -216,7 +217,8 @@ public class FilesUtils {
 
 
     // Create folder upload qr
-    public static String createFilePathQR(Integer eventId, Integer ticketEventId, Integer guestId, int index, String extension) {
+    public static String createFilePathQR(Integer eventId, Integer ticketEventId, Integer objectId,Integer type,
+                                          int index, String extension,String guestName) {
         String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
         String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
         String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
@@ -225,8 +227,8 @@ public class FilesUtils {
         if (!file.exists() && !file.mkdirs()) {
             logger.error("Can't create folder");
         } else {
-            filePathQrGen = filePathQrGen + File.separator + guestId + "_" + ticketEventId + "_" + index + "." + extension;
-            filePathOutPut = File.separator + todayFolder + File.separator + eventId + File.separator + guestId + "_" + ticketEventId + "_" + index + "." + extension;
+            filePathQrGen = filePathQrGen + File.separator + objectId + "_" + type + "_" + ticketEventId + "_" + index + "." + extension;
+            filePathOutPut = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + objectId + "_" + type + "_" + ticketEventId + "_" + index + "." + extension;
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(filePathQrGen);
                 logger.debug("Create file success");

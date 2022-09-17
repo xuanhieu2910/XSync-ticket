@@ -22,25 +22,26 @@ import java.util.*;
 @Log4j2
 public class GenerateQR {
 
-    public static String handlerGeneratePathQR (Integer eventId, Integer tickEventId, Integer guestId, Integer countTicket) {
-        return FilesUtils.createFilePathQR(eventId, tickEventId, guestId, countTicket, DbConstant.EXTENSION_GENERATE_QR[0]);
+    public static String handlerGeneratePathQR (String ticketEventCode,Integer eventId, Integer tickEventId,
+                                                Integer objectId, Integer type,Integer countTicket, String guestName) {
+        String pathFile = FilesUtils.createFilePathQR(eventId, tickEventId, objectId, type,countTicket,
+                DbConstant.EXTENSION_GENERATE_QR[0],guestName);
+        guestName = "EV_" + eventId + objectId + type + tickEventId + countTicket;
+        handleImageGenerateQR(pathFile,ticketEventCode,guestName);
+        return pathFile;
     }
 
 
     /**
-     *  @param content Code ticket
      *  @param pathQR This have been generate from method handlerGeneratePathQR(params...)
-     *  @param  nameTicket : index of ticket in Guest
-     *
      * */
-    public static void handleImageGenerateQR (String content, String pathQR, String nameTicket) {
+    public static void handleImageGenerateQR (String pathQR, String codeTicketEvent,String guestName) {
         try {
             log.info("---------------------------- GENERATE QR ----------------------");
-            log.info("Content :" + content + ", pathQR: " + pathQR + ", nameTicket:" + nameTicket);
             Map<EncodeHintType, Object> encodeHintTypeObjectMap = new HashMap<>();
             encodeHintTypeObjectMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-            QRCode code = Encoder.encode(content, ErrorCorrectionLevel.H, encodeHintTypeObjectMap);
-            BufferedImage image = renderQRImage(code, DbConstant.WIDTH_QR, DbConstant.HEIGHT_QR, DbConstant.PADDING_QR,nameTicket);
+            QRCode code = Encoder.encode(codeTicketEvent, ErrorCorrectionLevel.H, encodeHintTypeObjectMap);
+            BufferedImage image = renderQRImage(code, DbConstant.WIDTH_QR, DbConstant.HEIGHT_QR, DbConstant.PADDING_QR,guestName);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(image, DbConstant.EXTENSION_GENERATE_QR[0], baos);
             byte[] bytes = baos.toByteArray();

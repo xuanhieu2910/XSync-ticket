@@ -2,7 +2,9 @@ package compedia.vn.tickmi_mail.repository.impl;
 
 import compedia.vn.tickmi_mail.entity.EventRequestDetail;
 import compedia.vn.tickmi_mail.repository.EventRequestRepositoryDetailCustom;
+import compedia.vn.tickmi_mail.utils.DbConstant;
 import compedia.vn.tickmi_mail.utils.ValueUtil;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.util.CollectionUtils;
 import javax.persistence.EntityManager;
@@ -18,34 +20,25 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
     private EntityManager entityManager;
 
     @Override
-    public List<EventRequestDetail> getAllEventRequestDetailCustom(Integer limits, Integer status,Integer status2,Integer retry) {
+    public List<EventRequestDetail> getAllEventRequestDetailCustom() {
         log.debug("Start query find event request detail");
         Query query = entityManager.createNativeQuery(SQL_GetAllEventRequestDetailCustom);
-        query.setParameter("status_1",status);
-        query.setParameter("status_2",status2);
-        query.setParameter("sizeRetry",retry);
-        query.setParameter("limit",limits);
+        query.setParameter("limit", DbConstant.SIZE_LIMIT);
         List<Object[]> result = query.getResultList();
         List<EventRequestDetail> response = new ArrayList<>();
         if (!CollectionUtils.isEmpty(result)) {
             for (Object[] obj : result) {
                 EventRequestDetail detail = new EventRequestDetail();
                 detail.setId(ValueUtil.getIntegerByObject(obj[0]));
-                detail.setPathImage(ValueUtil.getStringByObject(obj[1]) == null ? null : ValueUtil.getStringByObject(obj[1]));
-                detail.setIndexTicket(ValueUtil.getIntegerByObject(obj[2]));
-                detail.setCodeTicket(ValueUtil.getStringByObject(obj[3]));
-                detail.setStatus(ValueUtil.getIntegerByObject(obj[4]));
-                detail.setRetry(ValueUtil.getIntegerByObject(obj[5]));
-                detail.setObjectContent(ValueUtil.getStringByObject(obj[6]) == null ? null : ValueUtil.getStringByObject(obj[6]));
-                detail.setEventRequestId(ValueUtil.getIntegerByObject(obj[7]));
-                detail.setGuestId(ValueUtil.getIntegerByObject(obj[8]));
-                detail.setEventId(ValueUtil.getIntegerByObject(obj[9]));
-                detail.setTicketEventId(ValueUtil.getIntegerByObject(obj[10]));
-                detail.setTimeGenerate(ValueUtil.getTimestampByObject(obj[11]) == null ? null : ValueUtil.getTimestampByObject(obj[11]));
-                detail.setModifiedTime(ValueUtil.getTimestampByObject(obj[12]) == null ? null : ValueUtil.getTimestampByObject(obj[12]));
-                detail.setProviderId(ValueUtil.getIntegerByObject(obj[13]));
-                detail.setUserId(ValueUtil.getIntegerByObject(obj[14]));
-                detail.setGuestCode(ValueUtil.getStringByObject(obj[15]));
+                detail.setIndexTicket(ValueUtil.getIntegerByObject(obj[1]));
+                detail.setCodeTicket(ValueUtil.getStringByObject(obj[2]));
+                detail.setStatus(ValueUtil.getIntegerByObject(obj[3]));
+                detail.setRetry(ValueUtil.getIntegerByObject(obj[4]));
+                detail.setEventId(ValueUtil.getIntegerByObject(obj[5]));
+                detail.setTicketEventId(ValueUtil.getIntegerByObject(obj[6]));
+                detail.setProviderId(ValueUtil.getIntegerByObject(obj[7]));
+                detail.setObjectId(ValueUtil.getIntegerByObject(obj[8]));
+                detail.setType(ValueUtil.getIntegerByObject(obj[9]));
                 response.add(detail);
             }
         }
@@ -65,21 +58,13 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
             for (Object[] obj : result) {
                 EventRequestDetail detail = new EventRequestDetail();
                 detail.setId(ValueUtil.getIntegerByObject(obj[0]));
-                detail.setPathImage(ValueUtil.getStringByObject(obj[1]) == null ? null : ValueUtil.getStringByObject(obj[1]));
                 detail.setIndexTicket(ValueUtil.getIntegerByObject(obj[2]));
                 detail.setCodeTicket(ValueUtil.getStringByObject(obj[3]));
                 detail.setStatus(ValueUtil.getIntegerByObject(obj[4]));
                 detail.setRetry(ValueUtil.getIntegerByObject(obj[5]));
-                detail.setObjectContent(ValueUtil.getStringByObject(obj[6]) == null ? null : ValueUtil.getStringByObject(obj[6]));
-                detail.setEventRequestId(ValueUtil.getIntegerByObject(obj[7]));
-                detail.setGuestId(ValueUtil.getIntegerByObject(obj[8]));
                 detail.setEventId(ValueUtil.getIntegerByObject(obj[9]));
                 detail.setTicketEventId(ValueUtil.getIntegerByObject(obj[10]));
-                detail.setTimeGenerate(ValueUtil.getTimestampByObject(obj[11]) == null ? null : ValueUtil.getTimestampByObject(obj[11]));
-                detail.setModifiedTime(ValueUtil.getTimestampByObject(obj[12]) == null ? null : ValueUtil.getTimestampByObject(obj[12]));
                 detail.setProviderId(ValueUtil.getIntegerByObject(obj[13]));
-                detail.setUserId(ValueUtil.getIntegerByObject(obj[14]));
-                detail.setGuestCode(ValueUtil.getStringByObject(obj[15]));
                 response.add(detail);
             }
         }
@@ -97,49 +82,28 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
             for (Object[] obj : result) {
                 EventRequestDetail detail = new EventRequestDetail();
                 detail.setId(ValueUtil.getIntegerByObject(obj[0]));
-                detail.setPathImage(ValueUtil.getStringByObject(obj[1]) == null ? null : ValueUtil.getStringByObject(obj[1]));
                 detail.setIndexTicket(ValueUtil.getIntegerByObject(obj[2]));
                 detail.setCodeTicket(ValueUtil.getStringByObject(obj[3]));
                 detail.setStatus(ValueUtil.getIntegerByObject(obj[4]));
                 detail.setRetry(ValueUtil.getIntegerByObject(obj[5]));
-                detail.setObjectContent(ValueUtil.getStringByObject(obj[6]) == null ? null : ValueUtil.getStringByObject(obj[6]));
-                detail.setEventRequestId(ValueUtil.getIntegerByObject(obj[7]));
-                detail.setGuestId(ValueUtil.getIntegerByObject(obj[8]));
                 detail.setEventId(ValueUtil.getIntegerByObject(obj[9]));
                 detail.setTicketEventId(ValueUtil.getIntegerByObject(obj[10]));
-                detail.setTimeGenerate(ValueUtil.getTimestampByObject(obj[11]) == null ? null : ValueUtil.getTimestampByObject(obj[11]));
-                detail.setModifiedTime(ValueUtil.getTimestampByObject(obj[12]) == null ? null : ValueUtil.getTimestampByObject(obj[12]));
                 detail.setProviderId(ValueUtil.getIntegerByObject(obj[13]));
-                detail.setUserId(ValueUtil.getIntegerByObject(obj[14]));
-                detail.setGuestCode(ValueUtil.getStringByObject(obj[15]));
                 response.add(detail);
             }
         }
         return response;
     }
 
-    private static String SQL_GetAllEventRequestDetailCustom = "SELECT details.ID_DETAILS," +
-            "       PATH_IMAGE," +
-            "       INDEX_TICKET," +
-            "       CODE_TICKET," +
-            "       STATUS," +
-            "       RETRY," +
-            "       OBJECT_CONTENT," +
-            "       ID_EVENT_REQUEST," +
-            "       GUEST_ID," +
-            "       EVENT_ID," +
-            "       TICKET_EVENT_ID," +
-            "       TIME_GENERATE," +
-            "       MODIFIED_TIME," +
-            "       PROVIDER_ID," +
-            "       USER_ID," +
-            "       GUEST_CODE" +
+    private static String SQL_GetAllEventRequestDetailCustom = "SELECT ID_REQUEST_DETAILS," +
+            "       INDEX_TICKET,CODE_TICKET," +
+            "       STATUS,RETRY," +
+            "       EVENT_ID,TICKET_EVENT_ID," +
+            "       PROVIDER_ID,OBJECT_ID, TYPE" +
             " FROM EVENT_REQUEST_DETAILS details" +
-            " WHERE (" +
-            "        (details.STATUS = :status_1 AND details.RETRY <= :sizeRetry) OR" +
-            "        (details.STATUS = :status_2 AND details.RETRY <= :sizeRetry)" +
-            "    )" +
+            " WHERE details.STATUS = -1" +
             "  AND ROWNUM < :limit";
+
 
     private static String SQL_GetAllEventRequestByIdEventRequest = "SELECT detail.ID_DETAILS, +" +
             "   detail.PATH_IMAGE, +" +
