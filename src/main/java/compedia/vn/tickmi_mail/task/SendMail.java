@@ -3,9 +3,12 @@ package compedia.vn.tickmi_mail.task;
 import compedia.vn.tickmi_mail.dto.CustomerEmailDto;
 import compedia.vn.tickmi_mail.dto.MailDto;
 import compedia.vn.tickmi_mail.dto.SmtpAuthenticator;
+import compedia.vn.tickmi_mail.repository.MailInputRepository;
+import compedia.vn.tickmi_mail.utils.DbConstant;
 import compedia.vn.tickmi_mail.utils.PropertiesUtil;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.mail.Message;
 import javax.mail.Session;
@@ -21,6 +24,8 @@ public class SendMail implements Runnable{
     private static SendMail INSTANCE = null;
     private static Queue<MailDto> mailDtoQueue;
 
+    @Autowired
+    MailInputRepository getEmailTo;
 
     public static SendMail getInstance() {
         if (INSTANCE != null) {
@@ -65,7 +70,7 @@ public class SendMail implements Runnable{
             message.setFrom(new InternetAddress(emailProps.getProperty("mail.user")));
 
             // Set To: header field of the header.
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(mailDto.getEmailTo()));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(mailDto.getEmailCustomer()));
             // Set Subject: header field
             message.setSubject(mailDto.getSubject(), "UTF-8");
 
@@ -78,21 +83,25 @@ public class SendMail implements Runnable{
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
+            return false;
         }
-        return false;
     }
 
 
     @Override
     public void run() {
         while(!mailDtoQueue.isEmpty()) {
-            try {
-                MailDto mailDto = mailDtoQueue.poll();
-                String rs = send(mailDto) ? "success" : "fail";
-                log.info("Send mail is " + rs + " (" + mailDto + ")");
-            }catch (Exception e){
-                log.error(e.getMessage(),e);
-            }
+           MailDto mailDto = mailDtoQueue.poll();
+           if(!send(mailDto)) {
+               int retry = mailDto.getRetry();
+               if (retry == DbConstant.MAX_RETRY) {
+                   // Remove to his
+               }
+               else {
+                   ++retry;
+                   // Update
+               }
+           }
         }
     }
 }

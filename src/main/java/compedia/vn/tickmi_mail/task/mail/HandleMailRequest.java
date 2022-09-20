@@ -2,6 +2,7 @@ package compedia.vn.tickmi_mail.task.mail;
 
 import compedia.vn.tickmi_mail.dto.InformationMailDto;
 import compedia.vn.tickmi_mail.entity.MailDetailHis;
+import compedia.vn.tickmi_mail.entity.MailInput;
 import compedia.vn.tickmi_mail.response.mail.MailResponse;
 import compedia.vn.tickmi_mail.service.MailDetailHisService;
 import compedia.vn.tickmi_mail.service.MailRequestService;
@@ -40,11 +41,19 @@ public class HandleMailRequest{
             if (!CollectionUtils.isEmpty(mailResponses)) {
                 // update status
                 List<Integer>ids = new ArrayList<>();
+                List<MailInput> mailInputs = new ArrayList<>();
                 for (MailResponse dto : mailResponses) {
                     ids.add(dto.getId());
+                    MailInput input = new MailInput();
+                    input.setObjectId(dto.getObjectId());
+                    input.setType(dto.getType());
+                    input.setContent(dto.getContent());
+                    input.setRetry(dto.getRetry());
+                    input.setProviderId(dto.getProviderId());
+                    input.setEmailCustomer(dto.getEmailGuest());
+                    mailInputs.add(input);
                 }
                 mailRequestService.updateStatusMailRequestsByIds(ids);
-                // Save to mail input
             }
             else {
                 log.info("Data in mail request empty!");

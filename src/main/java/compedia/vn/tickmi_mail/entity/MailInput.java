@@ -30,4 +30,6 @@ public class MailInput {
     private String content;
     @Column(name = "EMAIL_CUSTOMER")
     private String emailCustomer;
+    @Column(name = "SUBJECT")
+    private String subject;
 }
