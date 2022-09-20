@@ -47,8 +47,16 @@ public class EventRequestDetail {
     @Column(name = "TYPE")
     private Integer type;
 
-    @Column(name = "GUEST_NAME")
-    private String guestName;
+    @Column(name = "EVENT_REQUEST_ID")
+    private Integer eventRequestId;
 
+    @Column(name = "NAME_GUEST")
+    private String nameGuest;
+
+    @Column(name = "PHONE_GUEST")
+    private String phoneGuest;
+
+    @Column(name = "EMAIL_GUEST")
+    private String emailGuest;
 
 }

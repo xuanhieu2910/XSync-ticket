@@ -40,6 +40,10 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
                 dto.setObjectId(ValueUtil.getIntegerByObject(obj[5]));
                 dto.setType(ValueUtil.getIntegerByObject(obj[6]));
                 dto.setProviderId(ValueUtil.getIntegerByObject(obj[7]));
+                dto.setTicketGeneration(ValueUtil.getIntegerByObject(obj[8]));
+                dto.setNameGuest(ValueUtil.getStringByObject(obj[9]) == null ? null : "");
+                dto.setPhoneGuest(ValueUtil.getStringByObject(obj[10]) == null ? null : "");
+                dto.setEmailGuest(ValueUtil.getStringByObject(obj[11]) == null ? null : "");
                 response.add(dto);
             }
         }
@@ -57,11 +61,17 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             Object[] obj = result.get(0);
             EventRequest dto = new EventRequest();
             dto.setId(ValueUtil.getIntegerByObject(obj[0]));
-            dto.setStatus(ValueUtil.getIntegerByObject(obj[2]));
-            dto.setProviderId(ValueUtil.getIntegerByObject(obj[5]));
-            dto.setQuantity(ValueUtil.getIntegerByObject(obj[6]));
-            dto.setEventId(ValueUtil.getIntegerByObject(obj[7]));
-            dto.setTicketEventId(ValueUtil.getIntegerByObject(obj[8]));
+            dto.setStatus(ValueUtil.getIntegerByObject(obj[1]));
+            dto.setQuantity(ValueUtil.getIntegerByObject(obj[2]));
+            dto.setEventId(ValueUtil.getIntegerByObject(obj[3]));
+            dto.setTicketEventId(ValueUtil.getIntegerByObject(obj[4]));
+            dto.setObjectId(ValueUtil.getIntegerByObject(obj[5]));
+            dto.setType(ValueUtil.getIntegerByObject(obj[6]));
+            dto.setProviderId(ValueUtil.getIntegerByObject(obj[7]));
+            dto.setTicketGeneration(ValueUtil.getIntegerByObject(obj[8]));
+            dto.setNameGuest(ValueUtil.getStringByObject(obj[9]));
+            dto.setPhoneGuest(ValueUtil.getStringByObject(obj[10]));
+            dto.setEmailGuest(ValueUtil.getStringByObject(obj[11]));
             return Optional.of(dto);
         }
         return Optional.empty();
@@ -96,27 +106,29 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
         query.executeUpdate();
     }
 
-    private static String SQL_getEventRequestByStatus = "select evenRequest.ID_EVENT_REQUEST,STATUS,QUANTITY," +
-            "       EVENT_ID,TICKET_EVENT_ID,OBJECT_ID,TYPE,PROVIDER_ID" +
+    private static String SQL_getEventRequestByStatus = "select ID_EVENT_REQUEST," +
+            "       STATUS," +
+            "       QUANTITY," +
+            "       EVENT_ID," +
+            "       TICKET_EVENT_ID," +
+            "       OBJECT_ID," +
+            "       TYPE," +
+            "       PROVIDER_ID," +
+            "       TICKET_GEN," +
+            "       NAME_GUEST," +
+            "       PHONE_GUEST," +
+            "       EMAIL_GUEST" +
             " from EVENT_REQUEST evenRequest" +
             " where evenRequest.STATUS = -1" +
             "  and ROWNUM < :limitRow";
 
-    private static String SQL_findEventRequestByIdAndStatus = "SELECT eventRequest.ID_EVENT_REQUEST, +" +
-            "  GUEST_ID, +" +
-            "  STATUS, +" +
-            "  CREATE_TIME, +" +
-            "  MODIFIED_TIME, +" +
-            "  PROVIDER_ID, +" +
-            "  QUANTITY, +" +
-            "  EVENT_ID, +" +
-            "  TICKET_EVENT_ID, +" +
-            "  QUANTITY_GEN, +" +
-            "  USER_ID, +" +
-            "  GUEST_CODE +" +
-            "    FROM EVENT_REQUEST eventRequest +" +
-            "    WHERE eventRequest.ID_EVENT_REQUEST = :id +" +
-            "     AND eventRequest.STATUS = :status";
+    private static String SQL_findEventRequestByIdAndStatus = "SELECT eventRequest.ID_EVENT_REQUEST,STATUS,QUANTITY," +
+            "       EVENT_ID,TICKET_EVENT_ID,OBJECT_ID," +
+            "       TYPE,PROVIDER_ID,TICKET_GEN,NAME_GUEST," +
+            "       PHONE_GUEST,EMAIL_GUEST" +
+            " FROM EVENT_REQUEST eventRequest" +
+            " WHERE eventRequest.ID_EVENT_REQUEST = :id" +
+            "  AND eventRequest.STATUS = :status";
 
     private static String SQL_findEventRequestById = "SELECT eventRequest.ID_EVENT_REQUEST, +" +
             "  GUEST_ID, +" +

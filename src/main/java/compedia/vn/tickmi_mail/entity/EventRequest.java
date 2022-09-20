@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -40,6 +39,16 @@ public class EventRequest {
     @Column(name = "PROVIDER_ID")
     private Integer providerId;
 
-    @Column(name = "GUEST_NAME")
-    private String guestName;
+    @Column(name = "TICKET_GEN")
+    private Integer ticketGeneration;
+
+    @Column(name = "NAME_GUEST")
+    private String nameGuest;
+
+    @Column(name = "PHONE_GUEST")
+    private String phoneGuest;
+
+    @Column(name = "EMAIL_GUEST")
+    private String emailGuest;
+
 }

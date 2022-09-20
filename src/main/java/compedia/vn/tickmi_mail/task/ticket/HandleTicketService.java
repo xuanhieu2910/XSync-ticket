@@ -2,13 +2,13 @@ package compedia.vn.tickmi_mail.task.ticket;
 
 import compedia.vn.tickmi_mail.entity.EventRequest;
 import compedia.vn.tickmi_mail.entity.EventRequestDetail;
-import compedia.vn.tickmi_mail.entity.MailRoot;
+import compedia.vn.tickmi_mail.entity.MailRequest;
 import compedia.vn.tickmi_mail.entity.Ticket;
 import compedia.vn.tickmi_mail.repository.ProviderRepository;
 import compedia.vn.tickmi_mail.repository.TicketEventRepository;
 import compedia.vn.tickmi_mail.service.EventRequestDetailService;
 import compedia.vn.tickmi_mail.service.EventRequestService;
-import compedia.vn.tickmi_mail.service.MailRootService;
+import compedia.vn.tickmi_mail.service.MailRequestService;
 import compedia.vn.tickmi_mail.service.TicketService;
 import compedia.vn.tickmi_mail.task.qr.GenerateQR;
 import compedia.vn.tickmi_mail.utils.DbConstant;
@@ -34,8 +34,6 @@ public class HandleTicketService {
     private static final Queue<EventRequestDetail> queueEventRequestDetails = new ArrayDeque<>();
     private static final Queue<EventRequest> queueEventRequest = new ArrayDeque<>();
 
-    private static final Queue<List<EventRequestDetail>>queueEventDetailsToMai = new ArrayDeque<>();
-
     @Autowired
     EventRequestService eventRequestService;
 
@@ -46,7 +44,7 @@ public class HandleTicketService {
     TicketService ticketService;
 
     @Autowired
-    MailRootService mailRootService;
+    MailRequestService mailRequestService;
 
     @Autowired
     TicketEventRepository ticketEventRepository;
@@ -106,6 +104,10 @@ public class HandleTicketService {
                     dto.setProviderId(eventRequest.getProviderId());
                     dto.setObjectId(eventRequest.getObjectId());
                     dto.setType(eventRequest.getType());
+                    dto.setEventRequestId(eventRequest.getId());
+                    dto.setNameGuest(eventRequest.getNameGuest());
+                    dto.setPhoneGuest(eventRequest.getPhoneGuest());
+                    dto.setEmailGuest(eventRequest.getEmailGuest());
                     details.add(dto);
                 }
                 eventRequestDetailService.saveEventRequestDetails(details);
@@ -169,13 +171,32 @@ public class HandleTicketService {
                 if (detail.getRetry() < DbConstant.MAX_RETRY) {
                     try {
                         pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(),detail.getEventId(), detail.getTicketEventId(),
-                                detail.getObjectId(), detail.getType(), detail.getIndexTicket(),detail.getGuestName());
+                                detail.getObjectId(), detail.getType(), detail.getIndexTicket());
                         // Success
                         // Remove in event detail
                         eventRequestDetailService.deleteEventRequestDetail(detail);
                         log.info("Delete event request detail");
                         // Insert to ticket
-                        ticketService.saveTicket(createTicket(detail,pathQr,DbConstant.TICKET_NOT_CHECKIN));
+                        Ticket ticket = createTicket(detail,pathQr,DbConstant.TICKET_NOT_CHECKIN);
+                        ticketService.saveTicket(ticket);
+                        // Update ticket generic
+                        Optional<EventRequest> eventRequest = eventRequestService.
+                                findEventRequestByIdAndStatus(detail.getEventRequestId(),DbConstant.STATUS_EVENT_REQUEST);
+
+                        if (eventRequest.isPresent()) {
+                            int quantityGen = eventRequest.get().getTicketGeneration() + 1;
+                            eventRequest.get().setTicketGeneration(quantityGen);
+                            if (eventRequest.get().getQuantity().intValue() == eventRequest.get().getTicketGeneration().intValue()) {
+                                // Insert to email
+                                mailRequestService.saveMailRoot(createMailRequest(eventRequest.get()));
+                                // Delete event request
+                                eventRequestService.deleteEventRequest(eventRequest.get());
+                            }
+                            eventRequestService.updateEventRequest(eventRequest.get());
+                        }
+                        else {
+                            log.error("Don't exit event request");
+                        }
                         log.info("Ticket save ticket");
                         break;
                     } catch (Exception e) {
@@ -214,40 +235,22 @@ public class HandleTicketService {
         return ticket;
     }
 
-//    @Async
-//    @Scheduled(fixedRate = 1000)
-//    public void insertToEventMail () {
-//        try {
-//            if (!queueEventDetailsToMai.isEmpty()) {
-//                // Get event request detail
-//                List<EventRequestDetail> eventRequestDetails = queueEventDetailsToMai.poll();
-//                // send to ticket
-//                ticketService.saveAllTickets(createTicket(eventRequestDetails));
-//
-//                // update eventRequest
-//                eventRequestService.updateEventRequestByIdAndStatus(eventRequestDetails.get(0).getEventRequestId(),DbConstant.STATUS_READY_SEND);
-//                // create mail root
-//                mailRootService.saveMailRoot(createMailRoot(eventRequestDetails.get(0)));
-//                // remove event detail
-//                eventRequestDetailService.deleteEventRequestDetails(eventRequestDetails);
-//            }
-//            else {
-//                log.info("Queue Mail is empty!");
-//            }
-//        }catch (Exception e){
-//            log.error("Error to insert to event mail",e);
-//        }
-//    }
 
-    private MailRoot createMailRoot (EventRequestDetail eventRequestDetail) {
-        MailRoot mailRoot = new MailRoot();
-//        mailRoot.setGuestId(eventRequestDetail.getGuestId());
-        mailRoot.setStatus(DbConstant.MAIL_ROOT_STATUS_NEW);
-        mailRoot.setRetry(DbConstant.INIT_RETRY);
+    private MailRequest createMailRequest (EventRequest eventRequest) {
+        MailRequest mailRequest = new MailRequest();
+        mailRequest.setObjectId(eventRequest.getObjectId());
+        mailRequest.setStatus(DbConstant.MAIL_ROOT_STATUS_NEW);
+        mailRequest.setRetry(DbConstant.INIT_RETRY);
         Date now = new Date();
-        mailRoot.setCreateTime(new Timestamp(now.getTime()));
-        mailRoot.setModifiedTime(new Timestamp(now.getTime()));
-        mailRoot.setProviderId(eventRequestDetail.getProviderId());
-        return mailRoot;
+        mailRequest.setCreateTime(new Timestamp(now.getTime()));
+        mailRequest.setModifiedTime(new Timestamp(now.getTime()));
+        mailRequest.setProviderId(eventRequest.getProviderId());
+        mailRequest.setType(eventRequest.getType());
+        mailRequest.setEventId(eventRequest.getEventId());
+        mailRequest.setTicketEventId(eventRequest.getTicketEventId());
+        mailRequest.setNameGuest(eventRequest.getNameGuest());
+        mailRequest.setPhoneGuest(eventRequest.getPhoneGuest());
+        mailRequest.setEmailGuest(eventRequest.getEmailGuest());
+        return mailRequest;
     }
 }

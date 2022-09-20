@@ -1,0 +1,59 @@
+package compedia.vn.tickmi_mail.service;
+
+import compedia.vn.tickmi_mail.dto.InformationMailDto;
+import compedia.vn.tickmi_mail.entity.MailRequest;
+import compedia.vn.tickmi_mail.repository.MailRequestRepository;
+import compedia.vn.tickmi_mail.response.mail.MailResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class MailRequestService {
+
+    private final static Logger logger = LoggerFactory.getLogger(MailRequestService.class);
+
+
+    @Autowired
+    MailRequestRepository mailRequestRepository;
+
+    public void saveMailRoot (MailRequest mailRequest) {
+        mailRequestRepository.save(mailRequest);
+    }
+
+    public List<MailResponse> findAllMailRoot () throws IOException, SQLException {
+        logger.info("Service start find all mail root");
+        return mailRequestRepository.findAllMailRoot();
+    }
+
+    public List<MailRequest> updateMailRoots (List<MailRequest> roots) {
+        logger.info("Service start update mail root");
+        return mailRequestRepository.saveAll(roots);
+    }
+
+    public MailRequest updateMailRoot (MailRequest mailRequest) {
+        logger.info("Service start update mail root");
+        return mailRequestRepository.save(mailRequest);
+    }
+
+    public void deleteMailRoot (MailRequest root) {
+        logger.info("Service start delete mail root");
+        mailRequestRepository.delete(root);
+    }
+
+    public Optional<InformationMailDto> getInformationMailDtoByGuestId (Integer guestId) throws IOException, SQLException {
+        logger.info("Service start get information mail root by guest id : " + guestId);
+        return mailRequestRepository.getInformationMailDtos(guestId);
+    }
+
+    public void updateStatusMailRequestsByIds (List<Integer> ids){
+        logger.info("Service update status mail request by ids");
+        mailRequestRepository.updateStatusMailRequestByIds(ids);
+    }
+}

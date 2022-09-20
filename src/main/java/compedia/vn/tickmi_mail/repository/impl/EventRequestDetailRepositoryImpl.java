@@ -4,9 +4,9 @@ import compedia.vn.tickmi_mail.entity.EventRequestDetail;
 import compedia.vn.tickmi_mail.repository.EventRequestRepositoryDetailCustom;
 import compedia.vn.tickmi_mail.utils.DbConstant;
 import compedia.vn.tickmi_mail.utils.ValueUtil;
-import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.util.CollectionUtils;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -39,6 +39,9 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
                 detail.setProviderId(ValueUtil.getIntegerByObject(obj[7]));
                 detail.setObjectId(ValueUtil.getIntegerByObject(obj[8]));
                 detail.setType(ValueUtil.getIntegerByObject(obj[9]));
+                detail.setNameGuest(ValueUtil.getStringByObject(obj[10]));
+                detail.setPhoneGuest(ValueUtil.getStringByObject(obj[11]));
+                detail.setEmailGuest(ValueUtil.getStringByObject(obj[12]));
                 response.add(detail);
             }
         }
@@ -96,10 +99,18 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
     }
 
     private static String SQL_GetAllEventRequestDetailCustom = "SELECT ID_REQUEST_DETAILS," +
-            "       INDEX_TICKET,CODE_TICKET," +
-            "       STATUS,RETRY," +
-            "       EVENT_ID,TICKET_EVENT_ID," +
-            "       PROVIDER_ID,OBJECT_ID, TYPE" +
+            "       INDEX_TICKET," +
+            "       CODE_TICKET," +
+            "       STATUS," +
+            "       RETRY," +
+            "       EVENT_ID," +
+            "       TICKET_EVENT_ID," +
+            "       PROVIDER_ID," +
+            "       OBJECT_ID," +
+            "       TYPE," +
+            "       NAME_GUEST," +
+            "       PHONE_GUEST," +
+            "       EMAIL_GUEST" +
             " FROM EVENT_REQUEST_DETAILS details" +
             " WHERE details.STATUS = -1" +
             "  AND ROWNUM < :limit";

@@ -1,29 +1,67 @@
 package compedia.vn.tickmi_mail.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.springframework.beans.factory.annotation.Value;
 
-import java.util.List;
 
+@Log4j2
 public class TemplateEmailUtils {
 
-    private final static Logger logger = LoggerFactory.getLogger(TemplateEmailUtils.class);
+    @Value("vn.cpa.size.mod")
+    private static int mod;
 
-    public static String TEMPLATE_REPLACE = "\"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/2048px-QR_code_for_mobile_English_Wikipedia.svg.png\"";
-    public static String TAG_IMAGE_TEMPLATE = "<img id=\"QR_HERE\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/2048px-QR_code_for_mobile_English_Wikipedia.svg.png\" style=\"width:100%\"></img>";
-
-    public static String replaceTemplateEmail (List<String> pathQrs) {
-        String result = "";
-        String tmp = TAG_IMAGE_TEMPLATE;
-        for (int i = 0 ; i < pathQrs.size(); i++) {
-            String replacePath = tmp.replace(TEMPLATE_REPLACE,pathQrs.get(i));
-            result+= replacePath;
+    public static String replaceTemplateTicket (String contentHtml, String htmlReplace, String[] pathQR) {
+        log.info("Start to replace template ticket!");
+        int quantity = pathQR.length + 1;
+        StringBuilder htmlOutPut = new StringBuilder();
+        if (quantity < mod ) {
+            Document document = Jsoup.parse(contentHtml);
+            Element element =  document.getElementById("QR_LOCATE");
+            String childHtml = element.html();
+            for (int i = 0 ; i < quantity ; i++) {
+                String strReplace = childHtml;
+                strReplace = strReplace.replace("{QR_HERE}",pathQR[i]);
+                htmlOutPut.append(strReplace);
+            }
+            element.html(htmlOutPut.toString());
         }
-        return result;
+        else {
+            int loop = quantity/mod;
+            int remainder = quantity % mod;
+            if ( remainder != 0) {
+                ++loop;
+            }
+            int stt = 0;
+            for (int i = 0 ; i < loop ; ++i) {
+                StringBuilder tmpReplace = new StringBuilder();
+                Document document = Jsoup.parse(contentHtml);
+                Element elementTmp = document.getElementById("QR_LOCATE");
+                String content = elementTmp.html();
+                int loop_2 = mod;
+                if (i == loop - 1) {
+                    loop_2 = quantity - remainder * mod;
+                }
+                for (int j = 0 ; j < loop_2 ; ++j) {
+                    String strReplace = content;
+                    strReplace = replaceQR(content,pathQR[stt]);
+                    tmpReplace.append(strReplace);
+                    ++stt;
+                }
+                elementTmp.html(tmpReplace.toString());
+                htmlOutPut.append(elementTmp.toString());
+            }
+        }
+        htmlReplace.replace("{QR_HERE}",htmlOutPut.toString());
+        log.info("End replace template ticket");
+        return htmlReplace;
     }
 
-    public static String replaceTag (String root,String newStr) {
-        String a = root.replace(TAG_IMAGE_TEMPLATE,newStr);
-        return a;
+    public static String replaceQR (String htmlContent, String pathQr) {
+        return htmlContent.replace("{QR_HERE}",pathQr);
     }
+
+
 }

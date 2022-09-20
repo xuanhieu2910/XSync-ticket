@@ -43,6 +43,10 @@ public class EventRequestService {
         eventRequestRepository.updateEventRequestById(id,status);
     }
 
+    public void deleteEventRequest (EventRequest eventRequest) {
+        eventRequestRepository.delete(eventRequest);
+    }
+
 
 
 }
