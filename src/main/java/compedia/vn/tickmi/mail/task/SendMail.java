@@ -38,7 +38,7 @@ public class SendMail{
     @Autowired
     MailDetailHisRepository mailDetailHisRepository;
 
-    @Value("mail.user")
+    @Value("${mail.user}")
     private static String emailFrom;
 
     private static Queue<MailDto> mailDtoQueue = new ArrayDeque<>();

@@ -46,12 +46,12 @@ public class MailRequestRepositoryImpl implements MailRequestRepositoryCustom {
                     dto.setType(ValueUtil.getIntegerByObject(obj[4]));
                     dto.setProviderId(ValueUtil.getIntegerByObject(obj[5]));
                     dto.setPathQr(ValueUtil.getStringByObject(obj[6]));
-                    dto.setContent(ValueUtil.getClobString((Clob) obj[7]));
+                    dto.setContent(ValueUtil.getClobString((Clob) obj[7]) == null ? null : ValueUtil.getClobString((Clob) obj[7]));
                     dto.setQuantity(ValueUtil.getIntegerByObject(obj[8]));
                     dto.setNameGuest(ValueUtil.getStringByObject(obj[9]));
                     dto.setPhoneGuest(ValueUtil.getStringByObject(obj[10]));
                     dto.setEmailGuest(ValueUtil.getStringByObject(obj[11]));
-                    dto.setHtmlReplace(ValueUtil.getClobString((Clob) obj[13]));
+                    dto.setHtmlReplace(ValueUtil.getClobString((Clob) obj[13]) == null ? null : ValueUtil.getClobString((Clob) obj[13]));
                     dto.setRetry(ValueUtil.getIntegerByObject(obj[14]));
                     dto.setEmailFrom(ValueUtil.getStringByObject(obj[15]));
                     dto.setPassword(ValueUtil.getStringByObject(obj[16]));

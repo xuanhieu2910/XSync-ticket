@@ -52,4 +52,7 @@ public class MailRequest {
 
     @Column(name = "EMAIL_GUEST")
     private String emailGuest;
+
+    @Column(name = "QUANTITY")
+    private Integer quantity;
 }

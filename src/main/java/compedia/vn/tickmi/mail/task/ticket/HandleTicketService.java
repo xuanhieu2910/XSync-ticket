@@ -159,6 +159,7 @@ public class HandleTicketService {
                         log.info("Delete event request detail");
                         // Insert to ticket
                         Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN);
+                        log.info("Save ticket service success!" + ticket.toString());
                         ticketService.saveTicket(ticket);
                         // Update ticket generic
                         Optional<EventRequest> eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId());
@@ -168,6 +169,7 @@ public class HandleTicketService {
                             if (eventRequest.get().getQuantity().intValue() == eventRequest.get().getTicketGeneration().intValue()) {
                                 // Insert to email
                                 mailRequestService.saveMailRoot(createMailRequest(eventRequest.get()));
+                                log.info("Save mail request success!");
                                 // Delete event request
                                 eventRequestService.deleteEventRequest(eventRequest.get());
                             }
@@ -186,6 +188,8 @@ public class HandleTicketService {
                 } else {
                     // Delete in ticket request detail
                     eventRequestDetailService.deleteEventRequestDetail(detail);
+                    // Delete event request
+                    eventRequestService.deleteEventRequestById(detail.getEventRequestId());
                     // Insert into ticket
                     ticketService.saveTicket(createTicket(detail, pathQr, DbConstant.TICKET_FALSE));
                 }
@@ -228,6 +232,7 @@ public class HandleTicketService {
         mailRequest.setNameGuest(eventRequest.getNameGuest());
         mailRequest.setPhoneGuest(eventRequest.getPhoneGuest());
         mailRequest.setEmailGuest(eventRequest.getEmailGuest());
+        mailRequest.setQuantity(eventRequest.getQuantity());
         return mailRequest;
     }
 }

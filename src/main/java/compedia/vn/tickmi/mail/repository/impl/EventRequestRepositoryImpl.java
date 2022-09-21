@@ -67,27 +67,27 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             dto.setType(ValueUtil.getIntegerByObject(obj[6]));
             dto.setProviderId(ValueUtil.getIntegerByObject(obj[7]));
             dto.setTicketGeneration(ValueUtil.getIntegerByObject(obj[8]));
-            dto.setNameGuest(ValueUtil.getStringByObject(obj[9]) == null ? null : null);
-            dto.setPhoneGuest(ValueUtil.getStringByObject(obj[10]) == null ? null : null);
-            dto.setEmailGuest(ValueUtil.getStringByObject(obj[11]) == null ? null : null);
+            dto.setNameGuest(ValueUtil.getStringByObject(obj[9]) == null ? null : ValueUtil.getStringByObject(obj[9]));
+            dto.setPhoneGuest(ValueUtil.getStringByObject(obj[10]) == null ? null : ValueUtil.getStringByObject(obj[10]));
+            dto.setEmailGuest(ValueUtil.getStringByObject(obj[11]) == null ? null : ValueUtil.getStringByObject(obj[11]));
             return Optional.of(dto);
         }
         return Optional.empty();
     }
 
     private static String SQL_getEventRequestByStatus = "select ID_EVENT_REQUEST," +
-            "       STATUS," +
-            "       QUANTITY," +
-            "       EVENT_ID," +
-            "       TICKET_EVENT_ID," +
-            "       OBJECT_ID," +
-            "       TYPE," +
-            "       PROVIDER_ID," +
-            "       TICKET_GEN," +
-            "       NAME_GUEST," +
-            "       PHONE_GUEST," +
-            "       EMAIL_GUEST" +
-            " from EVENT_REQUEST evenRequest" +
+            "       STATUS, " +
+            "       QUANTITY, " +
+            "       EVENT_ID, " +
+            "       TICKET_EVENT_ID, " +
+            "       OBJECT_ID, "  +
+            "       TYPE, " +
+            "       PROVIDER_ID, " +
+            "       TICKET_GEN, " +
+            "       NAME_GUEST, " +
+            "       PHONE_GUEST, " +
+            "       EMAIL_GUEST " +
+            " from EVENT_REQUEST evenRequest " +
             " where evenRequest.STATUS = -1" +
             "  and ROWNUM < :limitRow";
 

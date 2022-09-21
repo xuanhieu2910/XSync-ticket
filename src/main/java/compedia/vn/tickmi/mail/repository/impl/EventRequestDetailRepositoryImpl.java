@@ -4,6 +4,7 @@ import compedia.vn.tickmi.mail.utils.ValueUtil;
 import compedia.vn.tickmi.mail.entity.EventRequestDetail;
 import compedia.vn.tickmi.mail.repository.EventRequestRepositoryDetailCustom;
 import compedia.vn.tickmi.mail.utils.DbConstant;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.util.CollectionUtils;
 
@@ -42,6 +43,7 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
                 detail.setNameGuest(ValueUtil.getStringByObject(obj[10]));
                 detail.setPhoneGuest(ValueUtil.getStringByObject(obj[11]));
                 detail.setEmailGuest(ValueUtil.getStringByObject(obj[12]));
+                detail.setEventRequestId(ValueUtil.getIntegerByObject(obj[13]));
                 response.add(detail);
             }
         }
@@ -97,22 +99,14 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
         return response;
     }
 
-    private static String SQL_GetAllEventRequestDetailCustom = "SELECT ID_REQUEST_DETAILS," +
-            "       INDEX_TICKET," +
-            "       CODE_TICKET," +
-            "       STATUS," +
-            "       RETRY," +
-            "       EVENT_ID," +
-            "       TICKET_EVENT_ID," +
-            "       PROVIDER_ID," +
-            "       OBJECT_ID," +
-            "       TYPE," +
-            "       NAME_GUEST," +
-            "       PHONE_GUEST," +
-            "       EMAIL_GUEST" +
+    private static String SQL_GetAllEventRequestDetailCustom = "SELECT ID_REQUEST_DETAILS,INDEX_TICKET," +
+            "       CODE_TICKET,STATUS,RETRY," +
+            "       EVENT_ID,TICKET_EVENT_ID,PROVIDER_ID," +
+            "       OBJECT_ID,TYPE,NAME_GUEST,PHONE_GUEST," +
+            "       EMAIL_GUEST,EVENT_REQUEST_ID" +
             " FROM EVENT_REQUEST_DETAILS details" +
-            " WHERE details.STATUS = -1" +
-            "  AND ROWNUM < :limit";
+            " WHERE details.STATUS = -1 " +
+            "  AND ROWNUM < :limit ";
 
 
     private static String SQL_GetAllEventRequestByIdEventRequest = "SELECT detail.ID_DETAILS, +" +

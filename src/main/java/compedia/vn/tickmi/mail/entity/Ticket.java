@@ -49,4 +49,22 @@ public class Ticket {
 
     @Column(name = "TYPE")
     private Integer type;
+
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "ticketId=" + ticketId +
+                ", providerId=" + providerId +
+                ", ticketEventId=" + ticketEventId +
+                ", eventId=" + eventId +
+                ", pathQr='" + pathQr + '\'' +
+                ", timeGenerate=" + timeGenerate +
+                ", modifiedTime=" + modifiedTime +
+                ", indexQr=" + indexQr +
+                ", ticketCode='" + ticketCode + '\'' +
+                ", status=" + status +
+                ", objectId=" + objectId +
+                ", type=" + type +
+                '}';
+    }
 }
