@@ -71,7 +71,7 @@ public class MailInputRepositoryImpl implements MailInputRepositoryCustom {
     }
 
     @Override
-    public List<MailDto> getMailDtosLitmit() {
+    public List<MailDto> getMailDtosLitmit() throws IOException, SQLException {
         Query query = entityManager.createNativeQuery(SQL_getMailDtoLimit);
         query.setParameter("limit", DbConstant.SIZE_LIMIT);
         query.setParameter("retry", DbConstant.MAX_RETRY_DETAIL);
@@ -83,7 +83,7 @@ public class MailInputRepositoryImpl implements MailInputRepositoryCustom {
                 mailDto.setId(ValueUtil.getIntegerByObject(obj[0]));
                 mailDto.setObjectId(ValueUtil.getIntegerByObject(obj[1]));
                 mailDto.setType(ValueUtil.getIntegerByObject(obj[2]));
-                mailDto.setContent(ValueUtil.getStringByObject(obj[3]));
+                mailDto.setContent(ValueUtil.getClobString((Clob) obj[3]));
                 mailDto.setRetry(ValueUtil.getIntegerByObject(obj[4]));
                 mailDto.setProviderId(ValueUtil.getIntegerByObject(obj[5]));
                 mailDto.setEmailCustomer(ValueUtil.getStringByObject(obj[6]));
@@ -97,6 +97,7 @@ public class MailInputRepositoryImpl implements MailInputRepositoryCustom {
                     customerEmailDto.setPort(ValueUtil.getStringByObject(obj[11]));
                     mailDto.setCustomerEmailDto(customerEmailDto);
                 }
+
                 mailDtos.add(mailDto);
             }
         }
@@ -107,9 +108,18 @@ public class MailInputRepositoryImpl implements MailInputRepositoryCustom {
     @Transactional
     @Override
     public void updateMailInputRetryById(Integer id, Integer retry) {
-        Query query = entityManager.createNativeQuery(SQL_updateMailInputRetryById);
+        Query query = entityManager.createNativeQuery(SQL_updateMailInputRetryStatusById);
         query.setParameter("retry", retry);
         query.setParameter("id", id);
+        query.executeUpdate();
+    }
+
+    @Modifying
+    @Transactional
+    @Override
+    public void updateMailInputStatusById(List<Integer> ids) {
+        Query query = entityManager.createNativeQuery(SQL_updateMailInputStatusByIds);
+        query.setParameter("ids",ids);
         query.executeUpdate();
     }
 
@@ -126,9 +136,14 @@ public class MailInputRepositoryImpl implements MailInputRepositoryCustom {
     private static String SQL_deleteMailInputById = "DELETE MAIL_INPUT mailInput" +
             " WHERE mailInput.ID_MAIL_INPUT = :id";
 
-    private static String SQL_updateMailInputRetryById = "UPDATE MAIL_INPUT mailInput" +
-            " SET mailInput.RETRY = :retry" +
+    private static String SQL_updateMailInputRetryStatusById = " UPDATE MAIL_INPUT mailInput " +
+            " SET mailInput.RETRY = :retry, mailInput.STATUS = -1 " +
             " WHERE mailInput.ID_MAIL_INPUT = :id";
+
+    private static String SQL_updateMailInputStatusByIds = " UPDATE MAIL_INPUT mailInput " +
+            " SET mailInput.STATUS = 1 " +
+            " WHERE mailInput.ID_MAIL_INPUT in (:ids)";
+
 
     private static String SQL_findMailInputById = "SELECT mailInput.*" +
             " FROM MAIL_INPUT mailInput" +
@@ -151,12 +166,13 @@ public class MailInputRepositoryImpl implements MailInputRepositoryCustom {
             "       configEmail.EMAIL_USER," +
             "       configEmail.EMAIL_PASSWORD," +
             "       configEmail.EMAIL_HOST," +
-            "       configEmail.EMAIL_PORT" +
-            "FROM MAIL_INPUT mailInput" +
+            "       configEmail.EMAIL_PORT," +
+            "       mailInput.STATUS" +
+            " FROM MAIL_INPUT mailInput" +
             "    left join (select *" +
             "    from CONFIG_EMAIL configEmail" +
             "    where configEmail.IS_USED = 1) configEmail" +
             " on mailInput.PROVIDER_ID = configEmail.PROVIDER_ID" +
             " WHERE ROWNUM <= :limit" +
-            " AND mailInput.RETRY <= :retry";
+            " AND (mailInput.RETRY <= :retry AND mailInput.STATUS = -1 )";
 }

@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Value;
 public class TemplateEmailUtils {
 
     @Value("vn.cpa.size.mod")
-    private static int mod;
+    private static int mod = 4;
 
-    public static String replaceTemplateTicket(String contentHtml, String htmlReplace, String[] pathQR) {
+    public static String replaceTemplateTicket(String contentHtml, String htmlReplace, String qr) {
         log.info("Start to replace template ticket!");
-        int quantity = pathQR.length + 1;
+        String[] pathQR = qr.split(";");
+        int quantity = pathQR.length;
+        contentHtml = contentHtml.replace("\\n", "").replace("\\", "").trim();
         StringBuilder htmlOutPut = new StringBuilder();
         if (quantity < mod) {
             Document document = Jsoup.parse(contentHtml);
@@ -53,13 +55,17 @@ public class TemplateEmailUtils {
                 htmlOutPut.append(elementTmp.toString());
             }
         }
-        htmlReplace.replace("{QR_HERE}", htmlOutPut.toString());
+        htmlReplace = htmlReplace.replace("\\n", "").replace("\\", "").trim();
+        htmlReplace = htmlReplace.replace("{QR_HERE}", htmlOutPut.toString());
         log.info("End replace template ticket");
         return htmlReplace;
     }
 
     public static String replaceQR(String htmlContent, String pathQr) {
+//        htmlContent = htmlContent.replace("\\n", "").replace("\\", "").trim();
         return htmlContent.replace("{QR_HERE}", pathQr);
     }
+
+
 
 }

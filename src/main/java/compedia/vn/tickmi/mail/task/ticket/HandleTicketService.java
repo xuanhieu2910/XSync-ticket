@@ -161,9 +161,7 @@ public class HandleTicketService {
                         Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN);
                         ticketService.saveTicket(ticket);
                         // Update ticket generic
-                        Optional<EventRequest> eventRequest = eventRequestService.
-                                findEventRequestByIdAndStatus(detail.getEventRequestId(), DbConstant.STATUS_EVENT_REQUEST);
-
+                        Optional<EventRequest> eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId());
                         if (eventRequest.isPresent()) {
                             int quantityGen = eventRequest.get().getTicketGeneration() + 1;
                             eventRequest.get().setTicketGeneration(quantityGen);

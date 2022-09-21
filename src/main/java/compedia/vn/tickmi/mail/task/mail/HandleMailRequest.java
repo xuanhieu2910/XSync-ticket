@@ -5,6 +5,8 @@ import compedia.vn.tickmi.mail.repository.MailInputRepository;
 import compedia.vn.tickmi.mail.response.MailResponse;
 import compedia.vn.tickmi.mail.service.MailDetailHisService;
 import compedia.vn.tickmi.mail.service.MailRequestService;
+import compedia.vn.tickmi.mail.utils.DbConstant;
+import compedia.vn.tickmi.mail.utils.TemplateEmailUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -14,8 +16,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 @Log4j2
 @Component
@@ -32,35 +36,50 @@ public class HandleMailRequest {
     @Autowired
     MailInputRepository mailInputRepository;
 
+    private Queue<MailResponse> mailResponsesQueue = new ArrayDeque<>();
+
     @Async
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 2000)
     public void getDataMailRequest() {
         log.info("Start to get data mail response");
         try {
             List<MailResponse> mailResponses = mailRequestService.findAllMailRoot();
             if (!CollectionUtils.isEmpty(mailResponses)) {
-                // Update status
                 List<Integer> ids = new ArrayList<>();
-                List<MailInput> mailInputs = new ArrayList<>();
                 for (MailResponse dto : mailResponses) {
                     ids.add(dto.getId());
-                    MailInput input = new MailInput();
-                    input.setObjectId(dto.getObjectId());
-                    input.setType(dto.getType());
-                    input.setContent(dto.getContent());
-                    input.setRetry(dto.getRetry());
-                    input.setProviderId(dto.getProviderId());
-                    input.setEmailCustomer(dto.getEmailGuest());
-                    mailInputs.add(input);
                 }
                 mailRequestService.updateStatusMailRequestsByIds(ids);
-                mailInputRepository.saveAll(mailInputs);
+                mailResponsesQueue.addAll(mailResponses);
             } else {
                 log.info("Data in mail request empty!");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    @Async
+    @Scheduled(fixedRate = 500)
+    public  void pushDataToMailInput () {
+        log.info("Start to create mail input to push mail input");
+        while (!mailResponsesQueue.isEmpty()) {
+            MailResponse mailResponse = mailResponsesQueue.poll();
+            MailInput input = new MailInput();
+            input.setObjectId(mailResponse.getObjectId());
+            input.setType(mailResponse.getType());
+            String content = TemplateEmailUtils.replaceTemplateTicket(mailResponse.getContent(),mailResponse.getHtmlReplace(),mailResponse.getPathQr());
+            input.setContent(content);
+            log.info("CONTENT : " + mailResponse.getContent());
+            input.setRetry(mailResponse.getRetry());
+            input.setProviderId(mailResponse.getProviderId());
+            input.setEmailCustomer(mailResponse.getEmailGuest());
+            input.setStatus(DbConstant.MAIL_ROOT_STATUS_NEW);
+            input.setSubject("HIỆU GỬI NÈ");
+            mailInputRepository.save(input);
+        }
+        log.info("Queue mail response is empty!");
     }
 
 }

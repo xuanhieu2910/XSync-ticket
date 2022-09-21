@@ -9,9 +9,6 @@ public interface EventRequestRepositoryCustom {
 
     List<EventRequest> getEventRequestByStatus();
 
-    Optional<EventRequest> findEventRequestByIdAndStatus(Integer id, Integer status);
+    Optional<EventRequest> findEventRequestByIdEventRequest(Integer id);
 
-    Optional<EventRequest> findEventRequestById(Integer id);
-
-    void updateEventRequestById(Integer id, Integer status);
 }

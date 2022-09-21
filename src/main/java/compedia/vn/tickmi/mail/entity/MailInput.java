@@ -39,4 +39,7 @@ public class MailInput {
 
     @Column(name = "SUBJECT")
     private String subject;
+
+    @Column(name = "STATUS")
+    private Integer status;
 }

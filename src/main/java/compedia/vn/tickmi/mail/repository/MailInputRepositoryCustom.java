@@ -13,9 +13,11 @@ public interface MailInputRepositoryCustom {
 
     List<MailInput> getMailInputLimit() throws IOException, SQLException;
 
-    List<MailDto> getMailDtosLitmit();
+    List<MailDto> getMailDtosLitmit() throws IOException, SQLException;
 
     void updateMailInputRetryById(Integer id, Integer retry);
+
+    void updateMailInputStatusById(List<Integer> ids);
 
     void deleteMailInputById(Integer id);
 }

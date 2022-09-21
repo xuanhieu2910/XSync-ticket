@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MailDetailHisRepository extends JpaRepository<MailDetailHis, Long>, MailDetailHisRepositoryCustom {
+public interface MailDetailHisRepository extends JpaRepository<MailDetailHis, Integer>, MailDetailHisRepositoryCustom {
 
 }

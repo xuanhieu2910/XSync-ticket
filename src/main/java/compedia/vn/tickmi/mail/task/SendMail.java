@@ -1,6 +1,5 @@
 package compedia.vn.tickmi.mail.task;
 
-import compedia.vn.tickmi.mail.dto.CustomerEmailDto;
 import compedia.vn.tickmi.mail.dto.MailDto;
 import compedia.vn.tickmi.mail.dto.SmtpAuthenticator;
 import compedia.vn.tickmi.mail.entity.MailDetailHis;
@@ -13,11 +12,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.PostConstruct;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -27,8 +27,10 @@ import java.sql.Timestamp;
 import java.util.*;
 
 @Log4j2
+@Component
 @EnableScheduling
-public class SendMail implements Runnable {
+@EnableAsync
+public class SendMail{
 
     @Autowired
     MailInputRepository mailInputRepository;
@@ -39,23 +41,22 @@ public class SendMail implements Runnable {
     @Value("mail.user")
     private static String emailFrom;
 
-    private static SendMail INSTANCE = null;
     private static Queue<MailDto> mailDtoQueue = new ArrayDeque<>();
 
     @Async
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 4000)
     public void getEmailTo() {
         log.info("Start to get data mail response");
         try {
             List<MailDto> mailDtos = mailInputRepository.getMailDtosLitmit();
             if (!CollectionUtils.isEmpty(mailDtos)) {
+                List<Integer> ids = new ArrayList<>();
                 for (MailDto dto : mailDtos) {
-                    if (!mailDtoQueue.contains(dto)) {
-                        mailDtoQueue.add(dto);
-
-                        log.info("MailDtoQueue add: " + dto.toString());
-                    }
+                    ids.add(dto.getId());
                 }
+                // update status
+                mailInputRepository.updateMailInputStatusById(ids);
+                mailDtoQueue.addAll(mailDtos);
             }
             log.info("DATA MAIL INPUT EMPTY!");
         } catch (Exception e) {
@@ -63,21 +64,7 @@ public class SendMail implements Runnable {
         }
     }
 
-    @PostConstruct
-    public static SendMail getInstance() {
-        if (INSTANCE != null) {
-            INSTANCE = new SendMail();
-            Thread thread = new Thread(INSTANCE);
-            thread.start();
-        }
-        return INSTANCE;
-    }
 
-    @Synchronized
-    public void sendTicketEmail(String emailTo, String content, String subject, CustomerEmailDto customerEmailDto) {
-        MailDto mailDto = new MailDto(emailTo, subject, content, customerEmailDto);
-        mailDtoQueue.add(mailDto);
-    }
 
     @Synchronized
     private boolean send(MailDto mailDto) {
@@ -128,7 +115,8 @@ public class SendMail implements Runnable {
     }
 
 
-    @Override
+    @Async
+    @Scheduled(fixedRate = 1000)
     public void run() {
         while (!mailDtoQueue.isEmpty()) {
             MailDto mailDto = mailDtoQueue.poll();
@@ -149,9 +137,11 @@ public class SendMail implements Runnable {
                 }
             } else {
                 mailInputRepository.deleteMailInputById(mailDto.getId());
+                mailDetailHisRepository.save(createMailDetailHis(mailDto));
                 log.info("Delete mail input with id: " + mailDto.getId());
             }
         }
+        log.info("Queue email dto empty!");
     }
 
     private MailDetailHis createMailDetailHis(MailDto mailDto) {
@@ -164,7 +154,7 @@ public class SendMail implements Runnable {
         mailDetailHis.setMailTo(mailDto.getEmailCustomer());
         mailDetailHis.setCreateDate(new Timestamp(new Date().getTime()));
         mailDetailHis.setUpdateDate(new Timestamp(new Date().getTime()));
-        mailDetailHis.setStatus(DbConstant.EVENT_MAIL_NEW);
+        mailDetailHis.setStatus(DbConstant.MAIL_HIS_STATUS_SUCCESS);
         mailDetailHis.setObjectId(mailDto.getObjectId());
         mailDetailHis.setType(mailDto.getType());
         return mailDetailHis;
