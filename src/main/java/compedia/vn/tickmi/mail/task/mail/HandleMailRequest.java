@@ -69,14 +69,13 @@ public class HandleMailRequest {
             MailInput input = new MailInput();
             input.setObjectId(mailResponse.getObjectId());
             input.setType(mailResponse.getType());
-            String content = TemplateEmailUtils.replaceTemplateTicket(mailResponse.getContent(),mailResponse.getHtmlReplace(),mailResponse.getPathQr());
-            input.setContent(content);
+            input.setContent(TemplateEmailUtils.replaceTemplateTicket(mailResponse.getContent(),mailResponse.getHtmlReplace(),mailResponse.getPathQr()));
             log.info("CONTENT : " + mailResponse.getContent());
             input.setRetry(mailResponse.getRetry());
             input.setProviderId(mailResponse.getProviderId());
             input.setEmailCustomer(mailResponse.getEmailGuest());
             input.setStatus(DbConstant.MAIL_ROOT_STATUS_NEW);
-            input.setSubject("HIỆU GỬI NÈ");
+            input.setSubject("VÉ SỰ KIỆN : " + mailResponse.getEventName());
             mailInputRepository.save(input);
         }
         log.info("Queue mail response is empty!");

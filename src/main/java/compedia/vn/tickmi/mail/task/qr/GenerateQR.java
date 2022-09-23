@@ -23,11 +23,10 @@ import java.util.Map;
 public class GenerateQR {
 
     public static String handlerGeneratePathQR(String ticketEventCode, Integer eventId, Integer tickEventId,
-                                               Integer objectId, Integer type, Integer countTicket) {
+                                               Integer objectId, Integer type, Integer countTicket, String nameTicket) {
         String pathFile = FilesUtils.createFilePathQR(eventId, tickEventId, objectId, type, countTicket,
                 DbConstant.EXTENSION_GENERATE_QR[0]);
-        String guestName = "EV_" + eventId + objectId + type + tickEventId + countTicket;
-        handleImageGenerateQR(pathFile, ticketEventCode, guestName);
+        handleImageGenerateQR(pathFile, ticketEventCode, nameTicket);
         return pathFile;
     }
 

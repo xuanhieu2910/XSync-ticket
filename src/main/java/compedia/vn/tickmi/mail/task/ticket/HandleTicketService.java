@@ -149,16 +149,18 @@ public class HandleTicketService {
             String pathQr = null;
             for (int i = 0; i < DbConstant.MAX_RETRY; i++) {
                 // Retry < 3
+                String nameTicket = "EV_" + detail.getObjectId() + detail.getType() + detail.getIndexTicket();
                 if (detail.getRetry() < DbConstant.MAX_RETRY) {
                     try {
+//                        String nameTicket = "EV_" + detail.getEventId() +  + type + tickEventId + countTicket;
                         pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), detail.getTicketEventId(),
-                                detail.getObjectId(), detail.getType(), detail.getIndexTicket());
+                                detail.getObjectId(), detail.getType(), detail.getIndexTicket(),nameTicket);
                         // Success
                         // Remove in event detail
                         eventRequestDetailService.deleteEventRequestDetail(detail);
                         log.info("Delete event request detail");
                         // Insert to ticket
-                        Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN);
+                        Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN,nameTicket);
                         log.info("Save ticket service success!" + ticket.toString());
                         ticketService.saveTicket(ticket);
                         // Update ticket generic
@@ -191,7 +193,7 @@ public class HandleTicketService {
                     // Delete event request
                     eventRequestService.deleteEventRequestById(detail.getEventRequestId());
                     // Insert into ticket
-                    ticketService.saveTicket(createTicket(detail, pathQr, DbConstant.TICKET_FALSE));
+                    ticketService.saveTicket(createTicket(detail, pathQr, DbConstant.TICKET_FALSE,nameTicket));
                 }
                 log.info("GENERATE PATH QR ==>>>>>>> END");
             }
@@ -200,7 +202,7 @@ public class HandleTicketService {
         }
     }
 
-    private Ticket createTicket(EventRequestDetail detail, String pathQR, Integer status) {
+    private Ticket createTicket(EventRequestDetail detail, String pathQR, Integer status,String nameTicket) {
         Ticket ticket = new Ticket();
         ticket.setProviderId(detail.getProviderId());
         ticket.setTicketEventId(detail.getTicketEventId());
@@ -214,6 +216,8 @@ public class HandleTicketService {
         ticket.setStatus(status);
         ticket.setObjectId(detail.getObjectId());
         ticket.setType(detail.getType());
+        ticket.setNameGuest(detail.getNameGuest());
+        ticket.setNameTicket(nameTicket);
         return ticket;
     }
 

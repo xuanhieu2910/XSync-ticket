@@ -50,6 +50,12 @@ public class Ticket {
     @Column(name = "TYPE")
     private Integer type;
 
+    @Column(name = "NAME_GUEST")
+    private String nameGuest;
+
+    @Column(name = "NAME_TICKET")
+    private String nameTicket;
+
     @Override
     public String toString() {
         return "Ticket{" +

@@ -11,6 +11,8 @@ import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -30,6 +32,8 @@ import java.util.*;
 @Component
 @EnableScheduling
 @EnableAsync
+@Configuration
+@PropertySource("classpath:/email.properties")
 public class SendMail{
 
     @Autowired
@@ -38,8 +42,14 @@ public class SendMail{
     @Autowired
     MailDetailHisRepository mailDetailHisRepository;
 
-    @Value("${mail.user}")
     private static String emailFrom;
+
+
+    @Autowired
+    public SendMail (@Value("${mail.user}") String emailFrom) {
+        this.emailFrom = emailFrom;
+    }
+
 
     private static Queue<MailDto> mailDtoQueue = new ArrayDeque<>();
 
@@ -48,6 +58,7 @@ public class SendMail{
     public void getEmailTo() {
         log.info("Start to get data mail response");
         try {
+            log.info("==============================" + emailFrom + "=============================");
             List<MailDto> mailDtos = mailInputRepository.getMailDtosLitmit();
             if (!CollectionUtils.isEmpty(mailDtos)) {
                 List<Integer> ids = new ArrayList<>();

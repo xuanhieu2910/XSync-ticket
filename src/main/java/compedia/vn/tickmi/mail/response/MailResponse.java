@@ -28,4 +28,5 @@ public class MailResponse {
     private String password;
     private String emailHost;
     private String emailPort;
+    private String eventName;
 }
