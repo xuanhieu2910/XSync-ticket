@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.io.IOException;
 import java.sql.Clob;
@@ -22,7 +23,7 @@ import java.util.Optional;
 
 public class MailInputRepositoryImpl implements MailInputRepositoryCustom {
 
-    @Autowired
+    @PersistenceContext
     EntityManager entityManager;
 
 

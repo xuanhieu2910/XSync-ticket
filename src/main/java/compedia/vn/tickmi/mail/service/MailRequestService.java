@@ -28,11 +28,9 @@ public class MailRequestService {
     }
 
     public List<MailResponse> findAllMailRoot() throws IOException, SQLException {
-        logger.info("Service start find all mail root");
         return mailRequestRepository.findAllMailRoot();
     }
     public void updateStatusMailRequestsByIds(List<Integer> ids) {
-        logger.info("Service update status mail request by ids");
         mailRequestRepository.updateStatusMailRequestByIds(ids);
     }
 }

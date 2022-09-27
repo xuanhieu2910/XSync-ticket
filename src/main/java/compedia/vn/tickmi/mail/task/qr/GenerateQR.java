@@ -62,7 +62,7 @@ public class GenerateQR {
             byte[] bytes = baos.toByteArray();
             FileOutputStream stream = new FileOutputStream(pathQR);
             stream.write(bytes);
-            log.info("---------------------------GENERATE FINISHED----------------------");
+            log.info("--------------------------- GENERATE FINISHED ----------------------");
         } catch (WriterException | IOException e) {
             log.error("Error generate QR ", e);
         }

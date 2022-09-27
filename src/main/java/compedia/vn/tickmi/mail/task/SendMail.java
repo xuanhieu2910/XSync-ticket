@@ -56,9 +56,7 @@ public class SendMail{
     @Async
     @Scheduled(fixedRate = 4000)
     public void getEmailTo() {
-        log.info("Start to get data mail response");
         try {
-            log.info("==============================" + emailFrom + "=============================");
             List<MailDto> mailDtos = mailInputRepository.getMailDtosLitmit();
             if (!CollectionUtils.isEmpty(mailDtos)) {
                 List<Integer> ids = new ArrayList<>();
@@ -69,7 +67,6 @@ public class SendMail{
                 mailInputRepository.updateMailInputStatusById(ids);
                 mailDtoQueue.addAll(mailDtos);
             }
-            log.info("DATA MAIL INPUT EMPTY!");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -115,9 +112,7 @@ public class SendMail{
             message.setContent(mailDto.getContent(), "text/html; charset=UTF-8");
             // Send message
             Transport.send(message);
-
-            log.info("Send mail to: " + mailDto.getEmailCustomer() + " - with content: " + message.getContent());
-
+            log.info("============================ SEND MAIL TO : " + mailDto.getEmailCustomer() + " - WITH CONTENT: " + message.getContent() +" ============== ");
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -152,7 +147,6 @@ public class SendMail{
                 log.info("Delete mail input with id: " + mailDto.getId());
             }
         }
-        log.info("Queue email dto empty!");
     }
 
     private MailDetailHis createMailDetailHis(MailDto mailDto) {

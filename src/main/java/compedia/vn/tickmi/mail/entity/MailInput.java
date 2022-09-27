@@ -42,4 +42,19 @@ public class MailInput {
 
     @Column(name = "STATUS")
     private Integer status;
+
+    @Override
+    public String toString() {
+        return "MailInput{" +
+                "id=" + id +
+                ", objectId=" + objectId +
+                ", type=" + type +
+                ", retry=" + retry +
+                ", providerId=" + providerId +
+                ", content='" + content + '\'' +
+                ", emailCustomer='" + emailCustomer + '\'' +
+                ", subject='" + subject + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

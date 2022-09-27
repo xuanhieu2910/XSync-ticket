@@ -55,7 +55,6 @@ public class HandleTicketService {
     @Scheduled(fixedRate = 3000)
     public void getEventRequestsLoop() {
         try {
-            log.info("EVENT_REQUEST =>>>>Start to get event request with limit");
             List<EventRequest> eventRequestList = eventRequestService.getEventRequestList();
             if (!CollectionUtils.isEmpty(eventRequestList)) {
                 // Update n object
@@ -63,8 +62,6 @@ public class HandleTicketService {
                 // Push n object to queue
                 queueEventRequest.addAll(eventRequestList);
                 log.info("EVENT_REQUEST =>>>> Push event request list success!");
-            } else {
-                log.info("EVENT_REQUEST =>>>> Data Event request is empty!");
             }
         } catch (Exception e) {
             log.error("Error to get event request", e);
@@ -78,7 +75,6 @@ public class HandleTicketService {
     @Async
     @Scheduled(fixedRate = 1000)
     public void insertCacheEventRequestDetail() {
-        log.info("INSERT EVENT REQUEST DETAIL DB =>>> Get data from queue event request to create event request detail");
         if (!queueEventRequest.isEmpty()) {
             EventRequest eventRequest = queueEventRequest.poll();
             List<EventRequestDetail> details = new ArrayList<>();
@@ -105,8 +101,6 @@ public class HandleTicketService {
             } catch (Exception e) {
                 log.error("Error to insert cache event request detail", e);
             }
-        } else {
-            log.info("INSERT EVENT REQUEST DETAIL DB =>>> DATA EMPTY!");
         }
     }
 
@@ -118,7 +112,6 @@ public class HandleTicketService {
     @Scheduled(fixedRate = 5000)
     public void getEventRequestDetailLoop() {
         try {
-            log.info("GET EVENT REQUEST DETAIL =>>>> Get all event request detail limit");
             // Get n object
             List<EventRequestDetail> eventRequestDetails = eventRequestDetailService.getAllEventRequestDetailLimit();
             // update object
@@ -128,8 +121,7 @@ public class HandleTicketService {
                 eventRequestDetailService.saveEventRequestDetails(eventRequestDetails);
                 // Insert queue
                 queueEventRequestDetails.addAll(eventRequestDetails);
-            } else {
-                log.info("GET EVENT REQUEST DETAIL =>>>> Data Event request detail is empty!");
+                log.info("Save to queue event request detail success!");
             }
         } catch (Exception e) {
             log.error("Error to get event request detail", e);
@@ -143,7 +135,6 @@ public class HandleTicketService {
     @Async
     @Scheduled(fixedRate = 1000)
     public void generateQRPathImage() {
-        log.info("GENERATE PATH QR ==>>>>>>> START");
         if (!queueEventRequestDetails.isEmpty()) {
             EventRequestDetail detail = queueEventRequestDetails.poll();
             String pathQr = null;
@@ -178,7 +169,6 @@ public class HandleTicketService {
                         } else {
                             log.error("Don't exit event request");
                         }
-                        log.info("Ticket save ticket");
                         break;
                     } catch (Exception e) {
                         // False
@@ -194,10 +184,7 @@ public class HandleTicketService {
                     // Insert into ticket
                     ticketService.saveTicket(createTicket(detail, pathQr, DbConstant.TICKET_FALSE,nameTicket));
                 }
-                log.info("GENERATE PATH QR ==>>>>>>> END");
             }
-        } else {
-            log.debug("GENERATE PATH QR ==>>>>>>> Queue event request detail is empty!");
         }
     }
 

@@ -28,7 +28,6 @@ public class MailRequestRepositoryImpl implements MailRequestRepositoryCustom {
 
     @Override
     public List<MailResponse> findAllMailRoot() throws IOException, SQLException {
-        log.debug("Start query find all mail root");
         Query query = entityManager.createNativeQuery(SQL_findAllMailRequest);
         query.setParameter("retry", DbConstant.INIT_RETRY);
         query.setParameter("limit", DbConstant.SIZE_LIMIT);
@@ -69,7 +68,6 @@ public class MailRequestRepositoryImpl implements MailRequestRepositoryCustom {
     @Modifying
     @Override
     public void updateStatusMailRequestByIds(List<Integer> ids) {
-        log.info("Start query update status mail request by ids");
         Query query = entityManager.createNativeQuery(SQL_updateStatusMailRequestByIds);
         query.setParameter("status", DbConstant.MAIL_HIS_STATUS_SUCCESS);
         query.setParameter("ids", ids);
