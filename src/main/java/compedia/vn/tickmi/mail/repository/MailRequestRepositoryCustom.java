@@ -12,7 +12,6 @@ public interface MailRequestRepositoryCustom {
 
     List<MailResponse> findAllMailRoot() throws IOException, SQLException;
 
-    Optional<InformationMailDto> getInformationMailDtos(Integer guestId) throws IOException, SQLException;
 
     void updateStatusMailRequestByIds(List<Integer> ids);
 }

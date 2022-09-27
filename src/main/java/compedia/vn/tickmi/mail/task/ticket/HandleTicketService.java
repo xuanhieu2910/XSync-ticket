@@ -152,7 +152,6 @@ public class HandleTicketService {
                 String nameTicket = "EV_" + detail.getObjectId() + detail.getType() + detail.getIndexTicket();
                 if (detail.getRetry() < DbConstant.MAX_RETRY) {
                     try {
-//                        String nameTicket = "EV_" + detail.getEventId() +  + type + tickEventId + countTicket;
                         pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), detail.getTicketEventId(),
                                 detail.getObjectId(), detail.getType(), detail.getIndexTicket(),nameTicket);
                         // Success
@@ -172,7 +171,6 @@ public class HandleTicketService {
                                 // Insert to email
                                 mailRequestService.saveMailRoot(createMailRequest(eventRequest.get()));
                                 log.info("Save mail request success!");
-                                // Delete event request
                                 eventRequestService.deleteEventRequest(eventRequest.get());
                             }
                             eventRequestService.updateEventRequest(eventRequest.get());

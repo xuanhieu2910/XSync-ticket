@@ -31,27 +31,6 @@ public class MailRequestService {
         logger.info("Service start find all mail root");
         return mailRequestRepository.findAllMailRoot();
     }
-
-    public List<MailRequest> updateMailRoots(List<MailRequest> roots) {
-        logger.info("Service start update mail root");
-        return mailRequestRepository.saveAll(roots);
-    }
-
-    public MailRequest updateMailRoot(MailRequest mailRequest) {
-        logger.info("Service start update mail root");
-        return mailRequestRepository.save(mailRequest);
-    }
-
-    public void deleteMailRoot(MailRequest root) {
-        logger.info("Service start delete mail root");
-        mailRequestRepository.delete(root);
-    }
-
-    public Optional<InformationMailDto> getInformationMailDtoByGuestId(Integer guestId) throws IOException, SQLException {
-        logger.info("Service start get information mail root by guest id : " + guestId);
-        return mailRequestRepository.getInformationMailDtos(guestId);
-    }
-
     public void updateStatusMailRequestsByIds(List<Integer> ids) {
         logger.info("Service update status mail request by ids");
         mailRequestRepository.updateStatusMailRequestByIds(ids);
