@@ -7,27 +7,44 @@ import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
 import compedia.vn.tickmi.mail.utils.DbConstant;
-import compedia.vn.tickmi.mail.utils.FilesUtils;
+import compedia.vn.tickmi.mail.utils.PropertiesUtil;
 import lombok.extern.log4j.Log4j2;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Log4j2
 public class GenerateQR {
 
+    private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("DDMMYYYY");
+
     public static String handlerGeneratePathQR(String ticketEventCode, Integer eventId, Integer tickEventId,
                                                Integer objectId, Integer type, Integer countTicket, String nameTicket) {
-        String pathFile = FilesUtils.createFilePathQR(eventId, tickEventId, objectId, type, countTicket,
-                DbConstant.EXTENSION_GENERATE_QR[0]);
-        handleImageGenerateQR(pathFile, ticketEventCode, nameTicket);
-        return pathFile;
+
+
+        String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
+        String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
+        String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
+        String filePathQrGen = root + File.separator + todayFolder + File.separator + eventId;
+        File file = new File(filePathQrGen);
+        if (!file.exists() && !file.mkdirs()) {
+            log.error("Can't create folder");
+        } else {
+            filePathQrGen = filePathQrGen + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+            filePathOutPut = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+            log.debug("Create file success");
+        }
+        handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket);
+        return filePathOutPut;
     }
 
     /**
