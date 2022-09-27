@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MailInputRepositoryCustom {
-    Optional<MailInput> getMailInputById(Integer id) throws IOException, SQLException;
-
-    List<MailInput> getMailInputLimit() throws IOException, SQLException;
 
     List<MailDto> getMailDtosLitmit() throws IOException, SQLException;
 

@@ -172,6 +172,7 @@ public class HandleTicketService {
                                 mailRequestService.saveMailRoot(createMailRequest(eventRequest.get()));
                                 log.info("Save mail request success!");
                                 eventRequestService.deleteEventRequest(eventRequest.get());
+                                log.info("Delete event request success!");
                             }
                             eventRequestService.updateEventRequest(eventRequest.get());
                         } else {

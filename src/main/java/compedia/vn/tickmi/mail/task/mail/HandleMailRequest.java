@@ -70,7 +70,7 @@ public class HandleMailRequest {
             input.setObjectId(mailResponse.getObjectId());
             input.setType(mailResponse.getType());
             input.setContent(TemplateEmailUtils.replaceTemplateTicket(mailResponse.getContent(),mailResponse.getHtmlReplace(),mailResponse.getPathQr()));
-            log.info("CONTENT : " + mailResponse.getContent());
+            log.info("CONTENT SEND MAIL: " + mailResponse.getContent());
             input.setRetry(mailResponse.getRetry());
             input.setProviderId(mailResponse.getProviderId());
             input.setEmailCustomer(mailResponse.getEmailGuest());
