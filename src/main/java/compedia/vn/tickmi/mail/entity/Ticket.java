@@ -56,6 +56,12 @@ public class Ticket {
     @Column(name = "NAME_TICKET")
     private String nameTicket;
 
+    @Column(name = "PHONE_GUEST")
+    private String phoneGuest;
+
+    @Column(name = "EMAIL_GUEST")
+    private String emailGuest;
+
     @Override
     public String toString() {
         return "Ticket{" +

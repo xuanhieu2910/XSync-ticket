@@ -215,6 +215,8 @@ public class HandleTicketService {
         ticket.setObjectId(detail.getObjectId());
         ticket.setType(detail.getType());
         ticket.setNameGuest(detail.getNameGuest());
+        ticket.setPhoneGuest(detail.getPhoneGuest());
+        ticket.setEmailGuest(detail.getEmailGuest());
         ticket.setNameTicket(nameTicket);
         return ticket;
     }
