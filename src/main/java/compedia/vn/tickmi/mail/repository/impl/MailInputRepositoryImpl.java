@@ -2,11 +2,9 @@ package compedia.vn.tickmi.mail.repository.impl;
 
 import compedia.vn.tickmi.mail.dto.CustomerEmailDto;
 import compedia.vn.tickmi.mail.dto.MailDto;
-import compedia.vn.tickmi.mail.entity.MailInput;
+import compedia.vn.tickmi.mail.repository.MailInputRepositoryCustom;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.ValueUtil;
-import compedia.vn.tickmi.mail.repository.MailInputRepositoryCustom;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -19,7 +17,6 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class MailInputRepositoryImpl implements MailInputRepositoryCustom {
 
@@ -40,7 +37,7 @@ public class MailInputRepositoryImpl implements MailInputRepositoryCustom {
                 mailDto.setId(ValueUtil.getIntegerByObject(obj[0]));
                 mailDto.setObjectId(ValueUtil.getIntegerByObject(obj[1]));
                 mailDto.setType(ValueUtil.getIntegerByObject(obj[2]));
-                mailDto.setContent(ValueUtil.getClobString((Clob) obj[3]));
+                mailDto.setContent(ValueUtil.getClobString((Clob) obj[3]) == null ? null : ValueUtil.getClobString((Clob) obj[3]));
                 mailDto.setRetry(ValueUtil.getIntegerByObject(obj[4]));
                 mailDto.setProviderId(ValueUtil.getIntegerByObject(obj[5]));
                 mailDto.setEmailCustomer(ValueUtil.getStringByObject(obj[6]));

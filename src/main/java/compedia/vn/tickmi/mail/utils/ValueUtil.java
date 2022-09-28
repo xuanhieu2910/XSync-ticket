@@ -74,8 +74,7 @@ public class ValueUtil {
 
     public static String getClobString(Clob clob) throws SQLException,
             IOException {
-        BufferedReader stringReader = new BufferedReader(
-                clob.getCharacterStream());
+        BufferedReader stringReader = new BufferedReader(clob.getCharacterStream());
         String singleLine = null;
         StringBuffer strBuff = new StringBuffer();
         while ((singleLine = stringReader.readLine()) != null) {
