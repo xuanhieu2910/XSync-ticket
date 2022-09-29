@@ -1,5 +1,6 @@
 package compedia.vn.tickmi.mail.utils;
 
+import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,7 +16,7 @@ public class TemplateEmailUtils {
 
 
 
-
+    @Synchronized
     public static String replaceTemplateTicket(String contentHtml, String htmlReplace, String qr,String url) {
             log.info("Start to replace template ticket!");
             try {
@@ -66,7 +67,7 @@ public class TemplateEmailUtils {
             }catch (Exception e) {
                 log.error(e.getMessage(),e);
             }
-            return null;
+            return " ";
     }
 
     public static String replaceQR(String htmlContent, String pathQr) {

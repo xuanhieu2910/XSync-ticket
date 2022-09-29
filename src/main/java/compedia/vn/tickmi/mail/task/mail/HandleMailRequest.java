@@ -46,7 +46,7 @@ public class HandleMailRequest {
     }
 
     @Async
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRate = 4000)
     public void getDataMailRequest() {
         try {
             List<MailResponse> mailResponses = mailRequestService.findAllMailRoot();
@@ -66,7 +66,7 @@ public class HandleMailRequest {
 
 
     @Async
-    @Scheduled(fixedRate = 500)
+    @Scheduled(fixedRate = 1000)
     public  void pushDataToMailInput () {
         while (!mailResponsesQueue.isEmpty()) {
             MailResponse mailResponse = mailResponsesQueue.poll();
