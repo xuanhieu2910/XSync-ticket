@@ -38,4 +38,27 @@ public class MailDetailHis {
     @Column(name = "TYPE")
     private Integer type;
 
+    @Column(name = "SUBJECT")
+    private String subject;
+
+    @Column(name = "TICKET_EVENT_ID")
+    private Integer ticketEventId;
+
+    @Column(name = "EVENT_ID")
+    private Integer eventId;
+
+    @Column(name = "PROVIDER_ID")
+    private Integer providerId;
+
+    @Column(name = "QUANTITY")
+    private Integer quantity;
+
+    @Column(name = "NAME_GUEST")
+    private String nameGuest;
+
+    @Column(name = "PHONE_GUEST")
+    private String phoneGuest;
+
+    @Column(name = "CONTENT")
+    private String content;
 }

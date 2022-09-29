@@ -80,6 +80,11 @@ public class HandleMailRequest {
             input.setEmailCustomer(mailResponse.getEmailGuest());
             input.setStatus(DbConstant.MAIL_ROOT_STATUS_NEW);
             input.setSubject("VÉ SỰ KIỆN : " + mailResponse.getEventName());
+            input.setTicketEventId(mailResponse.getTicketEventId());
+            input.setEventId(mailResponse.getEventId());
+            input.setNameGuest(mailResponse.getNameGuest());
+            input.setPhoneGuest(mailResponse.getPhoneGuest());
+            input.setQuantity(mailResponse.getQuantity());
             mailInputRepository.save(input);
             log.info("Save to mail input with :" + input.toString());
         }

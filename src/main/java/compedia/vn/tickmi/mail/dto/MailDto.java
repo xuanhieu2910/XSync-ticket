@@ -17,6 +17,11 @@ public class MailDto {
     private Integer retry;
     private Integer providerId;
     private String emailCustomer;
+    private Integer eventId;
+    private Integer ticketEventId;
+    private String nameGuest;
+    private String phoneGuest;
+    private Integer quantity;
     private CustomerEmailDto customerEmailDto;
 
     public MailDto(String emailCustomer, String subject, String content, CustomerEmailDto customerEmailDto) {
@@ -37,6 +42,11 @@ public class MailDto {
                 ", retry=" + retry +
                 ", providerId=" + providerId +
                 ", emailCustomer='" + emailCustomer + '\'' +
+                ", eventId=" + eventId +
+                ", ticketEventId=" + ticketEventId +
+                ", nameGuest='" + nameGuest + '\'' +
+                ", phoneGuest='" + phoneGuest + '\'' +
+                ", quantity=" + quantity +
                 ", customerEmailDto=" + customerEmailDto +
                 '}';
     }

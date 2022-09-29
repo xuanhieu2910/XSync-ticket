@@ -43,6 +43,21 @@ public class MailInput {
     @Column(name = "STATUS")
     private Integer status;
 
+    @Column(name = "TICKET_EVENT_ID")
+    private Integer ticketEventId;
+
+    @Column(name = "EVENT_ID")
+    private Integer eventId;
+
+    @Column(name = "NAME_GUEST")
+    private String nameGuest;
+
+    @Column(name = "PHONE_GUEST")
+    private String phoneGuest;
+
+    @Column(name = "QUANTITY")
+    private Integer quantity;
+
     @Override
     public String toString() {
         return "MailInput{" +

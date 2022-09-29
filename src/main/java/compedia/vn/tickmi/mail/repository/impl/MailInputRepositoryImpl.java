@@ -37,7 +37,7 @@ public class MailInputRepositoryImpl implements MailInputRepositoryCustom {
                 mailDto.setId(ValueUtil.getIntegerByObject(obj[0]));
                 mailDto.setObjectId(ValueUtil.getIntegerByObject(obj[1]));
                 mailDto.setType(ValueUtil.getIntegerByObject(obj[2]));
-                mailDto.setContent(ValueUtil.getClobString((Clob) obj[3]) == null ? null : ValueUtil.getClobString((Clob) obj[3]));
+                mailDto.setContent(ValueUtil.getClobString((Clob) obj[3]) == null ? "" : ValueUtil.getClobString((Clob) obj[3]));
                 mailDto.setRetry(ValueUtil.getIntegerByObject(obj[4]));
                 mailDto.setProviderId(ValueUtil.getIntegerByObject(obj[5]));
                 mailDto.setEmailCustomer(ValueUtil.getStringByObject(obj[6]));
@@ -51,7 +51,11 @@ public class MailInputRepositoryImpl implements MailInputRepositoryCustom {
                     customerEmailDto.setPort(ValueUtil.getStringByObject(obj[11]));
                     mailDto.setCustomerEmailDto(customerEmailDto);
                 }
-
+                mailDto.setEventId(ValueUtil.getIntegerByObject(obj[13]));
+                mailDto.setTicketEventId(ValueUtil.getIntegerByObject(obj[14]));
+                mailDto.setNameGuest(ValueUtil.getStringByObject(obj[15]));
+                mailDto.setPhoneGuest(ValueUtil.getStringByObject(obj[16]));
+                mailDto.setQuantity(ValueUtil.getIntegerByObject(obj[17]));
                 mailDtos.add(mailDto);
             }
         }
@@ -99,24 +103,30 @@ public class MailInputRepositoryImpl implements MailInputRepositoryCustom {
             " WHERE mailInput.ID_MAIL_INPUT in (:ids)";
 
 
-    private static String SQL_getMailDtoLimit = "SELECT mailInput.ID_MAIL_INPUT," +
-            "       mailInput.OBJECT_ID," +
-            "       mailInput.TYPE," +
-            "       mailInput.CONTENT," +
-            "       mailInput.RETRY," +
-            "       mailInput.PROVIDER_ID," +
-            "       mailInput.EMAIL_CUSTOMER," +
-            "       mailInput.SUBJECT," +
-            "       configEmail.EMAIL_USER," +
-            "       configEmail.EMAIL_PASSWORD," +
-            "       configEmail.EMAIL_HOST," +
-            "       configEmail.EMAIL_PORT," +
-            "       mailInput.STATUS" +
-            " FROM MAIL_INPUT mailInput" +
-            "    left join (select *" +
-            "    from CONFIG_EMAIL configEmail" +
-            "    where configEmail.IS_USED = 1) configEmail" +
-            " on mailInput.PROVIDER_ID = configEmail.PROVIDER_ID" +
-            " WHERE ROWNUM <= :limit" +
-            " AND (mailInput.RETRY <= :retry AND mailInput.STATUS = -1 )";
+    private static String SQL_getMailDtoLimit = "SELECT mailInput.ID_MAIL_INPUT, " +
+            "       mailInput.OBJECT_ID, " +
+            "       mailInput.TYPE, " +
+            "       mailInput.CONTENT, " +
+            "       mailInput.RETRY, " +
+            "       mailInput.PROVIDER_ID, " +
+            "       mailInput.EMAIL_CUSTOMER, " +
+            "       mailInput.SUBJECT, " +
+            "       configEmail.EMAIL_USER, " +
+            "       configEmail.EMAIL_PASSWORD, " +
+            "       configEmail.EMAIL_HOST, " +
+            "       configEmail.EMAIL_PORT, " +
+            "       mailInput.STATUS, " +
+            "       mailInput.EVENT_ID, " +
+            "       mailInput.TICKET_EVENT_ID, " +
+            "       mailInput.NAME_GUEST, " +
+            "       mailInput.PHONE_GUEST, " +
+            "       mailInput.QUANTITY " +
+            "           FROM MAIL_INPUT mailInput " +
+            "                left join (select * " +
+            "                from CONFIG_EMAIL configEmail " +
+            "                where configEmail.IS_USED = 1) configEmail " +
+            "on mailInput.PROVIDER_ID = configEmail.PROVIDER_ID " +
+            "WHERE ROWNUM <= :limit " +
+            "  AND (mailInput.RETRY <= :retry " +
+            "  AND mailInput.STATUS = -1)";
 }

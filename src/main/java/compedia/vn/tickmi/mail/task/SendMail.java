@@ -162,6 +162,14 @@ public class SendMail{
         mailDetailHis.setStatus(DbConstant.MAIL_HIS_STATUS_SUCCESS);
         mailDetailHis.setObjectId(mailDto.getObjectId());
         mailDetailHis.setType(mailDto.getType());
+        mailDetailHis.setSubject(mailDto.getSubject());
+        mailDetailHis.setEventId(mailDto.getEventId());
+        mailDetailHis.setProviderId(mailDto.getProviderId());
+        mailDetailHis.setTicketEventId(mailDto.getTicketEventId());
+        mailDetailHis.setQuantity(mailDto.getQuantity());
+        mailDetailHis.setNameGuest(mailDto.getNameGuest());
+        mailDetailHis.setPhoneGuest(mailDto.getPhoneGuest());
+        mailDetailHis.setContent(mailDto.getContent());
         return mailDetailHis;
     }
 }
