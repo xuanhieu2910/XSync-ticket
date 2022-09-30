@@ -12,6 +12,7 @@ import compedia.vn.tickmi.mail.service.TicketService;
 import compedia.vn.tickmi.mail.task.qr.GenerateQR;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.GenerateUtils;
+import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -26,7 +27,6 @@ import java.util.*;
 
 @Component
 @EnableScheduling
-@EnableAsync
 @Log4j2
 public class HandleTicketService {
 
@@ -51,8 +51,7 @@ public class HandleTicketService {
     /**
      * Method to get data from DB EVENT_REQUEST -> push queue to handle process other
      */
-    @Async
-    @Scheduled(fixedRate = 3000)
+    @Scheduled(fixedDelay = 2000)
     public void getEventRequestsLoop() {
         try {
             List<EventRequest> eventRequestList = eventRequestService.getEventRequestList();
@@ -72,8 +71,7 @@ public class HandleTicketService {
     /**
      * Method to handle from queue -> Set value -> Insert value to db EVENT_REQUEST_DETAIL
      */
-    @Async
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedDelay = 2000)
     public void insertCacheEventRequestDetail() {
         if (!queueEventRequest.isEmpty()) {
             EventRequest eventRequest = queueEventRequest.poll();
@@ -108,8 +106,7 @@ public class HandleTicketService {
     /***
      * Method to get event request detail -> set value -> push queue to handle process other
      */
-    @Async
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedDelay = 2000)
     public void getEventRequestDetailLoop() {
         try {
             // Get n object
@@ -132,63 +129,75 @@ public class HandleTicketService {
     /**
      * Handle to get data from event_request_detail -> process -> generate path QR
      */
-    @Async
-    @Scheduled(fixedRate = 1000)
-    public void generateQRPathImage() {
+    @Scheduled(fixedDelay = 1000)
+    public void generateQRPathImage() throws InterruptedException {
         if (!queueEventRequestDetails.isEmpty()) {
             EventRequestDetail detail = queueEventRequestDetails.poll();
+            detail.setRetry(0);
+
+            // Update ticket generic
+            EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
+            if (null == eventRequest) {
+                return;
+            }
+
+            int quantity = eventRequest.getQuantity();
+            Integer eventRequestId = eventRequest.getId();
+            log.info("Event request id:" + eventRequestId);
+
             String pathQr = null;
-            for (int i = 0; i < DbConstant.MAX_RETRY; i++) {
-                // Retry < 3
-                String nameTicket = "EV_" + detail.getObjectId() + detail.getType() + detail.getIndexTicket();
-                if (detail.getRetry() < DbConstant.MAX_RETRY) {
-                    try {
-                        pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), detail.getTicketEventId(),
-                                detail.getObjectId(), detail.getType(), detail.getIndexTicket(),nameTicket);
-                        // Success
-                        // Remove in event detail
-                        eventRequestDetailService.deleteEventRequestDetail(detail);
-                        log.info("Delete event request detail");
-                        // Insert to ticket
-                        Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN,nameTicket);
-                        log.info("Save ticket service success!" + ticket.toString());
-                        ticketService.saveTicket(ticket);
-                        // Update ticket generic
-                        Optional<EventRequest> eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId());
-                        if (eventRequest.isPresent()) {
-                            int quantityGen = eventRequest.get().getTicketGeneration() + 1;
-                            eventRequest.get().setTicketGeneration(quantityGen);
-                            if (eventRequest.get().getQuantity().intValue() == eventRequest.get().getTicketGeneration().intValue()) {
-                                // Insert to email
-                                mailRequestService.saveMailRoot(createMailRequest(eventRequest.get()));
-                                log.info("Save mail request success!");
-                                eventRequestService.deleteEventRequest(eventRequest.get());
-                                log.info("Delete event request success!");
-                            }
-                            eventRequestService.updateEventRequest(eventRequest.get());
-                        } else {
-                            log.error("Don't exit event request");
-                        }
-                        break;
-                    } catch (Exception e) {
-                        // False
-                        int retryBefore = detail.getRetry() + 1;
-                        detail.setRetry(retryBefore);
-                        log.error(e.getMessage(), e);
-                    }
-                } else {
-                    // Delete in ticket request detail
+            String nameTicket = "EV_" + detail.getObjectId() + detail.getType() + detail.getIndexTicket();
+
+            while (detail.getRetry() < DbConstant.MAX_RETRY) {
+                try {
+                    pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), detail.getTicketEventId(),
+                            detail.getObjectId(), detail.getType(), detail.getIndexTicket(), nameTicket);
+
+                    // Success and remove in event detail
                     eventRequestDetailService.deleteEventRequestDetail(detail);
-                    // Delete event request
-                    eventRequestService.deleteEventRequestById(detail.getEventRequestId());
-                    // Insert into ticket
-                    ticketService.saveTicket(createTicket(detail, pathQr, DbConstant.TICKET_FALSE,nameTicket));
+
+                    // Insert to ticket
+                    Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN, nameTicket);
+                    log.info("Save ticket service success!" + ticket.toString());
+                    ticketService.saveTicket(ticket);
+
+                    log.info("Create ticket and increase amount!");
+                    int quantityGen = eventRequest.getTicketGeneration() + 1;
+                    eventRequest.setTicketGeneration(quantityGen);
+
+                    if (quantity == quantityGen) {
+                        log.info("Save mail request success!");
+                        mailRequestService.saveMailRoot(createMailRequest(eventRequest));
+
+                        log.info("Delete event request success id: " + eventRequestId);
+                        eventRequestService.deleteEventRequestById(eventRequestId);
+                    }
+
+                    log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
+                    eventRequestService.updateEventRequest(eventRequest);
+                    break;
+                } catch (Exception e) {
+                    int retryBefore = detail.getRetry() + 1;
+                    detail.setRetry(retryBefore);
+                    log.error(e.getMessage(), e);
                 }
             }
+
+            if (detail.getRetry().intValue() == DbConstant.MAX_RETRY) {
+                // Delete in ticket request detail
+                eventRequestDetailService.deleteEventRequestDetail(detail);
+
+                // Delete event request
+                eventRequestService.deleteEventRequestById(eventRequestId);
+
+                // Insert into ticket
+                ticketService.saveTicket(createTicket(detail, pathQr, DbConstant.TICKET_FALSE, nameTicket));
+            }
+            Thread.sleep(300);
         }
     }
 
-    private Ticket createTicket(EventRequestDetail detail, String pathQR, Integer status,String nameTicket) {
+    private Ticket createTicket(EventRequestDetail detail, String pathQR, Integer status, String nameTicket) {
         Ticket ticket = new Ticket();
         ticket.setProviderId(detail.getProviderId());
         ticket.setTicketEventId(detail.getTicketEventId());

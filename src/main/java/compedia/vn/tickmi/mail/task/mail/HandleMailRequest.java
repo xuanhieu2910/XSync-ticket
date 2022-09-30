@@ -7,6 +7,7 @@ import compedia.vn.tickmi.mail.service.MailDetailHisService;
 import compedia.vn.tickmi.mail.service.MailRequestService;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.TemplateEmailUtils;
+import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,7 +47,7 @@ public class HandleMailRequest {
     }
 
     @Async
-    @Scheduled(fixedRate = 4000)
+    @Scheduled(fixedDelay = 4000)
     public void getDataMailRequest() {
         try {
             List<MailResponse> mailResponses = mailRequestService.findAllMailRoot();
@@ -66,10 +67,11 @@ public class HandleMailRequest {
 
 
     @Async
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedDelay = 2000)
     public  void pushDataToMailInput () {
         while (!mailResponsesQueue.isEmpty()) {
             MailResponse mailResponse = mailResponsesQueue.poll();
+            log.info("CONTENT Before : " + mailResponse.getContent());
             MailInput input = new MailInput();
             input.setObjectId(mailResponse.getObjectId());
             input.setType(mailResponse.getType());
@@ -86,6 +88,7 @@ public class HandleMailRequest {
             input.setPhoneGuest(mailResponse.getPhoneGuest());
             input.setQuantity(mailResponse.getQuantity());
             mailInputRepository.save(input);
+            mailRequestService.deleteById (mailResponse.getId());
             log.info("Save to mail input with :" + input.toString());
         }
     }

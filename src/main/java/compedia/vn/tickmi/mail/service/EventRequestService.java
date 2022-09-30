@@ -38,7 +38,7 @@ public class EventRequestService {
         eventRequestRepository.delete(eventRequest);
     }
 
-    public void deleteEventRequestById (Integer id) {
+    public void deleteEventRequestById(Integer id) {
         eventRequestRepository.deleteById(id);
     }
 

@@ -15,7 +15,5 @@ public class ProviderService {
     @Autowired
     ProviderRepository providerRepository;
 
-    public Optional<Provider> findProviderByUserId(Integer userId) {
-        return providerRepository.findProviderByUserId(userId);
-    }
+
 }

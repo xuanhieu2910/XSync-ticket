@@ -10,14 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MailDetailHisService {
 
-    private final static Logger logger = LoggerFactory.getLogger(MailDetailHisService.class);
-
-
     @Autowired
     MailDetailHisRepository mailDetailHisRepository;
 
-
-    public MailDetailHis updateMailDetailHis(MailDetailHis mailDetailHis) {
-        return mailDetailHisRepository.save(mailDetailHis);
-    }
 }

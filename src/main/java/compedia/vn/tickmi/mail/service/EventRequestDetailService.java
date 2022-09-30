@@ -38,17 +38,5 @@ public class EventRequestDetailService {
         eventRequestRepositoryDetail.delete(eventRequestDetail);
     }
 
-    public void deleteEventRequestDetails(List<EventRequestDetail> eventRequestDetails) {
-        logger.debug("Service start delete all event request detail");
-        eventRequestRepositoryDetail.deleteAll(eventRequestDetails);
-    }
-
-    public List<EventRequestDetail> requestDetails(Integer eventRequestId) {
-        return eventRequestRepositoryDetail.getAllEventRequestByIdEventRequest(eventRequestId);
-    }
-
-    public List<EventRequestDetail> getAllEventRequestByIdEventRequestAndStatus(Integer eventRequestId, Integer status) {
-        return eventRequestRepositoryDetail.getAllEventRequestByIdEventRequest(eventRequestId);
-    }
 
 }
