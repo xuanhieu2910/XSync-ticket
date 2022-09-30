@@ -28,6 +28,7 @@ import java.util.*;
 @Component
 @EnableScheduling
 @Log4j2
+@EnableAsync
 public class HandleTicketService {
 
     @Autowired
@@ -129,6 +130,7 @@ public class HandleTicketService {
     /**
      * Handle to get data from event_request_detail -> process -> generate path QR
      */
+    @Async
     @Scheduled(fixedDelay = 1000)
     public void generateQRPathImage() throws InterruptedException {
         if (!queueEventRequestDetails.isEmpty()) {
@@ -148,7 +150,7 @@ public class HandleTicketService {
             String pathQr = null;
             String nameTicket = "EV_" + detail.getObjectId() + detail.getType() + detail.getIndexTicket();
 
-            while (detail.getRetry() < DbConstant.MAX_RETRY) {
+            while (detail.getRetry().intValue() < DbConstant.MAX_RETRY) {
                 try {
                     pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), detail.getTicketEventId(),
                             detail.getObjectId(), detail.getType(), detail.getIndexTicket(), nameTicket);
@@ -171,11 +173,13 @@ public class HandleTicketService {
 
                         log.info("Delete event request success id: " + eventRequestId);
                         eventRequestService.deleteEventRequestById(eventRequestId);
+                        log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
+                        break;
+                    } else {
+                        log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
+                        eventRequestService.updateEventRequest(eventRequest);
+                        break;
                     }
-
-                    log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
-                    eventRequestService.updateEventRequest(eventRequest);
-                    break;
                 } catch (Exception e) {
                     int retryBefore = detail.getRetry() + 1;
                     detail.setRetry(retryBefore);
@@ -188,6 +192,7 @@ public class HandleTicketService {
                 eventRequestDetailService.deleteEventRequestDetail(detail);
 
                 // Delete event request
+                log.info("DELETE nè:");
                 eventRequestService.deleteEventRequestById(eventRequestId);
 
                 // Insert into ticket

@@ -2,7 +2,6 @@ package compedia.vn.tickmi.mail.repository.impl;
 
 import compedia.vn.tickmi.mail.repository.MailRequestRepositoryCustom;
 import compedia.vn.tickmi.mail.response.MailResponse;
-import compedia.vn.tickmi.mail.dto.InformationMailDto;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.ValueUtil;
 import lombok.extern.log4j.Log4j2;
@@ -18,7 +17,6 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Log4j2
 public class MailRequestRepositoryImpl implements MailRequestRepositoryCustom {
