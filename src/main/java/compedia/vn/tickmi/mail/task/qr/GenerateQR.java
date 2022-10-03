@@ -43,19 +43,19 @@ public class GenerateQR {
             filePathOutPut = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + "." + DbConstant.EXTENSION_GENERATE_QR[0];
             log.debug("Create file success");
         }
-        handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket);
+        handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket,eventId);
         return filePathOutPut;
     }
 
     /**
      * @param pathQR This have been generate from method handlerGeneratePathQR(params...)
      */
-    public static void handleImageGenerateQR(String pathQR, String codeTicketEvent, String guestName) {
+    public static void handleImageGenerateQR(String pathQR, String codeTicketEvent, String guestName,Integer eventId) {
         try {
             log.info("---------------------------- GENERATE QR ----------------------");
             Map<EncodeHintType, Object> encodeHintTypeObjectMap = new HashMap<>();
             encodeHintTypeObjectMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-            QRCode code = Encoder.encode(codeTicketEvent, ErrorCorrectionLevel.H, encodeHintTypeObjectMap);
+            QRCode code = Encoder.encode(codeTicketEvent + "\\" + eventId, ErrorCorrectionLevel.H, encodeHintTypeObjectMap);
             BufferedImage image = renderQRImage(code, DbConstant.WIDTH_QR, DbConstant.HEIGHT_QR, DbConstant.PADDING_QR, guestName);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(image, DbConstant.EXTENSION_GENERATE_QR[0], baos);

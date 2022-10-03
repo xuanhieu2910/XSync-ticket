@@ -52,7 +52,8 @@ public class HandleTicketService {
     /**
      * Method to get data from DB EVENT_REQUEST -> push queue to handle process other
      */
-    @Scheduled(fixedDelay = 2000)
+    @Synchronized
+    @Scheduled(fixedRate = 5000)
     public void getEventRequestsLoop() {
         try {
             List<EventRequest> eventRequestList = eventRequestService.getEventRequestList();
@@ -72,7 +73,8 @@ public class HandleTicketService {
     /**
      * Method to handle from queue -> Set value -> Insert value to db EVENT_REQUEST_DETAIL
      */
-    @Scheduled(fixedDelay = 2000)
+    @Synchronized
+    @Scheduled(fixedRate = 2000)
     public void insertCacheEventRequestDetail() {
         if (!queueEventRequest.isEmpty()) {
             EventRequest eventRequest = queueEventRequest.poll();
@@ -107,7 +109,8 @@ public class HandleTicketService {
     /***
      * Method to get event request detail -> set value -> push queue to handle process other
      */
-    @Scheduled(fixedDelay = 2000)
+    @Synchronized
+    @Scheduled(fixedRate = 5000)
     public void getEventRequestDetailLoop() {
         try {
             // Get n object
@@ -130,8 +133,8 @@ public class HandleTicketService {
     /**
      * Handle to get data from event_request_detail -> process -> generate path QR
      */
-    @Async
-    @Scheduled(fixedDelay = 1000)
+    @Synchronized
+    @Scheduled(fixedRate = 1000)
     public void generateQRPathImage() throws InterruptedException {
         if (!queueEventRequestDetails.isEmpty()) {
             EventRequestDetail detail = queueEventRequestDetails.poll();
@@ -174,12 +177,11 @@ public class HandleTicketService {
                         log.info("Delete event request success id: " + eventRequestId);
                         eventRequestService.deleteEventRequestById(eventRequestId);
                         log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
-                        break;
                     } else {
                         log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
                         eventRequestService.updateEventRequest(eventRequest);
-                        break;
                     }
+                    break;
                 } catch (Exception e) {
                     int retryBefore = detail.getRetry() + 1;
                     detail.setRetry(retryBefore);
@@ -192,7 +194,6 @@ public class HandleTicketService {
                 eventRequestDetailService.deleteEventRequestDetail(detail);
 
                 // Delete event request
-                log.info("DELETE nè:");
                 eventRequestService.deleteEventRequestById(eventRequestId);
 
                 // Insert into ticket
