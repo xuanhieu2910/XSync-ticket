@@ -74,47 +74,45 @@ public class MailRequestRepositoryImpl implements MailRequestRepositoryCustom {
     }
 
 
-    private static String SQL_findAllMailRequest = " WITH ROOT as ( " +
-            "                SELECT mailRequest.EVENT_ID,mailRequest.TICKET_EVENT_ID,mailRequest.OBJECT_ID,mailRequest.TYPE, " +
-            "                       mailRequest.PROVIDER_ID,mailRequest.ID,mailRequest.QUANTITY, mailRequest.NAME_GUEST, " +
-            "                       mailRequest.PHONE_GUEST,mailRequest.EMAIL_GUEST, mailRequest.RETRY " +
-            "                FROM MAIL_REQUEST mailRequest " +
-            "                WHERE mailRequest.STATUS = -1 " +
-            "                  AND mailRequest.RETRY <= :retry " +
-            "                  AND ROWNUM <= :limit " +
-            "            ), " +
-            "                 ROOT_DETAIL AS ( " +
-            "                     select root.ID,root.EVENT_ID,root.TICKET_EVENT_ID, root.OBJECT_ID,root.TYPE, " +
-            "                            root.PROVIDER_ID, " +
-            "                            LISTAGG(ticket.PATH_QR, ';') WITHIN GROUP (ORDER BY ticket.INDEX_QR) pathQR, " +
-            "                            count(ticket.TICKET_ID) countTicketId,root.QUANTITY,root.NAME_GUEST, " +
-            "                            root.PHONE_GUEST,root.EMAIL_GUEST,root.RETRY " +
-            "                     from ROOT root " +
-            "                              inner join TICKET ticket on root.OBJECT_ID = ticket.OBJECT_ID " +
-            "                         and root.TYPE = ticket.TYPE " +
-            "                     group by root.EVENT_ID, root.TICKET_EVENT_ID, root.OBJECT_ID, root.TYPE, " +
-            "                              root.PROVIDER_ID, root.ID, root.QUANTITY, root.NAME_GUEST, root.PHONE_GUEST, " +
-            "                              root.EMAIL_GUEST, root.RETRY " +
-            "                 ), " +
-            "                 ROOT_RESULT as ( " +
-            "                     select rootDetail.ID, rootDetail.EVENT_ID,rootDetail.TICKET_EVENT_ID,rootDetail.OBJECT_ID, " +
-            "                            rootDetail.TYPE,rootDetail.PROVIDER_ID,pathQR,templateTicket.HTML,rootDetail.QUANTITY, " +
-            "                            rootDetail.NAME_GUEST,rootDetail.PHONE_GUEST,rootDetail.EMAIL_GUEST, " +
-            "                            case when rootDetail.QUANTITY < countTicketId then 0 else 1 end ticketGen, " +
-            "                            templateTicket.HTML_REPLACE,rootDetail.RETRY,configEmail.EMAIL_USER mailFrom, " +
-            "                            configEmail.EMAIL_PASSWORD password,configEmail.EMAIL_HOST  emailHost,configEmail.EMAIL_PORT  emailPort, " +
-            "                            event.NAME NAME_EVENT " +
-            "                     from ROOT_DETAIL rootDetail " +
-            "                              inner join TICKET_EVENT ticketEvent on rootDetail.TICKET_EVENT_ID = ticketEvent.TICKET_EVENT_ID " +
-            "                         and rootDetail.EVENT_ID = ticketEvent.EVENT_ID " +
-            "                              inner join EVENT event on rootDetail.EVENT_ID = event.EVENT_ID " +
-            "                              inner join TEMPLATE_TICKET templateTicket " +
-            "                                         on ticketEvent.TEMPLATE_TICKET_ID = templateTicket.TEMPLATE_TICKET_ID " +
-            "                              left join (select * from CONFIG_EMAIL configEmail where configEmail.IS_USED = 1) configEmail " +
-            "                                        on rootDetail.PROVIDER_ID = configEmail.PROVIDER_ID " +
-            "                 ) " +
-            "            select * " +
-            "            from ROOT_RESULT ";
+    private static String SQL_findAllMailRequest = "WITH ROOT as (   " +
+            "                            SELECT mailRequest.EVENT_ID,mailRequest.TICKET_EVENT_ID,mailRequest.OBJECT_ID,mailRequest.TYPE,   " +
+            "                                   mailRequest.PROVIDER_ID,mailRequest.ID,mailRequest.QUANTITY, mailRequest.NAME_GUEST,   " +
+            "                                   mailRequest.PHONE_GUEST,mailRequest.EMAIL_GUEST, mailRequest.RETRY   " +
+            "                            FROM MAIL_REQUEST mailRequest   " +
+            "                            WHERE mailRequest.STATUS = -1   " +
+            "                              AND mailRequest.RETRY <= :retry   " +
+            "                              AND ROWNUM <= :limit   " +
+            "                        ),   " +
+            "                             ROOT_DETAIL AS (   " +
+            "                                 select root.ID,root.EVENT_ID,root.TICKET_EVENT_ID, root.OBJECT_ID,root.TYPE,   " +
+            "                                        root.PROVIDER_ID,   " +
+            "                                        LISTAGG(ticket.PATH_QR, ';') WITHIN GROUP (ORDER BY ticket.INDEX_QR) pathQR,   " +
+            "                                        count(ticket.TICKET_ID) countTicketId,root.QUANTITY,root.NAME_GUEST,   " +
+            "                                        root.PHONE_GUEST,root.EMAIL_GUEST,root.RETRY   " +
+            "                                 from ROOT root   " +
+            "                                          inner join TICKET ticket on root.OBJECT_ID = ticket.OBJECT_ID   " +
+            "                                     and root.TYPE = ticket.TYPE   " +
+            "                                 group by root.EVENT_ID, root.TICKET_EVENT_ID, root.OBJECT_ID, root.TYPE,   " +
+            "                                          root.PROVIDER_ID, root.ID, root.QUANTITY, root.NAME_GUEST, root.PHONE_GUEST,   " +
+            "                                          root.EMAIL_GUEST, root.RETRY   " +
+            "                             ),   " +
+            "                             ROOT_RESULT as (   " +
+            "                                 select rootDetail.ID, rootDetail.EVENT_ID,rootDetail.TICKET_EVENT_ID,rootDetail.OBJECT_ID,   " +
+            "                                        rootDetail.TYPE,rootDetail.PROVIDER_ID,pathQR,ticketEvent.HTML,rootDetail.QUANTITY,   " +
+            "                                        rootDetail.NAME_GUEST,rootDetail.PHONE_GUEST,rootDetail.EMAIL_GUEST,   " +
+            "                                        case when rootDetail.QUANTITY < countTicketId then 0 else 1 end ticketGen, " +
+            "                                        ticketEvent.HTML_REPLACE,rootDetail.RETRY,configEmail.EMAIL_USER mailFrom,   " +
+            "                                        configEmail.EMAIL_PASSWORD password,configEmail.EMAIL_HOST  emailHost,configEmail.EMAIL_PORT  emailPort,   " +
+            "                                        event.NAME NAME_EVENT   " +
+            "                                 from ROOT_DETAIL rootDetail   " +
+            "                                          inner join TICKET_EVENT ticketEvent on rootDetail.TICKET_EVENT_ID = ticketEvent.TICKET_EVENT_ID   " +
+            "                                     and rootDetail.EVENT_ID = ticketEvent.EVENT_ID   " +
+            "                                          inner join EVENT event on rootDetail.EVENT_ID = event.EVENT_ID   " +
+            "                                          left join (select * from CONFIG_EMAIL configEmail where configEmail.IS_USED = 1) configEmail   " +
+            "                                                    on rootDetail.PROVIDER_ID = configEmail.PROVIDER_ID   " +
+            "                             )   " +
+            "                        select *   " +
+            "                        from ROOT_RESULT";
 
     private static String SQL_updateStatusMailRequestByIds = "UPDATE MAIL_REQUEST mailRequest " +
             " SET mailRequest.STATUS = :status" +
