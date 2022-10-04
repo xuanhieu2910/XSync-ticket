@@ -7,9 +7,4 @@ import java.util.List;
 public interface EventRequestRepositoryDetailCustom {
 
     List<EventRequestDetail> getAllEventRequestDetailCustom();
-
-    List<EventRequestDetail> getAllEventRequestByIdEventRequest(Integer eventRequestId);
-
-    List<EventRequestDetail> getAllEventRequestByIdEventRequestAndStatus(Integer eventRequestId, Integer status);
-
 }
