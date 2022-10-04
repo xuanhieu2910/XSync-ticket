@@ -52,7 +52,7 @@ public class HandleTicketService {
      * Method to get data from DB EVENT_REQUEST -> push queue to handle process other
      */
     @Synchronized
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 3000)
     public void getEventRequestsLoop() {
         try {
             List<EventRequest> eventRequestList = eventRequestService.getEventRequestList();
@@ -73,7 +73,7 @@ public class HandleTicketService {
      * Method to handle from queue -> Set value -> Insert value to db EVENT_REQUEST_DETAIL
      */
     @Synchronized
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRate = 1000)
     public void insertCacheEventRequestDetail() {
         if (!queueEventRequest.isEmpty()) {
             EventRequest eventRequest = queueEventRequest.poll();
@@ -109,7 +109,7 @@ public class HandleTicketService {
      * Method to get event request detail -> set value -> push queue to handle process other
      */
     @Synchronized
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 2000)
     public void getEventRequestDetailLoop() {
         try {
             // Get n object
@@ -188,7 +188,7 @@ public class HandleTicketService {
                 }
             }
 
-            if (detail.getRetry().intValue() == DbConstant.MAX_RETRY) {
+            if (detail.getRetry().equals(DbConstant.MAX_RETRY)) {
                 // Delete in ticket request detail
                 eventRequestDetailService.deleteEventRequestDetail(detail);
 
@@ -198,7 +198,7 @@ public class HandleTicketService {
                 // Insert into ticket
                 ticketService.saveTicket(createTicket(detail, pathQr, DbConstant.TICKET_FALSE, nameTicket));
             }
-            Thread.sleep(300);
+//            Thread.sleep(300);
         }
     }
 
