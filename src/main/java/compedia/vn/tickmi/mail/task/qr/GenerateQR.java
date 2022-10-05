@@ -7,6 +7,7 @@ import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
 import compedia.vn.tickmi.mail.utils.DbConstant;
+import compedia.vn.tickmi.mail.utils.GenerateUtils;
 import compedia.vn.tickmi.mail.utils.PropertiesUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -39,8 +40,8 @@ public class GenerateQR {
         if (!file.exists() && !file.mkdirs()) {
             log.error("Can't create folder");
         } else {
-            filePathQrGen = filePathQrGen + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + "." + DbConstant.EXTENSION_GENERATE_QR[0];
-            filePathOutPut = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+            filePathQrGen = filePathQrGen + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + GenerateUtils.generateCodeTicket() +"." + DbConstant.EXTENSION_GENERATE_QR[0];
+            filePathOutPut = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + GenerateUtils.generateCodeTicket() + "." + DbConstant.EXTENSION_GENERATE_QR[0];
             log.debug("Create file success");
         }
         handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket,eventId);
