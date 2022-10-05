@@ -9,11 +9,11 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>compedia.vn</groupId>
-    <artifactId>tickmi_mail</artifactId>
+    <artifactId>gen_ticket</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>tickmi_mail</name>
-    <description>Mail Tickmi</description>
+    <name>gen_ticket_1.0</name>
+    <description>Gen Ticket</description>
     <properties>
         <java.version>1.8</java.version>
     </properties>

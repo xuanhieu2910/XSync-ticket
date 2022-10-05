@@ -36,12 +36,13 @@ public class GenerateQR {
         String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
         String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
         String filePathQrGen = root + File.separator + todayFolder + File.separator + eventId;
+        String randomString = GenerateUtils.generateCodeTicket();
         File file = new File(filePathQrGen);
         if (!file.exists() && !file.mkdirs()) {
             log.error("Can't create folder");
         } else {
-            filePathQrGen = filePathQrGen + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + GenerateUtils.generateCodeTicket() +"." + DbConstant.EXTENSION_GENERATE_QR[0];
-            filePathOutPut = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + GenerateUtils.generateCodeTicket() + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+            filePathQrGen = filePathQrGen + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + randomString +"." + DbConstant.EXTENSION_GENERATE_QR[0];
+            filePathOutPut = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
             log.debug("Create file success");
         }
         handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket,eventId);
