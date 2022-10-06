@@ -8,6 +8,7 @@ import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.GenerateUtils;
+import compedia.vn.tickmi.mail.utils.PropertiesUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -28,12 +29,12 @@ public class GenerateQR {
 
     private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("DDMMYYYY");
 
-
-    @Value("${vn.cpa.static.location.upload.gen_qr}")
-    private static String root;
-
-    @Value("${vn.cpa.static.location.export.qr}")
-    private static String filePathOutPut;
+//
+//    @Value("${vn.cpa.static.location.upload.gen_qr}")
+//    private static String root;
+//
+//    @Value("${vn.cpa.static.location.export.qr}")
+//    private static String filePathOutPut;
 
     private static String pathReturn;
 
@@ -41,6 +42,9 @@ public class GenerateQR {
 
     public static String handlerGeneratePathQR(String ticketEventCode, Integer eventId, Integer tickEventId,
                                                Integer objectId, Integer type, Integer countTicket, String nameTicket) {
+
+        String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
+        String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
         String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
         log.info("root: " + root + "- file path out put:" + filePathOutPut);
         String filePathQrGen = root + File.separator + todayFolder + File.separator + eventId;
