@@ -9,12 +9,15 @@ import compedia.vn.tickmi.mail.service.EventRequestDetailService;
 import compedia.vn.tickmi.mail.service.EventRequestService;
 import compedia.vn.tickmi.mail.service.MailRequestService;
 import compedia.vn.tickmi.mail.service.TicketService;
+import compedia.vn.tickmi.mail.task.CreateEventRequestDetail;
+import compedia.vn.tickmi.mail.task.GenerateQREventRequestDetail;
 import compedia.vn.tickmi.mail.task.qr.GenerateQR;
 import compedia.vn.tickmi.mail.utils.DbConstant;
-import compedia.vn.tickmi.mail.utils.GenerateUtils;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,12 +25,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Date;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 @EnableScheduling
 @Log4j2
 @EnableAsync
+@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class HandleTicketService {
 
     @Autowired
@@ -47,7 +56,7 @@ public class HandleTicketService {
 
     private static final Queue<EventRequest> queueEventRequest = new ArrayDeque<>();
     private static final Queue<EventRequestDetail> queueEventRequestDetails = new ArrayDeque<>();
-
+    private static final ExecutorService executor = Executors.newFixedThreadPool(50);
     /**
      * Method to get data from DB EVENT_REQUEST -> push queue to handle process other
      */
@@ -68,48 +77,25 @@ public class HandleTicketService {
         }
     }
 
-
     /**
      * Method to handle from queue -> Set value -> Insert value to db EVENT_REQUEST_DETAIL
      */
     @Synchronized
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 2000)
     public void insertCacheEventRequestDetail() {
         if (!queueEventRequest.isEmpty()) {
             EventRequest eventRequest = queueEventRequest.poll();
-            List<EventRequestDetail> details = new ArrayList<>();
-            try {
-                for (int i = 1; i <= eventRequest.getQuantity(); i++) {
-                    EventRequestDetail dto = new EventRequestDetail();
-                    dto.setIndexTicket(i);
-                    dto.setCodeTicket(GenerateUtils.generateCodeTicket());
-                    dto.setStatus(DbConstant.STATUS_NEW_EVENT_REQUEST_DETAIL);
-                    dto.setRetry(DbConstant.INIT_RETRY);
-                    dto.setEventId(eventRequest.getEventId());
-                    dto.setTicketEventId(eventRequest.getTicketEventId());
-                    dto.setProviderId(eventRequest.getProviderId());
-                    dto.setObjectId(eventRequest.getObjectId());
-                    dto.setType(eventRequest.getType());
-                    dto.setEventRequestId(eventRequest.getId());
-                    dto.setNameGuest(eventRequest.getNameGuest());
-                    dto.setPhoneGuest(eventRequest.getPhoneGuest());
-                    dto.setEmailGuest(eventRequest.getEmailGuest());
-                    details.add(dto);
-                }
-                eventRequestDetailService.saveEventRequestDetails(details);
-                log.info("INSERT EVENT REQUEST DETAIL DB =>>>  Push event request detail success!");
-            } catch (Exception e) {
-                log.error("Error to insert cache event request detail", e);
+            for (int i = 0; i < 1; i++) {
+                Runnable worker = new CreateEventRequestDetail(eventRequest,eventRequestDetailService);
+                executor.execute(worker);
             }
         }
     }
-
-
     /***
      * Method to get event request detail -> set value -> push queue to handle process other
      */
     @Synchronized
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRate = 1000)
     public void getEventRequestDetailLoop() {
         try {
             // Get n object
@@ -128,117 +114,24 @@ public class HandleTicketService {
         }
     }
 
-
     /**
      * Handle to get data from event_request_detail -> process -> generate path QR
      */
     @Synchronized
-    @Scheduled(fixedRate = 1000)
-    public void generateQRPathImage() throws InterruptedException {
+    @Scheduled(fixedRate = 50)
+    public void generateQRPathImage(){
         if (!queueEventRequestDetails.isEmpty()) {
             EventRequestDetail detail = queueEventRequestDetails.poll();
-            detail.setRetry(0);
-
-            // Update ticket generic
-            EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
-            if (null == eventRequest) {
+            if ( null == detail) {
                 return;
             }
-
-            int quantity = eventRequest.getQuantity();
-            Integer eventRequestId = eventRequest.getId();
-            log.info("Event request id:" + eventRequestId);
-
-            String pathQr = null;
-            String nameTicket = "EV_" + detail.getObjectId() + detail.getType() + detail.getIndexTicket();
-
-            while (detail.getRetry().intValue() < DbConstant.MAX_RETRY) {
-                try {
-                    pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), detail.getTicketEventId(),
-                            detail.getObjectId(), detail.getType(), detail.getIndexTicket(), nameTicket);
-
-                    // Success and remove in event detail
-                    eventRequestDetailService.deleteEventRequestDetail(detail);
-
-                    // Insert to ticket
-                    Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN, nameTicket);
-                    log.info("Save ticket service success!" + ticket.toString());
-                    ticketService.saveTicket(ticket);
-
-                    log.info("Create ticket and increase amount!");
-                    int quantityGen = eventRequest.getTicketGeneration() + 1;
-                    eventRequest.setTicketGeneration(quantityGen);
-
-                    if (quantity == quantityGen) {
-                        log.info("Save mail request success!");
-                        mailRequestService.saveMailRoot(createMailRequest(eventRequest));
-
-                        log.info("Delete event request success id: " + eventRequestId);
-                        eventRequestService.deleteEventRequestById(eventRequestId);
-                        log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
-                    } else {
-                        log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
-                        eventRequestService.updateEventRequest(eventRequest);
-                    }
-                    break;
-                } catch (Exception e) {
-                    int retryBefore = detail.getRetry() + 1;
-                    detail.setRetry(retryBefore);
-                    log.error(e.getMessage(), e);
-                }
-            }
-
-            if (detail.getRetry().equals(DbConstant.MAX_RETRY)) {
-                // Delete in ticket request detail
-                eventRequestDetailService.deleteEventRequestDetail(detail);
-
-                // Delete event request
-                eventRequestService.deleteEventRequestById(eventRequestId);
-
-                // Insert into ticket
-                ticketService.saveTicket(createTicket(detail, pathQr, DbConstant.TICKET_FALSE, nameTicket));
-            }
-//            Thread.sleep(300);
+            // Success and remove in event detail
+            Integer id = detail.getId();
+            log.info("Id event request detail: " + id);
+             eventRequestDetailService.deleteEventRequestDetail(id);
+            log.info("Delete event request detail success id: {}",id);
+             Runnable worker = new GenerateQREventRequestDetail(detail,eventRequestService,eventRequestDetailService, mailRequestService,ticketService);
+             executor.execute(worker);
         }
-    }
-
-    private Ticket createTicket(EventRequestDetail detail, String pathQR, Integer status, String nameTicket) {
-        Ticket ticket = new Ticket();
-        ticket.setProviderId(detail.getProviderId());
-        ticket.setTicketEventId(detail.getTicketEventId());
-        ticket.setEventId(detail.getEventId());
-        ticket.setPathQr(pathQR);
-        Date now = new Date();
-        ticket.setTimeGenerate(new Timestamp(now.getTime()));
-        ticket.setModifiedTime(new Timestamp(now.getTime()));
-        ticket.setIndexQr(detail.getIndexTicket());
-        ticket.setTicketCode(detail.getCodeTicket());
-        ticket.setStatus(status);
-        ticket.setObjectId(detail.getObjectId());
-        ticket.setType(detail.getType());
-        ticket.setNameGuest(detail.getNameGuest());
-        ticket.setPhoneGuest(detail.getPhoneGuest());
-        ticket.setEmailGuest(detail.getEmailGuest());
-        ticket.setNameTicket(nameTicket);
-        return ticket;
-    }
-
-    private MailRequest createMailRequest(EventRequest eventRequest) {
-        MailRequest mailRequest = new MailRequest();
-        mailRequest.setObjectId(eventRequest.getObjectId());
-        mailRequest.setStatus(DbConstant.MAIL_ROOT_STATUS_NEW);
-        mailRequest.setRetry(DbConstant.INIT_RETRY);
-        Date now = new Date();
-        mailRequest.setCreateTime(new Timestamp(now.getTime()));
-        mailRequest.setModifiedTime(new Timestamp(now.getTime()));
-        mailRequest.setProviderId(eventRequest.getProviderId());
-        mailRequest.setType(eventRequest.getType());
-        mailRequest.setEventId(eventRequest.getEventId());
-        mailRequest.setTicketEventId(eventRequest.getTicketEventId());
-        mailRequest.setNameGuest(eventRequest.getNameGuest());
-        mailRequest.setPhoneGuest(eventRequest.getPhoneGuest());
-        mailRequest.setEmailGuest(eventRequest.getEmailGuest());
-        mailRequest.setQuantity(eventRequest.getQuantity());
-        return mailRequest;
     }
 }

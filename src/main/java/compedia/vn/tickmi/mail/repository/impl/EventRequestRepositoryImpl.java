@@ -5,6 +5,7 @@ import compedia.vn.tickmi.mail.repository.EventRequestRepositoryCustom;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.ValueUtil;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityManager;
@@ -74,6 +75,19 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
         }
         return Optional.empty();
     }
+
+    @Transactional
+    @Override
+    public void autoUpdateQuantityGenById(Integer id) {
+        Query query = entityManager.createNativeQuery(SQL_updateTicketGen);
+        query.setParameter("id",id);
+        query.executeUpdate();
+    }
+
+    private static String SQL_updateTicketGen = "update EVENT_REQUEST request  " +
+            " set request.TICKET_GEN = request.TICKET_GEN + 1 " +
+            " where request.ID_EVENT_REQUEST = :id ";
+
 
     private static String SQL_getEventRequestByStatus = "select ID_EVENT_REQUEST," +
             "       STATUS, " +

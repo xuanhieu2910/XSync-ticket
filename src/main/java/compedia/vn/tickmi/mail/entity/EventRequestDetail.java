@@ -58,4 +58,24 @@ public class EventRequestDetail {
     @Column(name = "EMAIL_GUEST")
     private String emailGuest;
 
+
+    @Override
+    public String toString() {
+        return "EventRequestDetail{" +
+                "id=" + id +
+                ", indexTicket=" + indexTicket +
+                ", codeTicket='" + codeTicket + '\'' +
+                ", status=" + status +
+                ", retry=" + retry +
+                ", eventId=" + eventId +
+                ", ticketEventId=" + ticketEventId +
+                ", providerId=" + providerId +
+                ", objectId=" + objectId +
+                ", type=" + type +
+                ", eventRequestId=" + eventRequestId +
+                ", nameGuest='" + nameGuest + '\'' +
+                ", phoneGuest='" + phoneGuest + '\'' +
+                ", emailGuest='" + emailGuest + '\'' +
+                '}';
+    }
 }

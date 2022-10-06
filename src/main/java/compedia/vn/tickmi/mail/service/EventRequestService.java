@@ -30,8 +30,8 @@ public class EventRequestService {
         return eventRequestRepository.findEventRequestByIdEventRequest(id);
     }
 
-    public void updateEventRequest(EventRequest eventRequest) {
-        eventRequestRepository.save(eventRequest);
+    public void updateEventRequestByIdEventRequestDetail(Integer idEventRequestDetail) {
+        eventRequestRepository.autoUpdateQuantityGenById(idEventRequestDetail);
     }
 
     public void deleteEventRequest(EventRequest eventRequest) {

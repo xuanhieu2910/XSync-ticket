@@ -5,8 +5,11 @@ import compedia.vn.tickmi.mail.repository.EventRequestRepositoryDetailCustom;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.ValueUtil;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -49,6 +52,18 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
         return response;
     }
 
+
+    @Transactional
+    @Modifying
+    @Override
+    public void deleteByIdCustom(Integer id) {
+        Query query = entityManager.createNativeQuery(SQL_DeleteEventRequestDetailById);
+        query.setParameter("id",id);
+        query.executeUpdate();
+    }
+
+
+    private static String SQL_DeleteEventRequestDetailById = " DELETE EVENT_REQUEST_DETAILS detail WHERE detail.ID_REQUEST_DETAILS = :id ";
 
 
     private static String SQL_GetAllEventRequestDetailCustom = "SELECT ID_REQUEST_DETAILS,INDEX_TICKET," +

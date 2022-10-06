@@ -16,11 +16,8 @@ public class FilesUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(FilesUtils.class);
 
-    public static String pathReturn = "";
     public final static String EXT_PDF = "pdf";
     private static final String SEPARATOR = "/";
-    public static final String FOLDER_NAME_EXPORT = "export";
-    private static final String FOLDER_NAME_PARENT = "resources";
     private static final String FOLDER_NAME_IMAGE = "upload_image";
     private static final String FOLDER_NAME_FILE = "upload_file";
     public final static String EXT_OFFICE = "xls,xlsx,doc,docx,ppt";
@@ -119,9 +116,6 @@ public class FilesUtils {
         return null;
     }
 
-    public static String getFilePathFromDatabase(String databaseFilePath) {
-        return SEPARATOR + FOLDER_NAME_PARENT + SEPARATOR + databaseFilePath;
-    }
 
     // Get only file name
     public static String getFilenameFromFilePath(String databaseFilePath) {
@@ -151,33 +145,8 @@ public class FilesUtils {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
 
-    public static boolean isPdfFileExt(String fileName) {
-        return StringUtils.equalsIgnoreCase(getFileExtFromFileName(fileName), EXT_PDF);
-    }
-
-    public static boolean isOfficeFileExt(String fileName) {
-        return StringUtils.contains(EXT_OFFICE, getFileExtFromFileName(fileName).toLowerCase());
-    }
-
     public static boolean isAcceptFileTypeAudio(String fileName) {
         return isAcceptFileType(fileName, PropertiesUtil.getProperty("accept_file_audio_must_convert"));
-    }
-
-    public static boolean isAcceptFileTypeVideo(String fileName) {
-        return isAcceptFileType(fileName, PropertiesUtil.getProperty("accept_file_types_video"));
-    }
-
-    public static boolean isAcceptFileType(String fileName) {
-        return isAcceptFileType(fileName, PropertiesUtil.getProperty("accept_file_types"));
-    }
-
-    public static boolean isAcceptAudioFileType(String fileName) {
-        return isAcceptFileType(fileName, PropertiesUtil.getProperty("accept_file_types_audio"));
-    }
-
-
-    public static boolean isAcceptFileTypeImage(String fileName) {
-        return isAcceptFileType(fileName, PropertiesUtil.getProperty("accept_image_file_types"));
     }
 
     public static boolean isAcceptFileType(String fileName, String acceptTypes) {
@@ -188,63 +157,5 @@ public class FilesUtils {
         return fileTypeList.contains(getFileExtFromFileName(fileName).toLowerCase());
     }
 
-    // PDF
-    public static boolean isAcceptFilePDFType(String fileName) {
-        String fileTypeString = getAcceptFilePDFString();
-        if (StringUtils.isBlank(fileTypeString) || StringUtils.isBlank(fileName)) {
-            return false;
-        }
-        List<String> fileTypeList = Arrays.asList(fileTypeString.split(","));
-        return fileTypeList.contains(getFileExtFromFileName(fileName));
-    }
-
-    public static String getAcceptFilePDFString() {
-        return PropertiesUtil.getProperty("accept_file_types_pdf");
-    }
-
-    public static void deleteFileByListPath(List<String> fileList) {
-        for (String filePath : fileList) {
-            File file = new File(filePath);
-            if (file.exists()) {
-                boolean a = file.delete();
-                System.out.println(a);
-            }
-        }
-    }
-
-
-    // Create folder upload qr
-    public static String createFilePathQR(Integer eventId, Integer ticketEventId, Integer objectId, Integer type,
-                                          int index, String extension) {
-        String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
-        String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
-        String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
-        String filePathQrGen = root + File.separator + todayFolder + File.separator + eventId;
-        File file = new File(filePathQrGen);
-        if (!file.exists() && !file.mkdirs()) {
-            logger.error("Can't create folder");
-        } else {
-            filePathQrGen = filePathQrGen + File.separator + objectId + "_" + type + "_" + ticketEventId + "_" + index + "." + extension;
-            filePathOutPut = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + objectId + "_" + type + "_" + ticketEventId + "_" + index + "." + extension;
-            try {
-                FileOutputStream fileOutputStream = new FileOutputStream(filePathQrGen);
-                logger.debug("Create file success");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return filePathOutPut;
-    }
-
-    public static String getFolderInfo() {
-        StringBuilder builder = new StringBuilder();
-        builder.setLength(0);
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int day = cal.get(Calendar.DATE);
-        builder.append(year).append(month).append(day);
-        return builder.toString();
-    }
 
 }

@@ -8,8 +8,8 @@ import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.GenerateUtils;
-import compedia.vn.tickmi.mail.utils.PropertiesUtil;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -28,13 +28,21 @@ public class GenerateQR {
 
     private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("DDMMYYYY");
 
+
+    @Value("${vn.cpa.static.location.upload.gen_qr}")
+    private static String root;
+
+    @Value("${vn.cpa.static.location.export.qr}")
+    private static String filePathOutPut;
+
+    private static String pathReturn;
+
+
+
     public static String handlerGeneratePathQR(String ticketEventCode, Integer eventId, Integer tickEventId,
                                                Integer objectId, Integer type, Integer countTicket, String nameTicket) {
-
-
-        String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
         String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
-        String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
+        log.info("root: " + root + "- file path out put:" + filePathOutPut);
         String filePathQrGen = root + File.separator + todayFolder + File.separator + eventId;
         String randomString = GenerateUtils.generateCodeTicket();
         File file = new File(filePathQrGen);
@@ -42,22 +50,23 @@ public class GenerateQR {
             log.error("Can't create folder");
         } else {
             filePathQrGen = filePathQrGen + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + randomString +"." + DbConstant.EXTENSION_GENERATE_QR[0];
-            filePathOutPut = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+            pathReturn = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
             log.debug("Create file success");
         }
-        handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket,eventId);
-        return filePathOutPut;
+        handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket);
+        return pathReturn;
     }
+
 
     /**
      * @param pathQR This have been generate from method handlerGeneratePathQR(params...)
      */
-    public static void handleImageGenerateQR(String pathQR, String codeTicketEvent, String guestName,Integer eventId) {
+    public static void handleImageGenerateQR(String pathQR, String codeTicketEvent, String guestName) {
         try {
             log.info("---------------------------- GENERATE QR ----------------------");
             Map<EncodeHintType, Object> encodeHintTypeObjectMap = new HashMap<>();
             encodeHintTypeObjectMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-            QRCode code = Encoder.encode(codeTicketEvent + "\\" + eventId, ErrorCorrectionLevel.H, encodeHintTypeObjectMap);
+            QRCode code = Encoder.encode(codeTicketEvent, ErrorCorrectionLevel.H, encodeHintTypeObjectMap);
             BufferedImage image = renderQRImage(code, DbConstant.WIDTH_QR, DbConstant.HEIGHT_QR, DbConstant.PADDING_QR, guestName);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(image, DbConstant.EXTENSION_GENERATE_QR[0], baos);

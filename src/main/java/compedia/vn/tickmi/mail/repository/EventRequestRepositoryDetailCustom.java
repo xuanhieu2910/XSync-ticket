@@ -7,4 +7,6 @@ import java.util.List;
 public interface EventRequestRepositoryDetailCustom {
 
     List<EventRequestDetail> getAllEventRequestDetailCustom();
+
+    void deleteByIdCustom(Integer id);
 }

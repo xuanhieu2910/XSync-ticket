@@ -11,4 +11,6 @@ public interface EventRequestRepositoryCustom {
 
     Optional<EventRequest> findEventRequestByIdEventRequest(Integer id);
 
+    void autoUpdateQuantityGenById (Integer id);
+
 }

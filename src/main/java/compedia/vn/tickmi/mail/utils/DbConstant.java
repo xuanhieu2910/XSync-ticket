@@ -6,7 +6,7 @@ public class DbConstant {
     public final static Integer INIT_RETRY = 0;
 
     // Limit size to query db get value
-    public static final Integer SIZE_LIMIT = 10;
+    public static final Integer SIZE_LIMIT = 20;
 
     // Extension qr
     public static final String[] EXTENSION_GENERATE_QR = {"png", "img", "jpg"};
