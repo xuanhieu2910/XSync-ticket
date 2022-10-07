@@ -53,8 +53,8 @@ public class GenerateQR {
         if (!file.exists() && !file.mkdirs()) {
             log.error("Can't create folder");
         } else {
-            filePathQrGen = filePathQrGen + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + randomString +"." + DbConstant.EXTENSION_GENERATE_QR[0];
-            pathReturn = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + objectId + "_" + type + "_" + tickEventId + "_" + countTicket + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+            filePathQrGen = filePathQrGen + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+            pathReturn = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
             log.debug("Create file success");
         }
         handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket);
