@@ -61,21 +61,6 @@ public class GenerateQREventRequestDetail implements Runnable{
                 ticketService.saveTicket(ticket);
                 log.info("Save ticket service success id {}",ticket.getTicketId());
                 log.info("Create ticket and increase amount!");
-//                int quantityGen = eventRequest.getTicketGeneration() + 1;
-//                eventRequest.setTicketGeneration(quantityGen);
-//                log.info("Quantity Gen {}",quantityGen);
-//                if (quantity == quantityGen) {
-//                    log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
-//                    mailRequestService.saveMailRoot(createMailRequest(eventRequest));
-//                    log.info("Save mail request success!");
-//                    eventRequestService.deleteEventRequestById(eventRequestId);
-//                    log.info("Delete event request success id: " + eventRequestId);
-//                } else {
-//                    eventRequestService.updateEventRequest(eventRequest);
-//                    log.info("Update event request quantity gen : {}", quantityGen);
-//                }
-
-//                EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
                 eventRequestService.updateEventRequestByIdEventRequestDetail(detail.getEventRequestId());
 
                 EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
@@ -100,7 +85,6 @@ public class GenerateQREventRequestDetail implements Runnable{
         }
         if (detail.getRetry().equals(DbConstant.MAX_RETRY)) {
             // Delete event request
-            log.info("======================================= :  :  ======================================");
             eventRequestService.deleteEventRequestById(detail.getEventRequestId());
             // Insert into ticket
             ticketService.saveTicket(createTicket(detail, pathQr, DbConstant.TICKET_FALSE, nameTicket));
