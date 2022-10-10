@@ -29,13 +29,6 @@ public class GenerateQR {
 
     private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("DDMMYYYY");
 
-//
-//    @Value("${vn.cpa.static.location.upload.gen_qr}")
-//    private static String root;
-//
-//    @Value("${vn.cpa.static.location.export.qr}")
-//    private static String filePathOutPut;
-
     private static String pathReturn;
 
 
@@ -49,12 +42,14 @@ public class GenerateQR {
         log.info("root: " + root + "- file path out put:" + filePathOutPut);
         String filePathQrGen = root + File.separator + todayFolder + File.separator + eventId;
         String randomString = GenerateUtils.generateCodeTicket();
+        log.info("RANDOM_STRING:" + randomString);
         File file = new File(filePathQrGen);
         if (!file.exists() && !file.mkdirs()) {
             log.error("Can't create folder");
         } else {
             filePathQrGen = filePathQrGen + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
             pathReturn = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+            log.info("PATH_RETURN : " + pathReturn);
             log.debug("Create file success");
         }
         handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket);
