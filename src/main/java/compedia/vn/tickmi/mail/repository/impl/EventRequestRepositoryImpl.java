@@ -5,6 +5,7 @@ import compedia.vn.tickmi.mail.repository.EventRequestRepositoryCustom;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.ValueUtil;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -83,6 +84,19 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
         query.setParameter("id",id);
         query.executeUpdate();
     }
+
+    @Modifying
+    @Transactional
+    @Override
+    public void deleteByIdCustom(Integer id) {
+        Query query = entityManager.createNativeQuery(SQL_deleteEventRequest);
+        query.setParameter("id",id);
+        query.executeUpdate();
+    }
+
+
+    private static String SQL_deleteEventRequest = " DELETE EVENT_REQUEST request WHERE request.ID_EVENT_REQUEST = :id ";
+
 
     private static String SQL_updateTicketGen = "update EVENT_REQUEST request  " +
             " set request.TICKET_GEN = request.TICKET_GEN + 1 " +

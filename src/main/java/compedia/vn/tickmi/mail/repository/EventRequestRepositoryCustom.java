@@ -13,4 +13,5 @@ public interface EventRequestRepositoryCustom {
 
     void autoUpdateQuantityGenById (Integer id);
 
+    void deleteByIdCustom(Integer id);
 }

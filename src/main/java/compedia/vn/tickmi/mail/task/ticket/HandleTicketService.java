@@ -2,8 +2,6 @@ package compedia.vn.tickmi.mail.task.ticket;
 
 import compedia.vn.tickmi.mail.entity.EventRequest;
 import compedia.vn.tickmi.mail.entity.EventRequestDetail;
-import compedia.vn.tickmi.mail.entity.MailRequest;
-import compedia.vn.tickmi.mail.entity.Ticket;
 import compedia.vn.tickmi.mail.repository.ProviderRepository;
 import compedia.vn.tickmi.mail.service.EventRequestDetailService;
 import compedia.vn.tickmi.mail.service.EventRequestService;
@@ -11,7 +9,6 @@ import compedia.vn.tickmi.mail.service.MailRequestService;
 import compedia.vn.tickmi.mail.service.TicketService;
 import compedia.vn.tickmi.mail.task.CreateEventRequestDetail;
 import compedia.vn.tickmi.mail.task.GenerateQREventRequestDetail;
-import compedia.vn.tickmi.mail.task.qr.GenerateQR;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
@@ -24,9 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.sql.Timestamp;
 import java.util.ArrayDeque;
-import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
