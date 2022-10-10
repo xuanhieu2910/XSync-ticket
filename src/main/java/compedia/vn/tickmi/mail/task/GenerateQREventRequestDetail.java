@@ -40,13 +40,6 @@ public class GenerateQREventRequestDetail implements Runnable{
     @Override
     public void run() {
         detail.setRetry(0);
-        // Update ticket generic
-//        EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
-//        if (null == eventRequest) {
-//            return;
-//        }
-//        int quantity = eventRequest.getQuantity();
-//        Integer eventRequestId = eventRequest.getId();
         Integer eventRequestDetailId = detail.getId();
         log.info(" Event request detail id : " + eventRequestDetailId);
         String pathQr = null;
@@ -64,6 +57,9 @@ public class GenerateQREventRequestDetail implements Runnable{
                 eventRequestService.updateEventRequestByIdEventRequestDetail(detail.getEventRequestId());
 
                 EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
+                if (null == eventRequest) {
+                    return;
+                }
                 if (eventRequest != null) {
                     log.info("Update event request quantity gen : {}", eventRequest.getTicketGeneration());
                     if (eventRequest.getQuantity().equals(eventRequest.getTicketGeneration())) {
