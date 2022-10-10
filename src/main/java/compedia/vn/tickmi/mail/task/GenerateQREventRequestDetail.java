@@ -24,12 +24,9 @@ public class GenerateQREventRequestDetail implements Runnable{
     private EventRequestDetailService eventRequestDetailService;
     private MailRequestService mailRequestService;
     private TicketService ticketService;
-
-    static int i = 0;
     public GenerateQREventRequestDetail(EventRequestDetail detail, EventRequestService eventRequestService,
                                          EventRequestDetailService eventRequestDetailService, MailRequestService mailRequestService,
                                          TicketService ticketService) {
-        log.info("------------->>>>>>>> {}", ++i);
         this.detail = detail;
         this.eventRequestService = eventRequestService;
         this.eventRequestDetailService = eventRequestDetailService;
@@ -46,9 +43,7 @@ public class GenerateQREventRequestDetail implements Runnable{
         String nameTicket = "EV_" + detail.getObjectId() + detail.getType() + detail.getIndexTicket();
         while (detail.getRetry() < DbConstant.MAX_RETRY) {
             try {
-                pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), detail.getTicketEventId(),
-                        detail.getObjectId(), detail.getType(), detail.getIndexTicket(), nameTicket);
-
+                pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), nameTicket);
                 // Insert to ticket
                 Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN, nameTicket);
                 ticketService.saveTicket(ticket);

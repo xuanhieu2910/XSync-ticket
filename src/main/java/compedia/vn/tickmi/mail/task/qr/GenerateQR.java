@@ -29,13 +29,10 @@ public class GenerateQR {
 
     private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("DDMMYYYY");
 
-    private static String pathReturn;
 
 
-
-    public static String handlerGeneratePathQR(String ticketEventCode, Integer eventId, Integer tickEventId,
-                                               Integer objectId, Integer type, Integer countTicket, String nameTicket) {
-
+    public static String handlerGeneratePathQR(String ticketEventCode, Integer eventId, String nameTicket) {
+        String pathQR = null;
         String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
         String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
         String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
@@ -48,12 +45,12 @@ public class GenerateQR {
             log.error("Can't create folder");
         } else {
             filePathQrGen = filePathQrGen + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
-            pathReturn = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
-            log.info("PATH_RETURN : " + pathReturn);
+            pathQR = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+            log.info("PATH_RETURN : " + pathQR);
             log.debug("Create file success");
         }
         handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket);
-        return pathReturn;
+        return pathQR;
     }
 
 
