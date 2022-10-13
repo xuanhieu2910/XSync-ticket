@@ -32,20 +32,20 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
         if (!CollectionUtils.isEmpty(result)) {
             for (Object[] obj : result) {
                 EventRequestDetail detail = new EventRequestDetail();
-                detail.setId(ValueUtil.getIntegerByObject(obj[0]));
+                detail.setId(ValueUtil.getLongByObject(obj[0]));
                 detail.setIndexTicket(ValueUtil.getIntegerByObject(obj[1]));
                 detail.setCodeTicket(ValueUtil.getStringByObject(obj[2]));
                 detail.setStatus(ValueUtil.getIntegerByObject(obj[3]));
                 detail.setRetry(ValueUtil.getIntegerByObject(obj[4]));
-                detail.setEventId(ValueUtil.getIntegerByObject(obj[5]));
-                detail.setTicketEventId(ValueUtil.getIntegerByObject(obj[6]));
+                detail.setEventId(ValueUtil.getLongByObject(obj[5]));
+                detail.setTicketEventId(ValueUtil.getLongByObject(obj[6]));
                 detail.setProviderId(ValueUtil.getIntegerByObject(obj[7]));
-                detail.setObjectId(ValueUtil.getIntegerByObject(obj[8]));
+                detail.setObjectId(ValueUtil.getLongByObject(obj[8]));
                 detail.setType(ValueUtil.getIntegerByObject(obj[9]));
                 detail.setNameGuest(ValueUtil.getStringByObject(obj[10]));
                 detail.setPhoneGuest(ValueUtil.getStringByObject(obj[11]));
                 detail.setEmailGuest(ValueUtil.getStringByObject(obj[12]));
-                detail.setEventRequestId(ValueUtil.getIntegerByObject(obj[13]));
+                detail.setEventRequestId(ValueUtil.getLongByObject(obj[13]));
                 response.add(detail);
             }
         }
@@ -56,7 +56,7 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
     @Transactional
     @Modifying
     @Override
-    public void deleteByIdCustom(Integer id) {
+    public void deleteByIdCustom(Long id) {
         Query query = entityManager.createNativeQuery(SQL_DeleteEventRequestDetailById);
         query.setParameter("id",id);
         query.executeUpdate();

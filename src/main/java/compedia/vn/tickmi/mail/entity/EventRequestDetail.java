@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 
 @Getter
@@ -16,8 +17,8 @@ public class EventRequestDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID_REQUEST_DETAILS")
-    private Integer id;
+    @Column(name = "ID_REQUEST_DETAILS", updatable = false, nullable = false)
+    private Long id;
 
     @Column(name = "INDEX_TICKET")
     private Integer indexTicket;
@@ -32,22 +33,22 @@ public class EventRequestDetail {
     private Integer retry;
 
     @Column(name = "EVENT_ID")
-    private Integer eventId;
+    private Long eventId;
 
     @Column(name = "TICKET_EVENT_ID")
-    private Integer ticketEventId;
+    private Long ticketEventId;
 
     @Column(name = "PROVIDER_ID")
     private Integer providerId;
 
     @Column(name = "OBJECT_ID")
-    private Integer objectId;
+    private Long objectId;
 
     @Column(name = "TYPE")
     private Integer type;
 
     @Column(name = "EVENT_REQUEST_ID")
-    private Integer eventRequestId;
+    private Long eventRequestId;
 
     @Column(name = "NAME_GUEST")
     private String nameGuest;
@@ -77,5 +78,13 @@ public class EventRequestDetail {
                 ", phoneGuest='" + phoneGuest + '\'' +
                 ", emailGuest='" + emailGuest + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EventRequestDetail that = (EventRequestDetail) o;
+        return Objects.equals(id, that.id);
     }
 }

@@ -33,7 +33,7 @@ public class MailDetailHis {
     private Integer status;
 
     @Column(name = "OBJECT_ID")
-    private Integer objectId;
+    private Long objectId;
 
     @Column(name = "TYPE")
     private Integer type;
@@ -42,10 +42,10 @@ public class MailDetailHis {
     private String subject;
 
     @Column(name = "TICKET_EVENT_ID")
-    private Integer ticketEventId;
+    private Long ticketEventId;
 
     @Column(name = "EVENT_ID")
-    private Integer eventId;
+    private Long eventId;
 
     @Column(name = "PROVIDER_ID")
     private Integer providerId;

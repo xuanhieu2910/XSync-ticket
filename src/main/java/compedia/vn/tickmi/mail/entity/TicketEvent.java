@@ -17,7 +17,7 @@ public class TicketEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "TICKET_EVENT_ID")
-    private Integer ticketEventId;
+    private Long ticketEventId;
 
     @Column(name = "CODE_TICKET_EVENT")
     private String codeTicketEvent;
@@ -26,7 +26,7 @@ public class TicketEvent {
     private String nameTicket;
 
     @Column(name = "EVENT_ID")
-    private Integer eventId;
+    private Long eventId;
 
     @Column(name = "TYPE_TICKET")
     private Integer typeTicket;
@@ -35,7 +35,7 @@ public class TicketEvent {
     private Double price;
 
     @Column(name = "TEMPLATE_TICKET_ID")
-    private Integer templateTicketId;
+    private Long templateTicketId;
 
     @Column(name = "QUANTITY")
     private Integer quantity;

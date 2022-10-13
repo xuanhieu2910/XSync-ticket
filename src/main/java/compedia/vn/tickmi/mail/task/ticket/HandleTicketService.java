@@ -1,5 +1,6 @@
 package compedia.vn.tickmi.mail.task.ticket;
 
+import com.antkorwin.xsync.XSync;
 import compedia.vn.tickmi.mail.entity.EventRequest;
 import compedia.vn.tickmi.mail.entity.EventRequestDetail;
 import compedia.vn.tickmi.mail.repository.ProviderRepository;
@@ -15,15 +16,18 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,7 +35,7 @@ import java.util.concurrent.Executors;
 @EnableScheduling
 @Log4j2
 @EnableAsync
-@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+//@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class HandleTicketService {
 
     @Autowired
@@ -49,15 +53,18 @@ public class HandleTicketService {
     @Autowired
     EventRequestDetailService eventRequestDetailService;
 
-    private static final Queue<EventRequest> queueEventRequest = new ArrayDeque<>();
-    private static final Queue<EventRequestDetail> queueEventRequestDetails = new ArrayDeque<>();
+    @Autowired
+    XSync<Long> xSync;
+
+    private static final Queue<EventRequest> queueEventRequest = new ConcurrentLinkedQueue<>();
+    private static final Queue<EventRequestDetail> queueEventRequestDetails = new ConcurrentLinkedQueue<>();
     private static final ExecutorService executor = Executors.newFixedThreadPool(50);
     /**
      * Method to get data from DB EVENT_REQUEST -> push queue to handle process other
      */
-    @Synchronized
+    @Async
     @Scheduled(fixedRate = 3000)
-    public void getEventRequestsLoop() {
+    public void getEventRequestsLoop() throws InterruptedException {
         try {
             List<EventRequest> eventRequestList = eventRequestService.getEventRequestList();
             if (!CollectionUtils.isEmpty(eventRequestList)) {
@@ -75,8 +82,7 @@ public class HandleTicketService {
     /**
      * Method to handle from queue -> Set value -> Insert value to db EVENT_REQUEST_DETAIL
      */
-    @Synchronized
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRate = 10)
     public void insertCacheEventRequestDetail() {
         if (!queueEventRequest.isEmpty()) {
             EventRequest eventRequest = queueEventRequest.poll();
@@ -89,8 +95,7 @@ public class HandleTicketService {
     /***
      * Method to get event request detail -> set value -> push queue to handle process other
      */
-    @Synchronized
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 3000)
     public void getEventRequestDetailLoop() {
         try {
             // Get n object
@@ -112,8 +117,7 @@ public class HandleTicketService {
     /**
      * Handle to get data from event_request_detail -> process -> generate path QR
      */
-    @Synchronized
-    @Scheduled(fixedRate = 50)
+    @Scheduled(fixedRate = 10)
     public void generateQRPathImage(){
         if (!queueEventRequestDetails.isEmpty()) {
             EventRequestDetail detail = queueEventRequestDetails.poll();
@@ -121,11 +125,9 @@ public class HandleTicketService {
                 return;
             }
             // Success and remove in event detail
-            Integer id = detail.getId();
+            Long id = detail.getId();
             log.info("Id event request detail: " + id);
-             eventRequestDetailService.deleteEventRequestDetail(id);
-            log.info("Delete event request detail success id: {}",id);
-             Runnable worker = new GenerateQREventRequestDetail(detail,eventRequestService,eventRequestDetailService, mailRequestService,ticketService);
+             Runnable worker = new GenerateQREventRequestDetail(detail,eventRequestService,eventRequestDetailService, mailRequestService,ticketService, xSync);
              executor.execute(worker);
         }
     }

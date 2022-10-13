@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ public class EventRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID_EVENT_REQUEST")
-    private Integer Id;
+    private Long Id;
 
     @Column(name = "STATUS")
     private Integer status;
@@ -23,13 +24,13 @@ public class EventRequest {
     private Integer quantity;
 
     @Column(name = "EVENT_ID")
-    private Integer eventId;
+    private Long eventId;
 
     @Column(name = "TICKET_EVENT_ID")
-    private Integer ticketEventId;
+    private Long ticketEventId;
 
     @Column(name = "OBJECT_ID")
-    private Integer objectId;
+    private Long objectId;
 
     @Column(name = "TYPE")
     private Integer type;
@@ -49,4 +50,29 @@ public class EventRequest {
     @Column(name = "EMAIL_GUEST")
     private String emailGuest;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EventRequest that = (EventRequest) o;
+        return Objects.equals(Id, that.Id);
+    }
+
+    @Override
+    public String toString() {
+        return "EventRequest{" +
+                "Id=" + Id +
+                ", status=" + status +
+                ", quantity=" + quantity +
+                ", eventId=" + eventId +
+                ", ticketEventId=" + ticketEventId +
+                ", objectId=" + objectId +
+                ", type=" + type +
+                ", providerId=" + providerId +
+                ", ticketGeneration=" + ticketGeneration +
+                ", nameGuest='" + nameGuest + '\'' +
+                ", phoneGuest='" + phoneGuest + '\'' +
+                ", emailGuest='" + emailGuest + '\'' +
+                '}';
+    }
 }

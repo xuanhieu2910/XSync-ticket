@@ -33,7 +33,7 @@ public class EventRequestDetailService {
         eventRequestRepositoryDetail.save(eventRequestDetail);
     }
 
-    public void deleteEventRequestDetail(Integer id) {
+    public void deleteEventRequestDetail(Long id) {
         logger.debug("Service start delete event request detail");
         eventRequestRepositoryDetail.deleteByIdCustom(id);
     }

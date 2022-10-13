@@ -15,10 +15,10 @@ public class MailRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private Integer id;
+    private Long id;
 
     @Column(name = "OBJECT_ID")
-    private Integer objectId;
+    private Long objectId;
 
     @Column(name = "TYPE")
     private Integer type;
@@ -39,10 +39,10 @@ public class MailRequest {
     private Integer providerId;
 
     @Column(name = "EVENT_ID")
-    private Integer eventId;
+    private Long eventId;
 
     @Column(name = "TICKET_EVENT_ID")
-    private Integer ticketEventId;
+    private Long ticketEventId;
 
     @Column(name = "NAME_GUEST")
     private String nameGuest;

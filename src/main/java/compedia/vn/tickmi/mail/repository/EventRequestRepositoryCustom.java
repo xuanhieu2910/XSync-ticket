@@ -9,9 +9,9 @@ public interface EventRequestRepositoryCustom {
 
     List<EventRequest> getEventRequestByStatus();
 
-    Optional<EventRequest> findEventRequestByIdEventRequest(Integer id);
+    Optional<EventRequest> findEventRequestByIdEventRequest(Long id);
 
-    void autoUpdateQuantityGenById (Integer id);
+    void autoUpdateQuantityGenById (Long id);
 
-    void deleteByIdCustom(Integer id);
+    void deleteByIdCustom(Long id);
 }

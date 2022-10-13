@@ -26,11 +26,11 @@ public class EventRequestService {
         return eventRequestRepository.saveAll(eventRequests);
     }
 
-    public Optional<EventRequest> findEventRequestById(Integer id) {
+    public Optional<EventRequest> findEventRequestById(Long id) {
         return eventRequestRepository.findEventRequestByIdEventRequest(id);
     }
 
-    public void updateEventRequestByIdEventRequestDetail(Integer idEventRequestDetail) {
+    public void updateEventRequestByIdEventRequestDetail(Long idEventRequestDetail) {
         eventRequestRepository.autoUpdateQuantityGenById(idEventRequestDetail);
     }
 
@@ -38,7 +38,7 @@ public class EventRequestService {
         eventRequestRepository.delete(eventRequest);
     }
 
-    public void deleteEventRequestById(Integer id) {
+    public void deleteEventRequestById(Long id) {
         eventRequestRepository.deleteByIdCustom(id);
     }
 

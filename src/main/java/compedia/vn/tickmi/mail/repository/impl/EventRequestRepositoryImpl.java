@@ -33,12 +33,12 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
         if (!CollectionUtils.isEmpty(result)) {
             for (Object[] obj : result) {
                 EventRequest dto = new EventRequest();
-                dto.setId(ValueUtil.getIntegerByObject(obj[0]));
+                dto.setId(ValueUtil.getLongByObject(obj[0]));
                 dto.setStatus(ValueUtil.getIntegerByObject(obj[1]));
                 dto.setQuantity(ValueUtil.getIntegerByObject(obj[2]));
-                dto.setEventId(ValueUtil.getIntegerByObject(obj[3]));
-                dto.setTicketEventId(ValueUtil.getIntegerByObject(obj[4]));
-                dto.setObjectId(ValueUtil.getIntegerByObject(obj[5]));
+                dto.setEventId(ValueUtil.getLongByObject(obj[3]));
+                dto.setTicketEventId(ValueUtil.getLongByObject(obj[4]));
+                dto.setObjectId(ValueUtil.getLongByObject(obj[5]));
                 dto.setType(ValueUtil.getIntegerByObject(obj[6]));
                 dto.setProviderId(ValueUtil.getIntegerByObject(obj[7]));
                 dto.setTicketGeneration(ValueUtil.getIntegerByObject(obj[8]));
@@ -52,7 +52,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
     }
 
     @Override
-    public Optional<EventRequest> findEventRequestByIdEventRequest(Integer id) {
+    public Optional<EventRequest> findEventRequestByIdEventRequest(Long id) {
         log.debug("Query start query find event request by id :" + id);
         Query query = entityManager.createNativeQuery(SQL_findEventRequestById);
         query.setParameter("id", id);
@@ -60,18 +60,18 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
         if (!CollectionUtils.isEmpty(result)) {
             Object[] obj = result.get(0);
             EventRequest dto = new EventRequest();
-            dto.setId(ValueUtil.getIntegerByObject(obj[0]));
+            dto.setId(ValueUtil.getLongByObject(obj[0]));
             dto.setStatus(ValueUtil.getIntegerByObject(obj[1]));
             dto.setQuantity(ValueUtil.getIntegerByObject(obj[2]));
-            dto.setEventId(ValueUtil.getIntegerByObject(obj[3]));
-            dto.setTicketEventId(ValueUtil.getIntegerByObject(obj[4]));
-            dto.setObjectId(ValueUtil.getIntegerByObject(obj[5]));
+            dto.setEventId(ValueUtil.getLongByObject(obj[3]));
+            dto.setTicketEventId(ValueUtil.getLongByObject(obj[4]));
+            dto.setObjectId(ValueUtil.getLongByObject(obj[5]));
             dto.setType(ValueUtil.getIntegerByObject(obj[6]));
             dto.setProviderId(ValueUtil.getIntegerByObject(obj[7]));
             dto.setTicketGeneration(ValueUtil.getIntegerByObject(obj[8]));
-            dto.setNameGuest(ValueUtil.getStringByObject(obj[9]) == null ? null : ValueUtil.getStringByObject(obj[9]));
-            dto.setPhoneGuest(ValueUtil.getStringByObject(obj[10]) == null ? null : ValueUtil.getStringByObject(obj[10]));
-            dto.setEmailGuest(ValueUtil.getStringByObject(obj[11]) == null ? null : ValueUtil.getStringByObject(obj[11]));
+            dto.setNameGuest(ValueUtil.getStringByObject(obj[9]));
+            dto.setPhoneGuest(ValueUtil.getStringByObject(obj[10]));
+            dto.setEmailGuest(ValueUtil.getStringByObject(obj[11]));
             return Optional.of(dto);
         }
         return Optional.empty();
@@ -79,7 +79,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
 
     @Transactional
     @Override
-    public void autoUpdateQuantityGenById(Integer id) {
+    public void autoUpdateQuantityGenById(Long id) {
         Query query = entityManager.createNativeQuery(SQL_updateTicketGen);
         query.setParameter("id",id);
         query.executeUpdate();
@@ -88,7 +88,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
     @Modifying
     @Transactional
     @Override
-    public void deleteByIdCustom(Integer id) {
+    public void deleteByIdCustom(Long id) {
         Query query = entityManager.createNativeQuery(SQL_deleteEventRequest);
         query.setParameter("id",id);
         query.executeUpdate();

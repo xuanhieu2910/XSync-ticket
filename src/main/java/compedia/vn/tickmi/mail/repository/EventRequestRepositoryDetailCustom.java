@@ -8,5 +8,5 @@ public interface EventRequestRepositoryDetailCustom {
 
     List<EventRequestDetail> getAllEventRequestDetailCustom();
 
-    void deleteByIdCustom(Integer id);
+    void deleteByIdCustom(Long id);
 }
