@@ -9,4 +9,6 @@ public interface EventRequestRepositoryDetailCustom {
     List<EventRequestDetail> getAllEventRequestDetailCustom();
 
     void deleteByIdCustom(Long id);
+
+    void updateWholeEventRequestDetail ();
 }

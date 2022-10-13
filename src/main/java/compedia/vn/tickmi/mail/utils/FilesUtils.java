@@ -24,6 +24,8 @@ public class FilesUtils {
     private static final String FOLDER_NAME_CREATE_IMAGE_TICKET = "upload_create_image";
     private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("DDMMYYYY");
 
+
+
     // Save file if success then return file path, else return null
     public static Map<String, String> saveFiles(MultipartFile[] uploadedFile) throws IOException {
         Map<String, String> outputList = new LinkedHashMap<>();

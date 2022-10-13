@@ -14,4 +14,6 @@ public interface EventRequestRepositoryCustom {
     void autoUpdateQuantityGenById (Long id);
 
     void deleteByIdCustom(Long id);
+
+    void updateWholeEventRequestToNew ();
 }

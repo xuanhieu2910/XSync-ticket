@@ -95,6 +95,19 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
     }
 
 
+    @Transactional
+    @Override
+    public void updateWholeEventRequestToNew() {
+        Query query = entityManager.createNativeQuery(updateEventRequest);
+        query.executeUpdate();
+    }
+
+
+    private static String updateEventRequest = "UPDATE EVENT_REQUEST eventRequest " +
+            "SET eventRequest.STATUS = -1 " +
+            "WHERE 1 = 1 AND eventRequest.STATUS = 1 ";
+
+
     private static String SQL_deleteEventRequest = " DELETE EVENT_REQUEST request WHERE request.ID_EVENT_REQUEST = :id ";
 
 

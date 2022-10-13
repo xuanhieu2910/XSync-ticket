@@ -2,6 +2,10 @@ package compedia.vn.tickmi.mail.utils;
 
 public class DbConstant {
 
+    // Flat to run job
+    public  static boolean IS_FLAT_RUN_JOB = false;
+
+
     // Retry
     public final static Integer INIT_RETRY = 0;
 

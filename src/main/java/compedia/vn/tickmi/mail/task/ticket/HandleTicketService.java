@@ -30,7 +30,6 @@ import java.util.concurrent.Executors;
 @EnableScheduling
 @Log4j2
 @EnableAsync
-//@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class HandleTicketService {
 
     @Autowired
@@ -60,17 +59,19 @@ public class HandleTicketService {
     @Async
     @Scheduled(fixedRate = 3000)
     public void getEventRequestsLoop() throws InterruptedException {
-        try {
-            List<EventRequest> eventRequestList = eventRequestService.getEventRequestList();
-            if (!CollectionUtils.isEmpty(eventRequestList)) {
-                // Update n object
-                eventRequestService.updateEventRequestByStatus(eventRequestList, DbConstant.STATUS_EVENT_REQUEST);
-                // Push n object to queue
-                queueEventRequest.addAll(eventRequestList);
-                log.info("EVENT_REQUEST =>>>> Push event request list success!");
+        if (DbConstant.IS_FLAT_RUN_JOB) {
+            try {
+                List<EventRequest> eventRequestList = eventRequestService.getEventRequestList();
+                if (!CollectionUtils.isEmpty(eventRequestList)) {
+                    // Update n object
+                    eventRequestService.updateEventRequestByStatus(eventRequestList, DbConstant.STATUS_EVENT_REQUEST);
+                    // Push n object to queue
+                    queueEventRequest.addAll(eventRequestList);
+                    log.info("EVENT_REQUEST =>>>> Push event request list success!");
+                }
+            } catch (Exception e) {
+                log.error("Error to get event request", e);
             }
-        } catch (Exception e) {
-            log.error("Error to get event request", e);
         }
     }
 
@@ -90,20 +91,22 @@ public class HandleTicketService {
      */
     @Scheduled(fixedRate = 3000)
     public void getEventRequestDetailLoop() {
-        try {
-            // Get n object
-            List<EventRequestDetail> eventRequestDetails = eventRequestDetailService.getAllEventRequestDetailLimit();
-            // update object
-            if (!CollectionUtils.isEmpty(eventRequestDetails)) {
-                // create event request details
-                eventRequestDetails.stream().forEach(x -> x.setStatus(DbConstant.STATUS_EVENT_REQUEST_DETAIL));
-                eventRequestDetailService.saveEventRequestDetails(eventRequestDetails);
-                // Insert queue
-                queueEventRequestDetails.addAll(eventRequestDetails);
-                log.info("Save to queue event request detail success!");
+        if (DbConstant.IS_FLAT_RUN_JOB) {
+            try {
+                // Get n object
+                List<EventRequestDetail> eventRequestDetails = eventRequestDetailService.getAllEventRequestDetailLimit();
+                // update object
+                if (!CollectionUtils.isEmpty(eventRequestDetails)) {
+                    // create event request details
+                    eventRequestDetails.stream().forEach(x -> x.setStatus(DbConstant.STATUS_EVENT_REQUEST_DETAIL));
+                    eventRequestDetailService.saveEventRequestDetails(eventRequestDetails);
+                    // Insert queue
+                    queueEventRequestDetails.addAll(eventRequestDetails);
+                    log.info("Save to queue event request detail success!");
+                }
+            } catch (Exception e) {
+                log.error("Error to get event request detail", e);
             }
-        } catch (Exception e) {
-            log.error("Error to get event request detail", e);
         }
     }
 

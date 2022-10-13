@@ -63,6 +63,17 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
     }
 
 
+    @Transactional
+    @Override
+    public void updateWholeEventRequestDetail() {
+        Query query = entityManager.createNativeQuery(updateEventRequestDetail);
+        query.executeUpdate();
+    }
+
+    private static String updateEventRequestDetail = " UPDATE EVENT_REQUEST_DETAILS eventRequestDetails " +
+            "SET eventRequestDetails.STATUS = -1 " +
+            " WHERE 1 = 1 AND eventRequestDetails.STATUS = 1 ";
+
     private static String SQL_DeleteEventRequestDetailById = " DELETE EVENT_REQUEST_DETAILS detail WHERE detail.ID_REQUEST_DETAILS = :id ";
 
 
