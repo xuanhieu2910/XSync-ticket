@@ -11,20 +11,15 @@ import compedia.vn.tickmi.mail.service.TicketService;
 import compedia.vn.tickmi.mail.task.CreateEventRequestDetail;
 import compedia.vn.tickmi.mail.task.GenerateQREventRequestDetail;
 import compedia.vn.tickmi.mail.utils.DbConstant;
-import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.context.annotation.ApplicationScope;
 
-import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -86,10 +81,8 @@ public class HandleTicketService {
     public void insertCacheEventRequestDetail() {
         if (!queueEventRequest.isEmpty()) {
             EventRequest eventRequest = queueEventRequest.poll();
-            for (int i = 0; i < 1; i++) {
-                Runnable worker = new CreateEventRequestDetail(eventRequest,eventRequestDetailService);
-                executor.execute(worker);
-            }
+            Runnable worker = new CreateEventRequestDetail(eventRequest, eventRequestDetailService);
+            executor.execute(worker);
         }
     }
     /***
@@ -124,9 +117,6 @@ public class HandleTicketService {
             if ( null == detail) {
                 return;
             }
-            // Success and remove in event detail
-            Long id = detail.getId();
-            log.info("Id event request detail: " + id);
              Runnable worker = new GenerateQREventRequestDetail(detail,eventRequestService,eventRequestDetailService, mailRequestService,ticketService, xSync);
              executor.execute(worker);
         }
