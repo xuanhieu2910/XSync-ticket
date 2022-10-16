@@ -12,6 +12,7 @@ import compedia.vn.tickmi.mail.service.TicketService;
 import compedia.vn.tickmi.mail.task.qr.GenerateQR;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.sql.Timestamp;
@@ -53,28 +54,9 @@ public class GenerateQREventRequestDetail implements Runnable{
             ticketService.saveTicket(ticket);
             log.info("Save ticket service success id {}",ticket.getTicketId());
             log.info("Create ticket and increase amount!");
-
-            xSync.execute(detail.getEventRequestId(), () -> {
-                eventRequestService.updateEventRequestByIdEventRequestDetail(detail.getEventRequestId());
-
-                EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
-                if (null == eventRequest) {
-                    return;
-                }
-
-                log.info("Update event request quantity gen : {}", eventRequest.getTicketGeneration());
-                if (eventRequest.getQuantity().equals(eventRequest.getTicketGeneration())) {
-                    log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
-                    mailRequestService.saveMailRoot(createMailRequest(eventRequest));
-                    log.info("Save mail request success!");
-                    log.info("Delete event request success id: " + detail.getEventRequestId());
-                    eventRequestService.deleteEventRequestById(detail.getEventRequestId());
-                    log.info("Delete event request success id: " + detail.getEventRequestId());
-                }
-            });
+            handleSync();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-
             // Delete event request
             eventRequestService.deleteEventRequestById(detail.getEventRequestId());
             // Insert into ticket
@@ -83,6 +65,29 @@ public class GenerateQREventRequestDetail implements Runnable{
 
         eventRequestDetailService.deleteEventRequestDetail(eventRequestDetailId);
         log.info("Delete event request detail success id: {}", eventRequestDetailId);
+    }
+
+
+    @Transactional
+    public void handleSync() {
+        xSync.execute(detail.getEventRequestId(), () -> {
+            eventRequestService.updateEventRequestByIdEventRequestDetail(detail.getEventRequestId());
+
+            EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
+            if (null == eventRequest) {
+                return;
+            }
+
+            log.info("Update event request quantity gen : {}", eventRequest.getTicketGeneration());
+            if (eventRequest.getQuantity().equals(eventRequest.getTicketGeneration())) {
+                log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
+                mailRequestService.saveMailRoot(createMailRequest(eventRequest));
+                log.info("Save mail request success!");
+                log.info("Delete event request success id: " + detail.getEventRequestId());
+                eventRequestService.deleteEventRequestById(detail.getEventRequestId());
+                log.info("Delete event request success id: " + detail.getEventRequestId());
+            }
+        });
     }
 
 
