@@ -49,7 +49,7 @@ public class GenerateQR {
             log.info("PATH_RETURN : " + pathQR);
             log.debug("Create file success");
         }
-        handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket);
+        handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket,eventId);
         return pathQR;
     }
 
@@ -57,12 +57,12 @@ public class GenerateQR {
     /**
      * @param pathQR This have been generate from method handlerGeneratePathQR(params...)
      */
-    public static void handleImageGenerateQR(String pathQR, String codeTicketEvent, String guestName) {
+    public static void handleImageGenerateQR(String pathQR, String codeTicketEvent, String guestName,Long eventId) {
         try {
             log.info("---------------------------- GENERATE QR ----------------------");
             Map<EncodeHintType, Object> encodeHintTypeObjectMap = new HashMap<>();
             encodeHintTypeObjectMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-            QRCode code = Encoder.encode(codeTicketEvent, ErrorCorrectionLevel.H, encodeHintTypeObjectMap);
+            QRCode code = Encoder.encode(codeTicketEvent+"\\"+eventId, ErrorCorrectionLevel.H, encodeHintTypeObjectMap);
             BufferedImage image = renderQRImage(code, DbConstant.WIDTH_QR, DbConstant.HEIGHT_QR, DbConstant.PADDING_QR, guestName);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(image, DbConstant.EXTENSION_GENERATE_QR[0], baos);
