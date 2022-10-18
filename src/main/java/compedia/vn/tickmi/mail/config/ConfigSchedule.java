@@ -38,10 +38,7 @@ public class ConfigSchedule {
         DbConstant.IS_FLAT_RUN_JOB = true;
     }
 
-    public void updateWholeEventRequest() {
-        eventRequestRepository.updateWholeEventRequestToNew();
-
-    }
+    public void updateWholeEventRequest() { eventRequestRepository.updateWholeEventRequestToNew(); }
 
     public void updateWholeEventRequestDetail() {
         eventRequestDetailRepository.updateWholeEventRequestDetail();

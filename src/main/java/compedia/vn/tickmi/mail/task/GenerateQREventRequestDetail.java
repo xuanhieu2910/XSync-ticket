@@ -1,10 +1,8 @@
 package compedia.vn.tickmi.mail.task;
 
 import com.antkorwin.xsync.XSync;
-import compedia.vn.tickmi.mail.entity.EventRequest;
-import compedia.vn.tickmi.mail.entity.EventRequestDetail;
-import compedia.vn.tickmi.mail.entity.MailRequest;
-import compedia.vn.tickmi.mail.entity.Ticket;
+import compedia.vn.tickmi.mail.entity.*;
+import compedia.vn.tickmi.mail.repository.EventRequestHisRepository;
 import compedia.vn.tickmi.mail.service.EventRequestDetailService;
 import compedia.vn.tickmi.mail.service.EventRequestService;
 import compedia.vn.tickmi.mail.service.MailRequestService;
@@ -28,16 +26,20 @@ public class GenerateQREventRequestDetail implements Runnable{
     private MailRequestService mailRequestService;
     private TicketService ticketService;
     private XSync<Long> xSync;
+    private EventRequestHisRepository eventRequestHisRepository;
+
+
     public GenerateQREventRequestDetail(EventRequestDetail detail, EventRequestService eventRequestService,
                                          EventRequestDetailService eventRequestDetailService, MailRequestService mailRequestService,
                                          TicketService ticketService,
-                                         XSync<Long> xSync) {
+                                         XSync<Long> xSync,EventRequestHisRepository eventRequestHisRepository) {
         this.detail = detail;
         this.eventRequestService = eventRequestService;
         this.eventRequestDetailService = eventRequestDetailService;
         this.mailRequestService = mailRequestService;
         this.ticketService = ticketService;
         this.xSync = xSync;
+        this.eventRequestHisRepository = eventRequestHisRepository;
     }
 
     @Override
@@ -46,23 +48,30 @@ public class GenerateQREventRequestDetail implements Runnable{
         log.info(" Event request detail id : " + eventRequestDetailId);
         String pathQr = null;
         String nameTicket = "EV_" + detail.getObjectId() + detail.getType() + detail.getIndexTicket();
-
         try {
             pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), nameTicket);
-            // Insert to ticket
+
             Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN, nameTicket);
             ticketService.saveTicket(ticket);
             log.info("Save ticket service success id {}",ticket.getTicketId());
-            log.info("Create ticket and increase amount!");
             handleSync();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            // Delete event request
-            eventRequestService.deleteEventRequestById(detail.getEventRequestId());
-            // Insert into ticket
-            ticketService.saveTicket(createTicket(detail, pathQr, DbConstant.TICKET_FALSE, nameTicket));
-        }
 
+        } catch (Exception e) {
+
+            log.error(e.getMessage(), e);
+            eventRequestService.deleteEventRequestById(detail.getEventRequestId());
+            log.error("CATCH: Delete Event Request by id: {} success!",detail.getEventRequestId());
+
+            Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_FALSE, nameTicket);
+            ticketService.saveTicket(ticket);
+            log.error("CATCH: Save ticket {}",ticket.toString());
+
+            eventRequestService.updateStatusGenTicket(ticket.getObjectId(),ticket.getType(),
+                    DbConstant.STATUS_PROVED_FALSE);
+            log.info("CATCH : Update status gen ticket success " + ticket.getObjectId() + "- type: " +
+                    ticket.getType() + " - status: " + DbConstant.STATUS_PROVED_FALSE);
+
+        }
         eventRequestDetailService.deleteEventRequestDetail(eventRequestDetailId);
         log.info("Delete event request detail success id: {}", eventRequestDetailId);
     }
@@ -72,20 +81,30 @@ public class GenerateQREventRequestDetail implements Runnable{
     public void handleSync() {
         xSync.execute(detail.getEventRequestId(), () -> {
             eventRequestService.updateEventRequestByIdEventRequestDetail(detail.getEventRequestId());
-
             EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
             if (null == eventRequest) {
                 return;
             }
-
             log.info("Update event request quantity gen : {}", eventRequest.getTicketGeneration());
             if (eventRequest.getQuantity().equals(eventRequest.getTicketGeneration())) {
                 log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
-                mailRequestService.saveMailRoot(createMailRequest(eventRequest));
-                log.info("Save mail request success!");
-                log.info("Delete event request success id: " + detail.getEventRequestId());
+
+                MailRequest mailRequest = createMailRequest(eventRequest);
+                mailRequestService.saveMailRoot(mailRequest);
+                log.info("SAVE: Mail Request success {}",mailRequest.toString());
+
                 eventRequestService.deleteEventRequestById(detail.getEventRequestId());
-                log.info("Delete event request success id: " + detail.getEventRequestId());
+                log.info("DELETE: Event Request success id: " + detail.getEventRequestId());
+
+                EventRequestHis eventRequestHis = createEventRequestHis(eventRequest,1);
+                eventRequestHisRepository.save(eventRequestHis);
+                log.info("SAVE: Event request HIS {}", eventRequestHis.toString());
+
+                eventRequestService.updateStatusGenTicket(mailRequest.getObjectId(),mailRequest.getType(),
+                        DbConstant.STATUS_PROVED_SUCCESS);
+                log.info("UPDATE: Status gen ticket success " + mailRequest.getObjectId() + "- type: " +
+                        mailRequest.getType() + " - status: " + DbConstant.STATUS_PROVED_SUCCESS);
+
             }
         });
     }
@@ -131,4 +150,27 @@ public class GenerateQREventRequestDetail implements Runnable{
         mailRequest.setQuantity(eventRequest.getQuantity());
         return mailRequest;
     }
+
+
+    /**
+     * @param status : 1. Success
+     *                -1. False
+     * */
+    private EventRequestHis createEventRequestHis (EventRequest eventRequest,Integer status) {
+        EventRequestHis his = new EventRequestHis();
+        his.setStatus(status);
+        his.setQuantity(eventRequest.getQuantity());
+        his.setEventId(eventRequest.getEventId());
+        his.setTicketEventId(eventRequest.getTicketEventId());
+        his.setObjectId(eventRequest.getObjectId());
+        his.setType(eventRequest.getType());
+        his.setProviderId(eventRequest.getProviderId());
+        his.setTicketGen(eventRequest.getTicketGeneration());
+        his.setNameGuest(eventRequest.getNameGuest());
+        his.setPhoneGuest(eventRequest.getPhoneGuest());
+        his.setEmailGuest(eventRequest.getEmailGuest());
+        his.setIdEventRequest(eventRequest.getId());
+        return his;
+    }
+
 }

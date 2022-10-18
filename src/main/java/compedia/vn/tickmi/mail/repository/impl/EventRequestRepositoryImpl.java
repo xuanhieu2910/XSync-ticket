@@ -102,6 +102,46 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
         query.executeUpdate();
     }
 
+    @Transactional
+    @Override
+    public void updateStatusOrderDetail(Long objectId,Integer status) {
+        Query query = entityManager.createNativeQuery(updateStatusOrderDetail);
+        query.setParameter("status",status);
+        query.setParameter("objectId",objectId);
+    }
+
+    @Transactional
+    @Override
+    public void updateStatusGuestDetail(Long objectId,Integer status) {
+        Query query = entityManager.createNativeQuery(updateStatusGuestDetail);
+        query.setParameter("status",status);
+        query.setParameter("objectId",objectId);
+    }
+
+    @Transactional
+    @Override
+    public void updateStatusRegisterDetail(Long objectId,Integer status) {
+        Query query = entityManager.createNativeQuery(updateStatusRegisterTicketDetail);
+        query.setParameter("status",status);
+        query.setParameter("objectId",objectId);
+    }
+
+
+    private static String updateStatusOrderDetail = " UPDATE ORDER_DETAIL orderDetail " +
+            "SET orderDetail.STATUS_GEN_TICKET = :status " +
+            "WHERE orderDetail.ORDER_DETAIL_ID = :objectId ";
+
+
+    private static String updateStatusGuestDetail = " UPDATE GUEST_DETAIL guestDetail " +
+            "SET guestDetail.STATUS_GEN_TICKET = :status " +
+            "WHERE guestDetail.GUEST_DETAIL_ID = :objectId ";
+
+
+    private static String updateStatusRegisterTicketDetail = " UPDATE REGISTER_TICKET_DETAILS registerTicketDetail " +
+            "SET registerTicketDetail.STATUS_GEN_TICKET = :status " +
+            "WHERE registerTicketDetail.ID_REGISTER_TICKET_DETAILS = :objectId ";
+
+
 
     private static String updateEventRequest = "UPDATE EVENT_REQUEST eventRequest " +
             "SET eventRequest.STATUS = -1 " +

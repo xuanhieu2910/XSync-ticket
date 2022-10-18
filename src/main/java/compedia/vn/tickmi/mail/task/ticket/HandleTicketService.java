@@ -3,6 +3,7 @@ package compedia.vn.tickmi.mail.task.ticket;
 import com.antkorwin.xsync.XSync;
 import compedia.vn.tickmi.mail.entity.EventRequest;
 import compedia.vn.tickmi.mail.entity.EventRequestDetail;
+import compedia.vn.tickmi.mail.repository.EventRequestHisRepository;
 import compedia.vn.tickmi.mail.repository.ProviderRepository;
 import compedia.vn.tickmi.mail.service.EventRequestDetailService;
 import compedia.vn.tickmi.mail.service.EventRequestService;
@@ -48,6 +49,9 @@ public class HandleTicketService {
     EventRequestDetailService eventRequestDetailService;
 
     @Autowired
+    EventRequestHisRepository eventRequestHisRepository;
+
+    @Autowired
     XSync<Long> xSync;
 
     private static final Queue<EventRequest> queueEventRequest = new ConcurrentLinkedQueue<>();
@@ -63,11 +67,14 @@ public class HandleTicketService {
             try {
                 List<EventRequest> eventRequestList = eventRequestService.getEventRequestList();
                 if (!CollectionUtils.isEmpty(eventRequestList)) {
+                    String object = eventRequestList.toString();
+                    log.info("GET: from Database EVENT_REQUEST with Size: " + eventRequestList.size() + "- Detail: "+ object);
                     // Update n object
                     eventRequestService.updateEventRequestByStatus(eventRequestList, DbConstant.STATUS_EVENT_REQUEST);
+                    log.info("UPDATE: Update Status EVENT_REQUEST success: " + object);
                     // Push n object to queue
                     queueEventRequest.addAll(eventRequestList);
-                    log.info("EVENT_REQUEST =>>>> Push event request list success!");
+                    log.info("PUSH: Push event request to queue event request success!");
                 }
             } catch (Exception e) {
                 log.error("Error to get event request", e);
@@ -97,12 +104,15 @@ public class HandleTicketService {
                 List<EventRequestDetail> eventRequestDetails = eventRequestDetailService.getAllEventRequestDetailLimit();
                 // update object
                 if (!CollectionUtils.isEmpty(eventRequestDetails)) {
+                    String object = eventRequestDetails.toString();
+                    log.info("GET: Get from EVENT_REQUEST_DETAIL with size: " + eventRequestDetails.size() + " - Detail: " + object);
                     // create event request details
                     eventRequestDetails.stream().forEach(x -> x.setStatus(DbConstant.STATUS_EVENT_REQUEST_DETAIL));
                     eventRequestDetailService.saveEventRequestDetails(eventRequestDetails);
+                    log.info("UPDATE: Update Status EVENT_REQUEST success: " + object);
                     // Insert queue
                     queueEventRequestDetails.addAll(eventRequestDetails);
-                    log.info("Save to queue event request detail success!");
+                    log.info("PUSH: Push event request detail to QUEUE event request detail success!");
                 }
             } catch (Exception e) {
                 log.error("Error to get event request detail", e);
@@ -120,7 +130,8 @@ public class HandleTicketService {
             if ( null == detail) {
                 return;
             }
-             Runnable worker = new GenerateQREventRequestDetail(detail,eventRequestService,eventRequestDetailService, mailRequestService,ticketService, xSync);
+             Runnable worker = new GenerateQREventRequestDetail(detail,eventRequestService,eventRequestDetailService,
+                     mailRequestService,ticketService, xSync,eventRequestHisRepository);
              executor.execute(worker);
         }
     }

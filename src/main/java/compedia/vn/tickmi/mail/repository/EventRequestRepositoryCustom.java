@@ -16,4 +16,10 @@ public interface EventRequestRepositoryCustom {
     void deleteByIdCustom(Long id);
 
     void updateWholeEventRequestToNew ();
+
+    void updateStatusOrderDetail (Long objectId,Integer status);
+
+    void updateStatusGuestDetail (Long objectId,Integer status);
+
+    void updateStatusRegisterDetail (Long objectId,Integer status);
 }

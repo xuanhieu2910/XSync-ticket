@@ -2,6 +2,7 @@ package compedia.vn.tickmi.mail.service;
 
 import compedia.vn.tickmi.mail.entity.EventRequest;
 import compedia.vn.tickmi.mail.repository.EventRequestRepository;
+import compedia.vn.tickmi.mail.utils.DbConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,4 +43,22 @@ public class EventRequestService {
         eventRequestRepository.deleteByIdCustom(id);
     }
 
+
+    /**
+     *  @param objectId : Identity the Object
+     *         type:  1. Order detail
+     *                2. Guest detail
+     *                3. Register ticket detail
+     * */
+    public void updateStatusGenTicket (Long objectId, Integer type,Integer status) {
+        if (type.equals(1)) {
+            eventRequestRepository.updateStatusOrderDetail(objectId,status);
+        }
+        else if (type.equals(2)) {
+            eventRequestRepository.updateStatusGuestDetail(objectId,status);
+        }
+        else if (type.equals(3)) {
+            eventRequestRepository.updateStatusRegisterDetail(objectId,status);
+        }
+    }
 }

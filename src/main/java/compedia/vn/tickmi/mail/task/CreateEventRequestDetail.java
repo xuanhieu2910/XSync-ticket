@@ -6,15 +6,12 @@ import compedia.vn.tickmi.mail.service.EventRequestDetailService;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.GenerateUtils;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Log4j2
-@Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class CreateEventRequestDetail implements Runnable{
 
 
@@ -50,7 +47,7 @@ public class CreateEventRequestDetail implements Runnable{
             }
             log.info("Size details : {} ", details.size());
             eventRequestDetailService.saveEventRequestDetails(details);
-            log.info(" Push event request detail first success!" );
+            log.info(" SAVE: Event request detail success: " + details.toString());
         }catch (Exception e) {
             log.error(e.getMessage(),e);
         }
