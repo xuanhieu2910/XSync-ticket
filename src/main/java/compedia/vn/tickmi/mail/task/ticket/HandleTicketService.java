@@ -3,6 +3,7 @@ package compedia.vn.tickmi.mail.task.ticket;
 import com.antkorwin.xsync.XSync;
 import compedia.vn.tickmi.mail.entity.EventRequest;
 import compedia.vn.tickmi.mail.entity.EventRequestDetail;
+import compedia.vn.tickmi.mail.repository.EventRepository;
 import compedia.vn.tickmi.mail.repository.EventRequestHisRepository;
 import compedia.vn.tickmi.mail.repository.ProviderRepository;
 import compedia.vn.tickmi.mail.service.EventRequestDetailService;
@@ -50,6 +51,9 @@ public class HandleTicketService {
 
     @Autowired
     EventRequestHisRepository eventRequestHisRepository;
+
+    @Autowired
+    EventRepository eventRepository;
 
     @Autowired
     XSync<Long> xSync;
@@ -131,7 +135,7 @@ public class HandleTicketService {
                 return;
             }
              Runnable worker = new GenerateQREventRequestDetail(detail,eventRequestService,eventRequestDetailService,
-                     mailRequestService,ticketService, xSync,eventRequestHisRepository);
+                     mailRequestService,ticketService, xSync,eventRequestHisRepository,eventRepository);
              executor.execute(worker);
         }
     }

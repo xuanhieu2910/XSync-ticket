@@ -2,6 +2,7 @@ package compedia.vn.tickmi.mail.task;
 
 import com.antkorwin.xsync.XSync;
 import compedia.vn.tickmi.mail.entity.*;
+import compedia.vn.tickmi.mail.repository.EventRepository;
 import compedia.vn.tickmi.mail.repository.EventRequestHisRepository;
 import compedia.vn.tickmi.mail.service.EventRequestDetailService;
 import compedia.vn.tickmi.mail.service.EventRequestService;
@@ -27,12 +28,14 @@ public class GenerateQREventRequestDetail implements Runnable{
     private TicketService ticketService;
     private XSync<Long> xSync;
     private EventRequestHisRepository eventRequestHisRepository;
+    private EventRepository eventRepository;
 
 
     public GenerateQREventRequestDetail(EventRequestDetail detail, EventRequestService eventRequestService,
                                          EventRequestDetailService eventRequestDetailService, MailRequestService mailRequestService,
                                          TicketService ticketService,
-                                         XSync<Long> xSync,EventRequestHisRepository eventRequestHisRepository) {
+                                         XSync<Long> xSync,EventRequestHisRepository eventRequestHisRepository,
+                                         EventRepository eventRepository) {
         this.detail = detail;
         this.eventRequestService = eventRequestService;
         this.eventRequestDetailService = eventRequestDetailService;
@@ -40,6 +43,7 @@ public class GenerateQREventRequestDetail implements Runnable{
         this.ticketService = ticketService;
         this.xSync = xSync;
         this.eventRequestHisRepository = eventRequestHisRepository;
+        this.eventRepository = eventRepository;
     }
 
     @Override
@@ -49,28 +53,10 @@ public class GenerateQREventRequestDetail implements Runnable{
         String pathQr = null;
         String nameTicket = "EV_" + detail.getObjectId() + detail.getType() + detail.getIndexTicket();
         try {
-            pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), nameTicket);
-
-            Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN, nameTicket);
-            ticketService.saveTicket(ticket);
-            log.info("Save ticket service success id {}",ticket.getTicketId());
-            handleSync();
-
+            handleSyncTicket(nameTicket);
         } catch (Exception e) {
-
             log.error(e.getMessage(), e);
-            eventRequestService.deleteEventRequestById(detail.getEventRequestId());
-            log.error("CATCH: Delete Event Request by id: {} success!",detail.getEventRequestId());
-
-            Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_FALSE, nameTicket);
-            ticketService.saveTicket(ticket);
-            log.error("CATCH: Save ticket {}",ticket.toString());
-
-            eventRequestService.updateStatusGenTicket(ticket.getObjectId(),ticket.getType(),
-                    DbConstant.STATUS_PROVED_FALSE);
-            log.info("CATCH : Update status gen ticket success " + ticket.getObjectId() + "- type: " +
-                    ticket.getType() + " - status: " + DbConstant.STATUS_PROVED_FALSE);
-
+            handleSyncTicketFalse(nameTicket);
         }
         eventRequestDetailService.deleteEventRequestDetail(eventRequestDetailId);
         log.info("Delete event request detail success id: {}", eventRequestDetailId);
@@ -78,8 +64,15 @@ public class GenerateQREventRequestDetail implements Runnable{
 
 
     @Transactional
-    public void handleSync() {
+    public void handleSyncTicket(String nameTicket) {
         xSync.execute(detail.getEventRequestId(), () -> {
+            String pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), nameTicket);
+            Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN, nameTicket);
+            ticketService.saveTicket(ticket);
+            log.info("SAVE: ticket service success id {}",ticket.getTicketId());
+
+            eventRepository.updateTotalGenTicketEvent(detail.getEventId());
+            log.info("UPDATE: Update total gen ticket success by event id {}",detail.getEventId());
             eventRequestService.updateEventRequestByIdEventRequestDetail(detail.getEventRequestId());
             EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
             if (null == eventRequest) {
@@ -108,6 +101,22 @@ public class GenerateQREventRequestDetail implements Runnable{
             }
         });
     }
+
+    @Transactional
+    public void handleSyncTicketFalse (String nameTicket) {
+        eventRequestService.deleteEventRequestById(detail.getEventRequestId());
+        log.error("CATCH: Delete Event Request by id: {} success!",detail.getEventRequestId());
+
+        Ticket ticket = createTicket(detail, null, DbConstant.TICKET_FALSE, nameTicket);
+        ticketService.saveTicket(ticket);
+        log.error("CATCH: Save ticket {}",ticket.toString());
+
+        eventRequestService.updateStatusGenTicket(ticket.getObjectId(),ticket.getType(),
+                DbConstant.STATUS_PROVED_FALSE);
+        log.info("CATCH : Update status gen ticket success " + ticket.getObjectId() + "- type: " +
+                ticket.getType() + " - status: " + DbConstant.STATUS_PROVED_FALSE);
+    }
+
 
 
     private Ticket createTicket(EventRequestDetail detail, String pathQR, Integer status, String nameTicket) {
