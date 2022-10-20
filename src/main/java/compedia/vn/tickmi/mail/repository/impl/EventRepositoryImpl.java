@@ -19,6 +19,7 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
     public void updateTotalGenTicketEvent(Long eventId) {
         Query query = entityManager.createNativeQuery(updateTotalGenTicketEvent);
         query.setParameter("eventId",eventId);
+        query.executeUpdate();
     }
 
 

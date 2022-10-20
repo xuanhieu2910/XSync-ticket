@@ -108,6 +108,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
         Query query = entityManager.createNativeQuery(updateStatusOrderDetail);
         query.setParameter("status",status);
         query.setParameter("objectId",objectId);
+        query.executeUpdate();
     }
 
     @Transactional
@@ -116,6 +117,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
         Query query = entityManager.createNativeQuery(updateStatusGuestDetail);
         query.setParameter("status",status);
         query.setParameter("objectId",objectId);
+        query.executeUpdate();
     }
 
     @Transactional
@@ -124,6 +126,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
         Query query = entityManager.createNativeQuery(updateStatusRegisterTicketDetail);
         query.setParameter("status",status);
         query.setParameter("objectId",objectId);
+        query.executeUpdate();
     }
 
 

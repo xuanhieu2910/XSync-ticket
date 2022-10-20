@@ -72,6 +72,7 @@ public class GenerateQREventRequestDetail implements Runnable{
             log.info("SAVE: ticket service success id {}",ticket.getTicketId());
 
             eventRepository.updateTotalGenTicketEvent(detail.getEventId());
+
             log.info("UPDATE: Update total gen ticket success by event id {}",detail.getEventId());
             eventRequestService.updateEventRequestByIdEventRequestDetail(detail.getEventRequestId());
             EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
