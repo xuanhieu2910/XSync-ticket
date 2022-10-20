@@ -40,6 +40,9 @@ public class DbConstant {
     public final static Integer TICKET_FALSE = 2;
 
     // Ticket mail his
+    public final static Integer MAIL_HIS_STATUS_SUCCESS = 1;
+
+
     // Status gen and sen ticket
     public static final Integer STATUS_PROVED_NEW = -1;
     public static final Integer STATUS_PROVED_PROCESS = 0;
