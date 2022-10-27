@@ -53,6 +53,10 @@ public class EventRequestHis {
     @Column(name = "ID_EVENT_REQUEST")
     private Long idEventRequest;
 
+    @Column(name = "NOTE")
+    private String note;
+
+
     @Override
     public String toString() {
         return "EventRequestHis{" +

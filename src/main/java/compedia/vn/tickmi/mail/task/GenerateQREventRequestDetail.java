@@ -182,6 +182,7 @@ public class GenerateQREventRequestDetail implements Runnable{
         his.setPhoneGuest(eventRequest.getPhoneGuest());
         his.setEmailGuest(eventRequest.getEmailGuest());
         his.setIdEventRequest(eventRequest.getId());
+        his.setNote(eventRequest.getNote());
         return his;
     }
 
