@@ -56,6 +56,9 @@ public class MailRequest {
     @Column(name = "QUANTITY")
     private Integer quantity;
 
+    @Column(name = "NOTE")
+    private String note;
+
     @Override
     public String toString() {
         return "MailRequest{" +

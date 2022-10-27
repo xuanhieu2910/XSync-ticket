@@ -50,6 +50,9 @@ public class EventRequest {
     @Column(name = "EMAIL_GUEST")
     private String emailGuest;
 
+    @Column(name = "NOTE")
+    private String note;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

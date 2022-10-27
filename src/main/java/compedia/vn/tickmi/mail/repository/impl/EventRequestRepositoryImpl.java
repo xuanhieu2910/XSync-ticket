@@ -45,6 +45,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
                 dto.setNameGuest(ValueUtil.getStringByObject(obj[9]) == null ? null : ValueUtil.getStringByObject(obj[9]));
                 dto.setPhoneGuest(ValueUtil.getStringByObject(obj[10]) == null ? null : ValueUtil.getStringByObject(obj[10]) );
                 dto.setEmailGuest(ValueUtil.getStringByObject(obj[11]) == null ? null : ValueUtil.getStringByObject(obj[11]));
+                dto.setNote(ValueUtil.getStringByObject(obj[12]));
                 response.add(dto);
             }
         }
@@ -170,7 +171,8 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             "       TICKET_GEN, " +
             "       NAME_GUEST, " +
             "       PHONE_GUEST, " +
-            "       EMAIL_GUEST " +
+            "       EMAIL_GUEST, " +
+            "       NOTE"+
             " from EVENT_REQUEST evenRequest " +
             " where evenRequest.STATUS = -1" +
             "  and ROWNUM < :limitRow";
