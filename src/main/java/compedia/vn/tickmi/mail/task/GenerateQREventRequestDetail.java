@@ -83,9 +83,10 @@ public class GenerateQREventRequestDetail implements Runnable{
                 log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
 
                 MailRequest mailRequest = createMailRequest(eventRequest);
-                mailRequestService.saveMailRoot(mailRequest);
-                log.info("SAVE: Mail Request success {}",mailRequest.toString());
-
+                if (null != mailRequest && null != mailRequest.getEmailGuest()) {
+                    mailRequestService.saveMailRoot(mailRequest);
+                    log.info("SAVE: Mail Request success {}", mailRequest.toString());
+                }
                 eventRequestService.deleteEventRequestById(detail.getEventRequestId());
                 log.info("DELETE: Event Request success id: " + detail.getEventRequestId());
 
