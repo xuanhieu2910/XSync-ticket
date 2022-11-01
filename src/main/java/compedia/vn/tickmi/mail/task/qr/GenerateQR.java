@@ -10,7 +10,6 @@ import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.GenerateUtils;
 import compedia.vn.tickmi.mail.utils.PropertiesUtil;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -37,7 +36,7 @@ public class GenerateQR {
         String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
         String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
         log.info("root: " + root + "- file path out put:" + filePathOutPut);
-        String filePathQrGen = root + File.separator + todayFolder + File.separator + eventId;
+        String filePathQrGen = root + File.separator + eventId + File.separator + todayFolder;
         String randomString = GenerateUtils.generateCodeTicket();
         log.info("RANDOM_STRING:" + randomString);
         File file = new File(filePathQrGen);
@@ -45,7 +44,7 @@ public class GenerateQR {
             log.error("Can't create folder");
         } else {
             filePathQrGen = filePathQrGen + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
-            pathQR = filePathOutPut + File.separator + todayFolder + File.separator + eventId + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+            pathQR = filePathOutPut + File.separator + eventId + File.separator + todayFolder + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
             log.info("PATH_RETURN : " + pathQR);
             log.debug("Create file success");
         }

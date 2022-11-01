@@ -1,5 +1,6 @@
 package compedia.vn.tickmi.mail.utils;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -12,6 +13,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@Log4j2
 public class FilesUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(FilesUtils.class);
