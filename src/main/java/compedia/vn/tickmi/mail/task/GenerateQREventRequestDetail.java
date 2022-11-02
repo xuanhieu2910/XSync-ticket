@@ -50,7 +50,7 @@ public class GenerateQREventRequestDetail implements Runnable{
     public void run() {
         Long eventRequestDetailId = detail.getId();
         log.info(" Event request detail id : " + eventRequestDetailId);
-        String nameTicket = String.format("%08d", detail.getType() + eventRequestDetailId);
+        String nameTicket = String.format("%08d", Integer.parseInt(String.valueOf(detail.getType()) + eventRequestDetailId));
         try {
             handleSyncTicket(nameTicket);
         } catch (Exception e) {
