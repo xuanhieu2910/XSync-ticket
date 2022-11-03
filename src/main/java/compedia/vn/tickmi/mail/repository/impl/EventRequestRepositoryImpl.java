@@ -46,6 +46,9 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
                 dto.setPhoneGuest(ValueUtil.getStringByObject(obj[10]) == null ? null : ValueUtil.getStringByObject(obj[10]) );
                 dto.setEmailGuest(ValueUtil.getStringByObject(obj[11]) == null ? null : ValueUtil.getStringByObject(obj[11]));
                 dto.setNote(ValueUtil.getStringByObject(obj[12]));
+                dto.setLogoOrganization(ValueUtil.getStringByObject(obj[13]));
+                dto.setIsDisplayName(ValueUtil.getIntegerByObject(obj[14]));
+                dto.setIsDisplayLogo(ValueUtil.getIntegerByObject(obj[15]));
                 response.add(dto);
             }
         }
@@ -160,22 +163,25 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             " where request.ID_EVENT_REQUEST = :id ";
 
 
-    private static String SQL_getEventRequestByStatus = "select ID_EVENT_REQUEST," +
+    private static String SQL_getEventRequestByStatus = "select ID_EVENT_REQUEST, " +
             "       STATUS, " +
             "       QUANTITY, " +
             "       EVENT_ID, " +
             "       TICKET_EVENT_ID, " +
-            "       OBJECT_ID, "  +
+            "       OBJECT_ID, " +
             "       TYPE, " +
             "       PROVIDER_ID, " +
             "       TICKET_GEN, " +
             "       NAME_GUEST, " +
             "       PHONE_GUEST, " +
             "       EMAIL_GUEST, " +
-            "       NOTE"+
-            " from EVENT_REQUEST evenRequest " +
-            " where evenRequest.STATUS = -1" +
-            "  and ROWNUM < :limitRow";
+            "       NOTE, " +
+            "       LOGO_ORGANIZATION, " +
+            "       IS_DISPLAY_NAME_TICKET, " +
+            "       IS_DISPLAY_LOGO " +
+            "from EVENT_REQUEST evenRequest " +
+            "where evenRequest.STATUS = -1 " +
+            "  and ROWNUM < :limitRow ";
 
     private static String SQL_findEventRequestById = "SELECT eventRequest.ID_EVENT_REQUEST, " +
             " eventRequest.STATUS, eventRequest.QUANTITY," +

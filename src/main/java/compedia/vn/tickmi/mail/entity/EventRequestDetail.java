@@ -59,6 +59,15 @@ public class EventRequestDetail {
     @Column(name = "EMAIL_GUEST")
     private String emailGuest;
 
+    @Column(name = "IS_DISPLAY_LOGO")
+    private Integer isDisplayLogo;
+
+    @Column(name = "IS_DISPLAY_NAME")
+    private Integer isDisplayName;
+
+    @Column(name = "PATH_LOGO")
+    private String pathLogo;
+
 
     @Override
     public String toString() {
@@ -77,6 +86,9 @@ public class EventRequestDetail {
                 ", nameGuest='" + nameGuest + '\'' +
                 ", phoneGuest='" + phoneGuest + '\'' +
                 ", emailGuest='" + emailGuest + '\'' +
+                ", isDisplayLogo=" + isDisplayLogo +
+                ", isDisplayName=" + isDisplayName +
+                ", pathLogo='" + pathLogo + '\'' +
                 '}';
     }
 

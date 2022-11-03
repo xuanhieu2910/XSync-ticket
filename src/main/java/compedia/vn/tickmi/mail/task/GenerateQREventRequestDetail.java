@@ -65,7 +65,8 @@ public class GenerateQREventRequestDetail implements Runnable{
     @Transactional
     public void handleSyncTicket(String nameTicket) {
         xSync.execute(detail.getEventRequestId(), () -> {
-            String pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), nameTicket);
+            String pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), nameTicket,
+                                                            detail.getIsDisplayLogo(), detail.getIsDisplayName(),detail.getPathLogo());
             Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN, nameTicket);
             ticketService.saveTicket(ticket);
             log.info("SAVE: ticket service success id {}",ticket.getTicketId());

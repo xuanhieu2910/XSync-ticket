@@ -4,6 +4,7 @@ import compedia.vn.tickmi.mail.entity.EventRequestDetail;
 import compedia.vn.tickmi.mail.repository.EventRequestRepositoryDetailCustom;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.ValueUtil;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,9 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
                 detail.setPhoneGuest(ValueUtil.getStringByObject(obj[11]));
                 detail.setEmailGuest(ValueUtil.getStringByObject(obj[12]));
                 detail.setEventRequestId(ValueUtil.getLongByObject(obj[13]));
+                detail.setPathLogo(ValueUtil.getStringByObject(obj[14]));
+                detail.setIsDisplayName(ValueUtil.getIntegerByObject(obj[15]));
+                detail.setIsDisplayLogo(ValueUtil.getIntegerByObject(obj[16]));
                 response.add(detail);
             }
         }
@@ -77,12 +81,24 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
     private static String SQL_DeleteEventRequestDetailById = " DELETE EVENT_REQUEST_DETAILS detail WHERE detail.ID_REQUEST_DETAILS = :id ";
 
 
-    private static String SQL_GetAllEventRequestDetailCustom = "SELECT ID_REQUEST_DETAILS,INDEX_TICKET," +
-            "       CODE_TICKET,STATUS,RETRY," +
-            "       EVENT_ID,TICKET_EVENT_ID,PROVIDER_ID," +
-            "       OBJECT_ID,TYPE,NAME_GUEST,PHONE_GUEST," +
-            "       EMAIL_GUEST,EVENT_REQUEST_ID" +
-            " FROM EVENT_REQUEST_DETAILS details" +
+    private static String SQL_GetAllEventRequestDetailCustom = " SELECT ID_REQUEST_DETAILS, " +
+            "       INDEX_TICKET, " +
+            "       CODE_TICKET, " +
+            "       STATUS, " +
+            "       RETRY, " +
+            "       EVENT_ID, " +
+            "       TICKET_EVENT_ID, " +
+            "       PROVIDER_ID, " +
+            "       OBJECT_ID, " +
+            "       TYPE, " +
+            "       NAME_GUEST, " +
+            "       PHONE_GUEST, " +
+            "       EMAIL_GUEST, " +
+            "       EVENT_REQUEST_ID, " +
+            "       PATH_LOGO, " +
+            "       IS_DISPLAY_NAME, " +
+            "       IS_DISPLAY_LOGO " +
+            " FROM EVENT_REQUEST_DETAILS details " +
             " WHERE details.STATUS = -1 " +
             "  AND ROWNUM < :limit ";
 

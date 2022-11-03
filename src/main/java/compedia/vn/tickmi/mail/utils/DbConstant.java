@@ -1,10 +1,30 @@
 package compedia.vn.tickmi.mail.utils;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+import javax.annotation.PostConstruct;
+
+@Configuration
 public class DbConstant {
+
+    @Autowired
+    private Environment env;
+
+    @PostConstruct
+    public void setUpConfigData() {
+        URL = env.getProperty("vn.compedia.location.upload");
+
+    }
+
+    public static String URL;
 
     // Flat to run job
     public  static boolean IS_FLAT_RUN_JOB = false;
-
+    public static Integer IS_FLAT_DISPLAY_LOGO = 1;
+    public static Integer IS_FLAT_DISPLAY_NAME_TICKET = 1;
 
     // Retry
     public final static Integer INIT_RETRY = 0;
@@ -20,6 +40,10 @@ public class DbConstant {
     public static final Integer HEIGHT_QR = 400;
     public static final Integer PADDING_QR = 3;
     public static final Integer POSITION_NAME = 33;
+
+    // Style Logo
+    public static final Integer WIDTH_LOGO = 60;
+    public static final Integer HEIGHT_LOGO = 60;
 
     // Event request
     public final static Integer MAX_RETRY = 3;

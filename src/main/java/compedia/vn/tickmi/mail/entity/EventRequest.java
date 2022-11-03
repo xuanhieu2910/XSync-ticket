@@ -53,6 +53,15 @@ public class EventRequest {
     @Column(name = "NOTE")
     private String note;
 
+    @Column(name = "IS_DISPLAY_LOGO")
+    private Integer isDisplayLogo;
+
+    @Column(name = "IS_DISPLAY_NAME_TICKET")
+    private Integer isDisplayName;
+
+    @Column(name = "LOGO_ORGANIZATION")
+    private String logoOrganization;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -76,6 +85,9 @@ public class EventRequest {
                 ", nameGuest='" + nameGuest + '\'' +
                 ", phoneGuest='" + phoneGuest + '\'' +
                 ", emailGuest='" + emailGuest + '\'' +
+                ", note='" + note + '\'' +
+                ", isDisplayLogo=" + isDisplayLogo +
+                ", isDisplayName=" + isDisplayName +
                 '}';
     }
 }

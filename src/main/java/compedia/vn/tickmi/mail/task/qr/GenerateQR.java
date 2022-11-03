@@ -18,6 +18,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,7 +32,8 @@ public class GenerateQR {
 
 
 
-    public static String handlerGeneratePathQR(String ticketEventCode, Long eventId, String nameTicket) {
+    public static String handlerGeneratePathQR(String ticketEventCode, Long eventId, String nameTicket,
+                                               int flatLogo, int flatName, String pathLogo) {
         String pathQR = null;
         String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
         String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
@@ -44,11 +47,12 @@ public class GenerateQR {
             log.error("Can't create folder");
         } else {
             filePathQrGen = filePathQrGen + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
-            pathQR = filePathOutPut + File.separator + eventId + File.separator + todayFolder + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+            pathQR = filePathOutPut + File.separator + eventId + File.separator + todayFolder + File.separator +
+                                                        randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
             log.info("PATH_RETURN : " + pathQR);
             log.debug("Create file success");
         }
-        handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket,eventId);
+        handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket,eventId,flatLogo,flatName,pathLogo);
         return pathQR;
     }
 
@@ -56,13 +60,15 @@ public class GenerateQR {
     /**
      * @param pathQR This have been generate from method handlerGeneratePathQR(params...)
      */
-    public static void handleImageGenerateQR(String pathQR, String codeTicketEvent, String guestName,Long eventId) {
+    public static void handleImageGenerateQR(String pathQR, String codeTicketEvent, String guestName,Long eventId,
+                                             int flatLogo, int flatName, String pathLogo) {
         try {
             log.info("---------------------------- GENERATE QR ----------------------");
             Map<EncodeHintType, Object> encodeHintTypeObjectMap = new HashMap<>();
             encodeHintTypeObjectMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
             QRCode code = Encoder.encode(codeTicketEvent+"\\"+eventId, ErrorCorrectionLevel.H, encodeHintTypeObjectMap);
-            BufferedImage image = renderQRImage(code, DbConstant.WIDTH_QR, DbConstant.HEIGHT_QR, DbConstant.PADDING_QR, guestName);
+            BufferedImage image = renderQRImage(code, DbConstant.WIDTH_QR, DbConstant.HEIGHT_QR, DbConstant.PADDING_QR,
+                    guestName,flatLogo,flatName, pathLogo);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(image, DbConstant.EXTENSION_GENERATE_QR[0], baos);
             byte[] bytes = baos.toByteArray();
@@ -75,7 +81,17 @@ public class GenerateQR {
     }
 
 
-    private static BufferedImage renderQRImage(QRCode code, int width, int height, int quietZone, String nameTicket) {
+    /**
+     * @param code : Content of QR Code ( Matrix 2D to fill style for it)
+     * @param width : Size width for sub matrix
+     * @param height: Size height for sub matrix
+     * @param quietZone : Padding of QR
+     * @param nameTicket : Name  ticket is display bottom of QR Code
+     * @param flatLogo : Flat to enable/disable to display logo of Organization
+     * @param flatName : Flat to enable/disable to display name Ticket.
+     * */
+    private static BufferedImage renderQRImage(QRCode code, int width, int height, int quietZone, String nameTicket,
+                                               int flatLogo, int flatName, String pathLogo) throws IOException {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -118,7 +134,18 @@ public class GenerateQR {
         drawFinderPatternCircleStyle(graphics2D, leftPadding, topPadding, circleDiameter);
         drawFinderPatternCircleStyle(graphics2D, leftPadding + (inputWidth - FINDER_PATTERN_SIZE) * multiple, topPadding, circleDiameter);
         drawFinderPatternCircleStyle(graphics2D, leftPadding, topPadding + (inputHeight - FINDER_PATTERN_SIZE) * multiple, circleDiameter);
-        graphics2D.drawString(nameTicket, outputWidth / 2 - DbConstant.POSITION_NAME, outputHeight - DbConstant.PADDING_QR * 3);
+
+        // Draw logo Ticket
+        if (flatLogo == DbConstant.IS_FLAT_DISPLAY_LOGO) {
+            BufferedImage logoImage = getLogoTicket(pathLogo);
+            int visitedWith = DbConstant.WIDTH_QR / 2 - DbConstant.WIDTH_LOGO/2;
+            int visitedHeight = DbConstant.HEIGHT_QR / 2 - DbConstant.HEIGHT_LOGO/2;
+            graphics2D.drawImage(logoImage,visitedWith,visitedHeight,DbConstant.WIDTH_LOGO, DbConstant.HEIGHT_LOGO,null);
+        }
+        // Draw name Ticket
+        if (flatName == DbConstant.IS_FLAT_DISPLAY_NAME_TICKET) {
+            graphics2D.drawString(nameTicket, outputWidth / 2 - DbConstant.POSITION_NAME, outputHeight - DbConstant.PADDING_QR * 3);
+        }
         return image;
     }
 
@@ -133,5 +160,18 @@ public class GenerateQR {
         graphics.fillRect(x + WHITE_CIRCLE_OFFSET, y + WHITE_CIRCLE_OFFSET, WHITE_CIRCLE_DIAMETER, WHITE_CIRCLE_DIAMETER);
         graphics.setColor(Color.BLACK);
         graphics.fillRect(x + MIDDLE_DOT_OFFSET, y + MIDDLE_DOT_OFFSET, MIDDLE_DOT_DIAMETER, MIDDLE_DOT_DIAMETER);
+    }
+
+    private  static BufferedImage getLogoTicket (String pathLogo) throws IOException {
+        log.info(DbConstant.URL + pathLogo);
+        BufferedImage originalImage = ImageIO.read(new File(DbConstant.URL + pathLogo));
+        BufferedImage newResizedImage = new BufferedImage(DbConstant.WIDTH_LOGO, DbConstant.HEIGHT_LOGO, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = newResizedImage.createGraphics();
+        g.setComposite(AlphaComposite.Src);
+        g.fillRect(0, 0, DbConstant.WIDTH_LOGO, DbConstant.HEIGHT_LOGO);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING,
+                RenderingHints.VALUE_RENDER_QUALITY);
+        g.drawImage(originalImage, 0, 0, DbConstant.WIDTH_LOGO, DbConstant.HEIGHT_LOGO, null);
+        return newResizedImage;
     }
 }
