@@ -64,7 +64,6 @@ public class HandleTicketService {
     /**
      * Method to get data from DB EVENT_REQUEST -> push queue to handle process other
      */
-    @Async
     @Scheduled(fixedRate = 3000)
     public void getEventRequestsLoop() throws InterruptedException {
         if (DbConstant.IS_FLAT_RUN_JOB) {
