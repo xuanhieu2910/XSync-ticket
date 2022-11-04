@@ -88,6 +88,7 @@ public class HandleTicketService {
     /**
      * Method to handle from queue -> Set value -> Insert value to db EVENT_REQUEST_DETAIL
      */
+    @Async
     @Scheduled(fixedRate = 10)
     public void insertCacheEventRequestDetail() {
         if (!queueEventRequest.isEmpty()) {
@@ -126,6 +127,7 @@ public class HandleTicketService {
     /**
      * Handle to get data from event_request_detail -> process -> generate path QR
      */
+    @Async
     @Scheduled(fixedRate = 10)
     public void generateQRPathImage(){
         if (!queueEventRequestDetails.isEmpty()) {
