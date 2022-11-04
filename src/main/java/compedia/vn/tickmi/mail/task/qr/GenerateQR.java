@@ -136,7 +136,7 @@ public class GenerateQR {
         drawFinderPatternCircleStyle(graphics2D, leftPadding, topPadding + (inputHeight - FINDER_PATTERN_SIZE) * multiple, circleDiameter);
 
         // Draw logo Ticket
-        if (flatLogo == DbConstant.IS_FLAT_DISPLAY_LOGO) {
+        if (flatLogo == DbConstant.IS_FLAT_DISPLAY_LOGO && null != pathLogo) {
             BufferedImage logoImage = getLogoTicket(pathLogo);
             int visitedWith = DbConstant.WIDTH_QR / 2 - DbConstant.WIDTH_LOGO/2;
             int visitedHeight = DbConstant.HEIGHT_QR / 2 - DbConstant.HEIGHT_LOGO/2;
