@@ -16,7 +16,6 @@ public class DbConstant {
     @PostConstruct
     public void setUpConfigData() {
         URL = env.getProperty("vn.compedia.location.upload");
-
     }
 
     public static String URL;
