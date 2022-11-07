@@ -76,6 +76,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             dto.setNameGuest(ValueUtil.getStringByObject(obj[9]));
             dto.setPhoneGuest(ValueUtil.getStringByObject(obj[10]));
             dto.setEmailGuest(ValueUtil.getStringByObject(obj[11]));
+            dto.setNote(ValueUtil.getStringByObject(obj[12]));
             return Optional.of(dto);
         }
         return Optional.empty();
@@ -183,13 +184,21 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             "where evenRequest.STATUS = -1 " +
             "  and ROWNUM < :limitRow ";
 
-    private static String SQL_findEventRequestById = "SELECT eventRequest.ID_EVENT_REQUEST, " +
-            " eventRequest.STATUS, eventRequest.QUANTITY," +
-            "       eventRequest.EVENT_ID, eventRequest.TICKET_EVENT_ID, eventRequest.OBJECT_ID, " +
-            "       eventRequest.TYPE, eventRequest.PROVIDER_ID, eventRequest.TICKET_GEN, eventRequest.NAME_GUEST, " +
-            "       eventRequest.PHONE_GUEST, eventRequest.EMAIL_GUEST " +
-            " FROM EVENT_REQUEST eventRequest " +
-            " WHERE eventRequest.ID_EVENT_REQUEST in (:id) " +
+    private static String SQL_findEventRequestById = " SELECT eventRequest.ID_EVENT_REQUEST, " +
+            "       eventRequest.STATUS, " +
+            "       eventRequest.QUANTITY, " +
+            "       eventRequest.EVENT_ID, " +
+            "       eventRequest.TICKET_EVENT_ID, " +
+            "       eventRequest.OBJECT_ID, " +
+            "       eventRequest.TYPE, " +
+            "       eventRequest.PROVIDER_ID, " +
+            "       eventRequest.TICKET_GEN, " +
+            "       eventRequest.NAME_GUEST, " +
+            "       eventRequest.PHONE_GUEST, " +
+            "       eventRequest.EMAIL_GUEST, " +
+            "       eventRequest.NOTE " +
+            "FROM EVENT_REQUEST eventRequest " +
+            "WHERE eventRequest.ID_EVENT_REQUEST in (:id) " +
             "  AND eventRequest.STATUS = 1 ";
 
     private static String SQL_updateEventRequestById = "UPDATE EVENT_REQUEST request +" +
