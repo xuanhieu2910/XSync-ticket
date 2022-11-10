@@ -102,6 +102,7 @@ public class GenerateQREventRequestDetail implements Runnable{
         });
     }
 
+    @Transactional
     public void handleSyncTicketFalse (String nameTicket) {
         eventRequestService.deleteEventRequestById(detail.getEventRequestId());
         log.error("CATCH: Delete Event Request by id: {} success!",detail.getEventRequestId());
