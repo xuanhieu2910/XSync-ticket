@@ -27,7 +27,7 @@ import java.util.Map;
 public class GenerateQR {
 
     private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("DDMMYYYY");
-
+    private final static String SEPARATOR =  File.separator;
 
 
     public static String handlerGeneratePathQR(String ticketEventCode, Long eventId, String nameTicket,
@@ -37,15 +37,15 @@ public class GenerateQR {
         String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
         String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
         log.info("root: " + root + "- file path out put:" + filePathOutPut);
-        String filePathQrGen = root + File.separator + eventId + File.separator + todayFolder;
+        String filePathQrGen = root + SEPARATOR + eventId + SEPARATOR + todayFolder;
         String randomString = GenerateUtils.generateCodeTicket();
         log.info("RANDOM_STRING:" + randomString);
         File file = new File(filePathQrGen);
         if (!file.exists() && !file.mkdirs()) {
             log.error("Can't create folder");
         } else {
-            filePathQrGen = filePathQrGen + File.separator + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
-            pathQR = filePathOutPut + File.separator + eventId + File.separator + todayFolder + File.separator +
+            filePathQrGen = filePathQrGen + SEPARATOR + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+            pathQR = filePathOutPut + SEPARATOR + eventId + SEPARATOR + todayFolder + SEPARATOR +
                                                         randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
             log.info("PATH_RETURN : " + pathQR);
             log.debug("Create file success");

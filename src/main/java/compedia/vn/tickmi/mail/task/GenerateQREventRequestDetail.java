@@ -61,6 +61,7 @@ public class GenerateQREventRequestDetail implements Runnable{
         log.info("Delete event request detail success id: {}", eventRequestDetailId);
     }
 
+    @Transactional
     public void handleSyncTicket(String nameTicket) {
         xSync.execute(detail.getEventRequestId(), () -> {
             String pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), nameTicket,
