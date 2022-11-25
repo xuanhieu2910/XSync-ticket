@@ -36,7 +36,7 @@ public class GenerateQR {
         String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
         String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
         String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
-        log.info("root: " + root + "- file path out put:" + filePathOutPut);
+        log.info("root: " + root + " - file path out put: " + filePathOutPut);
         String filePathQrGen = root + SEPARATOR + eventId + SEPARATOR + todayFolder;
         String randomString = GenerateUtils.generateCodeTicket();
         log.info("RANDOM_STRING:" + randomString);
