@@ -18,6 +18,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,7 +34,7 @@ public class GenerateQR {
 
 
     public static String handlerGeneratePathQR(String ticketEventCode, Long eventId, String nameTicket,
-                                               int flatLogo, int flatName, String pathLogo) {
+                                               int flatLogo, int flatName, String pathLogo) throws IOException {
         String pathQR = null;
         String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
         String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
@@ -40,9 +43,9 @@ public class GenerateQR {
         String filePathQrGen = root + SEPARATOR + eventId + SEPARATOR + todayFolder;
         String randomString = GenerateUtils.generateCodeTicket();
         log.info("RANDOM_STRING:" + randomString);
-        File file = new File(filePathQrGen);
-        if (!file.exists() && !file.mkdirs()) {
-            log.error("Can't create folder");
+        Path nameFolder =  Paths.get(filePathQrGen);
+        if (Files.notExists(nameFolder)) {
+            Files.createDirectories(nameFolder);
         } else {
             filePathQrGen = filePathQrGen + SEPARATOR + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
             pathQR = filePathOutPut + SEPARATOR + eventId + SEPARATOR + todayFolder + SEPARATOR +
