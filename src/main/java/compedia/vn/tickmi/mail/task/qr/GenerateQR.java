@@ -46,9 +46,10 @@ public class GenerateQR {
         Path nameFolder =  Paths.get(filePathQrGen);
         if (Files.notExists(nameFolder)) {
             try {
+                log.info("Create folder: " + filePathQrGen);
                 Files.createDirectories(nameFolder);
             } catch (IOException e) {
-                log.error("Can't not create folder {}", nameFolder);
+                log.error("Can't not create folder {}", filePathQrGen);
             }
         } else {
             filePathQrGen = filePathQrGen + SEPARATOR + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
