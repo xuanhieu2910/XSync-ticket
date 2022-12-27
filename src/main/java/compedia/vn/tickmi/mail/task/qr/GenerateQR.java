@@ -51,9 +51,9 @@ public class GenerateQR {
                 log.error("Can't not create folder {}", filePathQrGen);
             }
         }
-        filePathQrGen = filePathQrGen + SEPARATOR + ticketEventCode + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+        filePathQrGen = filePathQrGen + SEPARATOR + nameTicket + "." + DbConstant.EXTENSION_GENERATE_QR[0];
         pathQR = filePathOutPut + SEPARATOR + eventId + SEPARATOR + todayFolder + SEPARATOR +
-                ticketEventCode + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+                nameTicket + "." + DbConstant.EXTENSION_GENERATE_QR[0];
         log.info("PATH_RETURN : " + pathQR);
         log.debug("Create file success");
         handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket,eventId,flatLogo,flatName,pathLogo);
