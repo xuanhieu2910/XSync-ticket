@@ -41,8 +41,6 @@ public class GenerateQR {
         String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
         log.info("root: " + root + " - file path out put: " + filePathOutPut);
         String filePathQrGen = root + SEPARATOR + eventId + SEPARATOR + todayFolder;
-        String randomString = GenerateUtils.generateCodeTicket();
-        log.info("RANDOM_STRING:" + randomString);
         Path nameFolder =  Paths.get(filePathQrGen);
         if (Files.notExists(nameFolder)) {
             try {
@@ -52,9 +50,9 @@ public class GenerateQR {
                 log.error("Can't not create folder {}", filePathQrGen);
             }
         }
-        filePathQrGen = filePathQrGen + SEPARATOR + randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+        filePathQrGen = filePathQrGen + SEPARATOR + ticketEventCode + "." + DbConstant.EXTENSION_GENERATE_QR[0];
         pathQR = filePathOutPut + SEPARATOR + eventId + SEPARATOR + todayFolder + SEPARATOR +
-                randomString + "." + DbConstant.EXTENSION_GENERATE_QR[0];
+                ticketEventCode + "." + DbConstant.EXTENSION_GENERATE_QR[0];
         log.info("PATH_RETURN : " + pathQR);
         log.debug("Create file success");
         handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket,eventId,flatLogo,flatName,pathLogo);
