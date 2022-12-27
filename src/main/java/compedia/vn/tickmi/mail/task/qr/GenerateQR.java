@@ -35,7 +35,7 @@ public class GenerateQR {
 
     public static String handlerGeneratePathQR(String ticketEventCode, Long eventId, String nameTicket,
                                                int flatLogo, int flatName, String pathLogo){
-        log.info("Event code : " + ticketEventCode);
+        log.info("Event code : " + ticketEventCode + " ,name ticket: " + nameTicket);
         String pathQR = null;
         String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
         String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
