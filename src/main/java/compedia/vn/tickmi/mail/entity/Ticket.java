@@ -62,6 +62,9 @@ public class Ticket {
     @Column(name = "EMAIL_GUEST")
     private String emailGuest;
 
+    @Column(name = "NOTE_GUEST")
+    private String noteGuest;
+
     @Override
     public String toString() {
         return "Ticket{" +
@@ -77,6 +80,11 @@ public class Ticket {
                 ", status=" + status +
                 ", objectId=" + objectId +
                 ", type=" + type +
+                ", nameGuest='" + nameGuest + '\'' +
+                ", nameTicket='" + nameTicket + '\'' +
+                ", phoneGuest='" + phoneGuest + '\'' +
+                ", emailGuest='" + emailGuest + '\'' +
+                ", note='" + noteGuest + '\'' +
                 '}';
     }
 }

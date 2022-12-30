@@ -139,6 +139,7 @@ public class GenerateQREventRequestDetail implements Runnable{
         ticket.setPhoneGuest(detail.getPhoneGuest());
         ticket.setEmailGuest(detail.getEmailGuest());
         ticket.setNameTicket(nameTicket);
+        ticket.setNoteGuest(detail.getNote());
         return ticket;
     }
 

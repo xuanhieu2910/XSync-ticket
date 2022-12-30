@@ -50,6 +50,7 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
                 detail.setPathLogo(ValueUtil.getStringByObject(obj[14]));
                 detail.setIsDisplayName(ValueUtil.getIntegerByObject(obj[15]));
                 detail.setIsDisplayLogo(ValueUtil.getIntegerByObject(obj[16]));
+                detail.setNote(ValueUtil.getStringByObject(obj[17]));
                 response.add(detail);
             }
         }
@@ -97,7 +98,8 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
             "       EVENT_REQUEST_ID, " +
             "       PATH_LOGO, " +
             "       IS_DISPLAY_NAME, " +
-            "       IS_DISPLAY_LOGO " +
+            "       IS_DISPLAY_LOGO," +
+            "       NOTE " +
             " FROM EVENT_REQUEST_DETAILS details " +
             " WHERE details.STATUS = -1 " +
             "  AND ROWNUM < :limit ";

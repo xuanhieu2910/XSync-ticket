@@ -68,6 +68,9 @@ public class EventRequestDetail {
     @Column(name = "PATH_LOGO")
     private String pathLogo;
 
+    @Column(name = "NOTE")
+    private String note;
+
 
     @Override
     public String toString() {
