@@ -169,6 +169,7 @@ public class GenerateQR {
     private  static BufferedImage getLogoTicket (String pathLogo) throws IOException {
         log.info(DbConstant.URL + pathLogo);
         BufferedImage originalImage = ImageIO.read(new File(DbConstant.URL + pathLogo));
+        log.info("File logo: {}",DbConstant.URL + pathLogo);
         BufferedImage newResizedImage = new BufferedImage(DbConstant.WIDTH_LOGO, DbConstant.HEIGHT_LOGO, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = newResizedImage.createGraphics();
         g.setComposite(AlphaComposite.Src);
