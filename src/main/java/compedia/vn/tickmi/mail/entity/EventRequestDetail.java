@@ -71,6 +71,9 @@ public class EventRequestDetail {
     @Column(name = "NOTE")
     private String note;
 
+    @Column(name = "AVATAR_PATH")
+    private String avatarPath;
+
 
     @Override
     public String toString() {
@@ -92,6 +95,8 @@ public class EventRequestDetail {
                 ", isDisplayLogo=" + isDisplayLogo +
                 ", isDisplayName=" + isDisplayName +
                 ", pathLogo='" + pathLogo + '\'' +
+                ", note='" + note + '\'' +
+                ", avatarPath='" + avatarPath + '\'' +
                 '}';
     }
 

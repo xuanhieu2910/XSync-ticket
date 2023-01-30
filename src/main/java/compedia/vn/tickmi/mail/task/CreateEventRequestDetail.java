@@ -47,6 +47,9 @@ public class CreateEventRequestDetail implements Runnable{
                 dto.setIsDisplayName(eventRequest.getIsDisplayName());
                 dto.setPathLogo(eventRequest.getLogoOrganization());
                 dto.setNote(eventRequest.getNote());
+                if (null != eventRequest.getAvatarPath()) {
+                    dto.setPathLogo(eventRequest.getAvatarPath());
+                }
                 details.add(dto);
             }
             log.info("Size details : {} ", details.size());

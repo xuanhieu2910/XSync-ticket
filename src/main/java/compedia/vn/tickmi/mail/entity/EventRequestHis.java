@@ -56,6 +56,9 @@ public class EventRequestHis {
     @Column(name = "NOTE")
     private String note;
 
+    @Column(name = "AVATAR_PATH")
+    private String avatarPath;
+
 
     @Override
     public String toString() {
@@ -73,6 +76,8 @@ public class EventRequestHis {
                 ", phoneGuest='" + phoneGuest + '\'' +
                 ", emailGuest='" + emailGuest + '\'' +
                 ", idEventRequest=" + idEventRequest +
+                ", note='" + note + '\'' +
+                ", avatarPath='" + avatarPath + '\'' +
                 '}';
     }
 }

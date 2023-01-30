@@ -65,6 +65,9 @@ public class Ticket {
     @Column(name = "NOTE_GUEST")
     private String noteGuest;
 
+    @Column(name = "AVATAR_PATH")
+    private String avatarPath;
+
     @Override
     public String toString() {
         return "Ticket{" +
@@ -84,7 +87,8 @@ public class Ticket {
                 ", nameTicket='" + nameTicket + '\'' +
                 ", phoneGuest='" + phoneGuest + '\'' +
                 ", emailGuest='" + emailGuest + '\'' +
-                ", note='" + noteGuest + '\'' +
+                ", noteGuest='" + noteGuest + '\'' +
+                ", avatarPath='" + avatarPath + '\'' +
                 '}';
     }
 }

@@ -11,6 +11,7 @@ import compedia.vn.tickmi.mail.service.TicketService;
 import compedia.vn.tickmi.mail.task.qr.GenerateQR;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -140,6 +141,9 @@ public class GenerateQREventRequestDetail implements Runnable{
         ticket.setEmailGuest(detail.getEmailGuest());
         ticket.setNameTicket(nameTicket);
         ticket.setNoteGuest(detail.getNote());
+        if (!StringUtils.isBlank(detail.getAvatarPath())) {
+            ticket.setAvatarPath(detail.getAvatarPath());
+        }
         return ticket;
     }
 
@@ -185,6 +189,9 @@ public class GenerateQREventRequestDetail implements Runnable{
         his.setEmailGuest(eventRequest.getEmailGuest());
         his.setIdEventRequest(eventRequest.getId());
         his.setNote(eventRequest.getNote());
+        if (!StringUtils.isBlank(eventRequest.getAvatarPath())) {
+            his.setAvatarPath(eventRequest.getAvatarPath());
+        }
         return his;
     }
 

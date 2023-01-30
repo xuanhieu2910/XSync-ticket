@@ -49,6 +49,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
                 dto.setLogoOrganization(ValueUtil.getStringByObject(obj[13]));
                 dto.setIsDisplayName(ValueUtil.getIntegerByObject(obj[14]));
                 dto.setIsDisplayLogo(ValueUtil.getIntegerByObject(obj[15]));
+                dto.setAvatarPath(ValueUtil.getStringByObject(obj[16]));
                 response.add(dto);
             }
         }
@@ -77,6 +78,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             dto.setPhoneGuest(ValueUtil.getStringByObject(obj[10]));
             dto.setEmailGuest(ValueUtil.getStringByObject(obj[11]));
             dto.setNote(ValueUtil.getStringByObject(obj[12]));
+            dto.setAvatarPath(ValueUtil.getStringByObject(obj[13]));
             return Optional.of(dto);
         }
         return Optional.empty();
@@ -179,7 +181,8 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             "       NOTE, " +
             "       LOGO_ORGANIZATION, " +
             "       IS_DISPLAY_NAME_TICKET, " +
-            "       IS_DISPLAY_LOGO " +
+            "       IS_DISPLAY_LOGO, " +
+            "       AVATAR_PATH " +
             "from EVENT_REQUEST evenRequest " +
             "where evenRequest.STATUS = -1 " +
             "  and ROWNUM < :limitRow ";
@@ -196,7 +199,8 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             "       eventRequest.NAME_GUEST, " +
             "       eventRequest.PHONE_GUEST, " +
             "       eventRequest.EMAIL_GUEST, " +
-            "       eventRequest.NOTE " +
+            "       eventRequest.NOTE, " +
+            "       eventRequest.AVATAR_PATH " +
             "FROM EVENT_REQUEST eventRequest " +
             "WHERE eventRequest.ID_EVENT_REQUEST in (:id) " +
             "  AND eventRequest.STATUS = 1 ";

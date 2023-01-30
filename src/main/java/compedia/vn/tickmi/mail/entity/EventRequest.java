@@ -62,6 +62,9 @@ public class EventRequest {
     @Column(name = "LOGO_ORGANIZATION")
     private String logoOrganization;
 
+    @Column(name = "AVATAR_PATH")
+    private String avatarPath;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -88,6 +91,8 @@ public class EventRequest {
                 ", note='" + note + '\'' +
                 ", isDisplayLogo=" + isDisplayLogo +
                 ", isDisplayName=" + isDisplayName +
+                ", logoOrganization='" + logoOrganization + '\'' +
+                ", avatarPath='" + avatarPath + '\'' +
                 '}';
     }
 }
