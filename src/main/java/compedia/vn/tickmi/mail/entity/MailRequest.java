@@ -59,6 +59,9 @@ public class MailRequest {
     @Column(name = "NOTE")
     private String note;
 
+    @Column(name = "AVATAR_PATH")
+    private String avatarPath;
+
     @Override
     public String toString() {
         return "MailRequest{" +
@@ -76,6 +79,8 @@ public class MailRequest {
                 ", phoneGuest='" + phoneGuest + '\'' +
                 ", emailGuest='" + emailGuest + '\'' +
                 ", quantity=" + quantity +
+                ", note='" + note + '\'' +
+                ", avatarPath='" + avatarPath + '\'' +
                 '}';
     }
 }

@@ -163,8 +163,11 @@ public class GenerateQREventRequestDetail implements Runnable{
         mailRequest.setPhoneGuest(eventRequest.getPhoneGuest());
         mailRequest.setEmailGuest(eventRequest.getEmailGuest());
         mailRequest.setQuantity(eventRequest.getQuantity());
-        if (null != eventRequest.getNote()) {
+        if (StringUtils.isNotBlank(eventRequest.getNote())) {
             mailRequest.setNote(eventRequest.getNote());
+        }
+        if (StringUtils.isNotBlank(eventRequest.getAvatarPath())) {
+            mailRequest.setAvatarPath(eventRequest.getAvatarPath());
         }
         return mailRequest;
     }
