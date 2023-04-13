@@ -52,6 +52,7 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
                 detail.setIsDisplayLogo(ValueUtil.getIntegerByObject(obj[16]));
                 detail.setNote(ValueUtil.getStringByObject(obj[17]));
                 detail.setAvatarPath(ValueUtil.getStringByObject(obj[18]));
+                detail.setIsPackageFree(ValueUtil.getIntegerByObject(obj[19]));
                 response.add(detail);
             }
         }
@@ -83,7 +84,7 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
     private static String SQL_DeleteEventRequestDetailById = " DELETE EVENT_REQUEST_DETAILS detail WHERE detail.ID_REQUEST_DETAILS = :id ";
 
 
-    private static String SQL_GetAllEventRequestDetailCustom = " SELECT ID_REQUEST_DETAILS, " +
+    private static String SQL_GetAllEventRequestDetailCustom = "SELECT ID_REQUEST_DETAILS, " +
             "       INDEX_TICKET, " +
             "       CODE_TICKET, " +
             "       STATUS, " +
@@ -99,11 +100,12 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
             "       EVENT_REQUEST_ID, " +
             "       PATH_LOGO, " +
             "       IS_DISPLAY_NAME, " +
-            "       IS_DISPLAY_LOGO," +
+            "       IS_DISPLAY_LOGO, " +
             "       NOTE, " +
-            "       AVATAR_PATH " +
-            " FROM EVENT_REQUEST_DETAILS details " +
-            " WHERE details.STATUS = -1 " +
+            "       AVATAR_PATH, " +
+            "       IS_PACKAGE_FREE " +
+            "FROM EVENT_REQUEST_DETAILS details " +
+            "WHERE details.STATUS = -1 " +
             "  AND ROWNUM < :limit ";
 
 

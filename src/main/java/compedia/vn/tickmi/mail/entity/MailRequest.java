@@ -62,6 +62,9 @@ public class MailRequest {
     @Column(name = "AVATAR_PATH")
     private String avatarPath;
 
+    @Column(name = "IS_PACKAGE_FREE")
+    private Integer isPackageFree;
+
     @Override
     public String toString() {
         return "MailRequest{" +
@@ -81,6 +84,7 @@ public class MailRequest {
                 ", quantity=" + quantity +
                 ", note='" + note + '\'' +
                 ", avatarPath='" + avatarPath + '\'' +
+                ", isPackageFree=" + isPackageFree +
                 '}';
     }
 }

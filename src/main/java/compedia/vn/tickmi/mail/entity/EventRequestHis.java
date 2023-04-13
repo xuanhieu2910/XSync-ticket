@@ -59,6 +59,8 @@ public class EventRequestHis {
     @Column(name = "AVATAR_PATH")
     private String avatarPath;
 
+    @Column(name = "IS_PACKAGE_FREE")
+    private Integer isPackageFree;
 
     @Override
     public String toString() {
@@ -78,6 +80,7 @@ public class EventRequestHis {
                 ", idEventRequest=" + idEventRequest +
                 ", note='" + note + '\'' +
                 ", avatarPath='" + avatarPath + '\'' +
+                ", isPackageFree=" + isPackageFree +
                 '}';
     }
 }

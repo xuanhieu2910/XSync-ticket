@@ -61,4 +61,7 @@ public class MailDetailHis {
 
     @Column(name = "CONTENT")
     private String content;
+
+    @Column(name = "IS_PACKAGE_FREE")
+    private Integer isPackageFree;
 }

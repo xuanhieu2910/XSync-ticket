@@ -169,6 +169,7 @@ public class GenerateQREventRequestDetail implements Runnable{
         if (StringUtils.isNotBlank(eventRequest.getAvatarPath())) {
             mailRequest.setAvatarPath(eventRequest.getAvatarPath());
         }
+        mailRequest.setIsPackageFree(eventRequest.getIsPackageFree());
         return mailRequest;
     }
 
@@ -195,6 +196,7 @@ public class GenerateQREventRequestDetail implements Runnable{
         if (!StringUtils.isBlank(eventRequest.getAvatarPath())) {
             his.setAvatarPath(eventRequest.getAvatarPath());
         }
+        his.setIsPackageFree(eventRequest.getIsPackageFree());
         return his;
     }
 

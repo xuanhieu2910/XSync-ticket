@@ -65,6 +65,9 @@ public class EventRequest {
     @Column(name = "AVATAR_PATH")
     private String avatarPath;
 
+    @Column(name = "IS_PACKAGE_FREE")
+    private Integer isPackageFree;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -93,6 +96,7 @@ public class EventRequest {
                 ", isDisplayName=" + isDisplayName +
                 ", logoOrganization='" + logoOrganization + '\'' +
                 ", avatarPath='" + avatarPath + '\'' +
+                ", isPackageFree=" + isPackageFree +
                 '}';
     }
 }

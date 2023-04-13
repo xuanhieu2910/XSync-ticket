@@ -50,6 +50,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
                 dto.setIsDisplayName(ValueUtil.getIntegerByObject(obj[14]));
                 dto.setIsDisplayLogo(ValueUtil.getIntegerByObject(obj[15]));
                 dto.setAvatarPath(ValueUtil.getStringByObject(obj[16]));
+                dto.setIsPackageFree(ValueUtil.getIntegerByObject(obj[17]));
                 response.add(dto);
             }
         }
@@ -79,6 +80,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             dto.setEmailGuest(ValueUtil.getStringByObject(obj[11]));
             dto.setNote(ValueUtil.getStringByObject(obj[12]));
             dto.setAvatarPath(ValueUtil.getStringByObject(obj[13]));
+            dto.setIsPackageFree(ValueUtil.getIntegerByObject(obj[14]));
             return Optional.of(dto);
         }
         return Optional.empty();
@@ -182,12 +184,13 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             "       LOGO_ORGANIZATION, " +
             "       IS_DISPLAY_NAME_TICKET, " +
             "       IS_DISPLAY_LOGO, " +
-            "       AVATAR_PATH " +
+            "       AVATAR_PATH, " +
+            "       IS_PACKAGE_FREE " +
             "from EVENT_REQUEST evenRequest " +
             "where evenRequest.STATUS = -1 " +
             "  and ROWNUM < :limitRow ";
 
-    private static String SQL_findEventRequestById = " SELECT eventRequest.ID_EVENT_REQUEST, " +
+    private static String SQL_findEventRequestById = "SELECT eventRequest.ID_EVENT_REQUEST, " +
             "       eventRequest.STATUS, " +
             "       eventRequest.QUANTITY, " +
             "       eventRequest.EVENT_ID, " +
@@ -200,7 +203,8 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             "       eventRequest.PHONE_GUEST, " +
             "       eventRequest.EMAIL_GUEST, " +
             "       eventRequest.NOTE, " +
-            "       eventRequest.AVATAR_PATH " +
+            "       eventRequest.AVATAR_PATH, " +
+            "       eventRequest.IS_PACKAGE_FREE " +
             "FROM EVENT_REQUEST eventRequest " +
             "WHERE eventRequest.ID_EVENT_REQUEST in (:id) " +
             "  AND eventRequest.STATUS = 1 ";
