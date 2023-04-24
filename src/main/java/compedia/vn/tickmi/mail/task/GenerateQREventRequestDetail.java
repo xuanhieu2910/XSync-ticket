@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 @Log4j2
-public class GenerateQREventRequestDetail implements Runnable{
+public class GenerateQREventRequestDetail implements Runnable {
 
 
     private EventRequestDetail detail;
@@ -33,10 +33,10 @@ public class GenerateQREventRequestDetail implements Runnable{
 
 
     public GenerateQREventRequestDetail(EventRequestDetail detail, EventRequestService eventRequestService,
-                                         EventRequestDetailService eventRequestDetailService, MailRequestService mailRequestService,
-                                         TicketService ticketService,
-                                         XSync<Long> xSync,EventRequestHisRepository eventRequestHisRepository,
-                                         EventRepository eventRepository) {
+                                        EventRequestDetailService eventRequestDetailService, MailRequestService mailRequestService,
+                                        TicketService ticketService,
+                                        XSync<Long> xSync, EventRequestHisRepository eventRequestHisRepository,
+                                        EventRepository eventRepository) {
         this.detail = detail;
         this.eventRequestService = eventRequestService;
         this.eventRequestDetailService = eventRequestDetailService;
@@ -66,13 +66,13 @@ public class GenerateQREventRequestDetail implements Runnable{
     public void handleSyncTicket(String nameTicket) {
         xSync.execute(detail.getEventRequestId(), () -> {
             String pathQr = GenerateQR.handlerGeneratePathQR(detail.getCodeTicket(), detail.getEventId(), nameTicket,
-                                                            detail.getIsDisplayLogo(), detail.getIsDisplayName(),detail.getPathLogo());
+                    detail.getIsDisplayLogo(), detail.getIsDisplayName(), detail.getPathLogo());
             Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN, nameTicket);
             ticketService.saveTicket(ticket);
-            log.info("SAVE: ticket service success id {}",ticket.getTicketId());
+            log.info("SAVE: ticket service success id {}", ticket.getTicketId());
             if (null != pathQr) {
                 eventRepository.updateTotalGenTicketEvent(detail.getEventId());
-                log.info("UPDATE: Update total gen ticket success by event id {}",detail.getEventId());
+                log.info("UPDATE: Update total gen ticket success by event id {}", detail.getEventId());
             }
             eventRequestService.updateEventRequestByIdEventRequestDetail(detail.getEventRequestId());
             EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
@@ -83,19 +83,19 @@ public class GenerateQREventRequestDetail implements Runnable{
             if (eventRequest.getQuantity().equals(eventRequest.getTicketGeneration())) {
                 log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
 
-                MailRequest mailRequest = createMailRequest(eventRequest);
-                if (null != mailRequest && null != mailRequest.getEmailGuest()) {
+                MailRequest mailRequest = createMailRequest(eventRequest, nameTicket);
+                if (null != mailRequest.getEmailGuest()) {
                     mailRequestService.saveMailRoot(mailRequest);
                     log.info("SAVE: Mail Request success {}", mailRequest.toString());
                 }
                 eventRequestService.deleteEventRequestById(detail.getEventRequestId());
                 log.info("DELETE: Event Request success id: " + detail.getEventRequestId());
 
-                EventRequestHis eventRequestHis = createEventRequestHis(eventRequest,1);
+                EventRequestHis eventRequestHis = createEventRequestHis(eventRequest, 1);
                 eventRequestHisRepository.save(eventRequestHis);
                 log.info("SAVE: Event request HIS {}", eventRequestHis.toString());
 
-                eventRequestService.updateStatusGenTicket(mailRequest.getObjectId(),mailRequest.getType(),
+                eventRequestService.updateStatusGenTicket(mailRequest.getObjectId(), mailRequest.getType(),
                         DbConstant.STATUS_PROVED_SUCCESS);
                 log.info("UPDATE: Status gen ticket success " + mailRequest.getObjectId() + "- type: " +
                         mailRequest.getType() + " - status: " + DbConstant.STATUS_PROVED_SUCCESS);
@@ -105,21 +105,19 @@ public class GenerateQREventRequestDetail implements Runnable{
     }
 
     @Transactional
-    public void handleSyncTicketFalse (String nameTicket) {
+    public void handleSyncTicketFalse(String nameTicket) {
         eventRequestService.deleteEventRequestById(detail.getEventRequestId());
-        log.error("CATCH: Delete Event Request by id: {} success!",detail.getEventRequestId());
+        log.error("CATCH: Delete Event Request by id: {} success!", detail.getEventRequestId());
 
         Ticket ticket = createTicket(detail, null, DbConstant.TICKET_FALSE, nameTicket);
         ticketService.saveTicket(ticket);
-        log.error("CATCH: Save ticket {}",ticket.toString());
+        log.error("CATCH: Save ticket {}", ticket.toString());
 
-        eventRequestService.updateStatusGenTicket(ticket.getObjectId(),ticket.getType(),
+        eventRequestService.updateStatusGenTicket(ticket.getObjectId(), ticket.getType(),
                 DbConstant.STATUS_PROVED_FALSE);
         log.info("CATCH : Update status gen ticket success " + ticket.getObjectId() + "- type: " +
                 ticket.getType() + " - status: " + DbConstant.STATUS_PROVED_FALSE);
     }
-
-
 
     private Ticket createTicket(EventRequestDetail detail, String pathQR, Integer status, String nameTicket) {
         Ticket ticket = new Ticket();
@@ -147,7 +145,7 @@ public class GenerateQREventRequestDetail implements Runnable{
         return ticket;
     }
 
-    private MailRequest createMailRequest(EventRequest eventRequest) {
+    private MailRequest createMailRequest(EventRequest eventRequest, String nameTicket) {
         MailRequest mailRequest = new MailRequest();
         mailRequest.setObjectId(eventRequest.getObjectId());
         mailRequest.setStatus(DbConstant.MAIL_ROOT_STATUS_NEW);
@@ -170,6 +168,7 @@ public class GenerateQREventRequestDetail implements Runnable{
             mailRequest.setAvatarPath(eventRequest.getAvatarPath());
         }
         mailRequest.setIsPackageFree(eventRequest.getIsPackageFree());
+        mailRequest.setTicketCode(nameTicket);
         return mailRequest;
     }
 
@@ -178,7 +177,7 @@ public class GenerateQREventRequestDetail implements Runnable{
      * @param status : 1. Success
      *                -1. False
      * */
-    private EventRequestHis createEventRequestHis (EventRequest eventRequest,Integer status) {
+    private EventRequestHis createEventRequestHis(EventRequest eventRequest, Integer status) {
         EventRequestHis his = new EventRequestHis();
         his.setStatus(status);
         his.setQuantity(eventRequest.getQuantity());

@@ -65,6 +65,9 @@ public class MailRequest {
     @Column(name = "IS_PACKAGE_FREE")
     private Integer isPackageFree;
 
+    @Column(name = "TICKET_CODE")
+    private String ticketCode;
+
     @Override
     public String toString() {
         return "MailRequest{" +
