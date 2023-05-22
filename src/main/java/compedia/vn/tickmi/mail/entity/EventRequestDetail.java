@@ -77,6 +77,9 @@ public class EventRequestDetail {
     @Column(name = "IS_PACKAGE_FREE")
     private Integer isPackageFree;
 
+    @Column(name = "LIMIT_SCANNER")
+    private Integer limitScanner;
+
     @Override
     public String toString() {
         return "EventRequestDetail{" +

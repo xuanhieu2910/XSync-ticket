@@ -51,6 +51,7 @@ public class CreateEventRequestDetail implements Runnable{
                     dto.setAvatarPath(eventRequest.getAvatarPath());
                 }
                 dto.setIsPackageFree(eventRequest.getIsPackageFree());
+                dto.setLimitScanner(eventRequest.getLimitScanner());
                 details.add(dto);
             }
             log.info("Size details : {} ", details.size());

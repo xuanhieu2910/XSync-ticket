@@ -68,6 +68,9 @@ public class EventRequest {
     @Column(name = "IS_PACKAGE_FREE")
     private Integer isPackageFree;
 
+    @Column(name = "LIMIT_SCANNER")
+    private Integer limitScanner;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

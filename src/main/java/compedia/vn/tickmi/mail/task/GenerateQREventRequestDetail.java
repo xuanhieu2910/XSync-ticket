@@ -142,6 +142,7 @@ public class GenerateQREventRequestDetail implements Runnable {
         if (!StringUtils.isBlank(detail.getAvatarPath())) {
             ticket.setAvatarPath(detail.getAvatarPath());
         }
+        ticket.setLimitScanner(detail.getLimitScanner());
         return ticket;
     }
 

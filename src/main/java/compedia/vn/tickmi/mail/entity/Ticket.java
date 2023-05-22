@@ -68,6 +68,12 @@ public class Ticket {
     @Column(name = "AVATAR_PATH")
     private String avatarPath;
 
+    @Column(name = "NUMBER_TICKET_SCANNED")
+    private Integer numberTicketScanned;
+
+    @Column(name = "LIMIT_SCANNER")
+    private Integer limitScanner;
+
     @Override
     public String toString() {
         return "Ticket{" +

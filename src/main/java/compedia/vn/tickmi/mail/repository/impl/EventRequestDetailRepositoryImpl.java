@@ -53,6 +53,7 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
                 detail.setNote(ValueUtil.getStringByObject(obj[17]));
                 detail.setAvatarPath(ValueUtil.getStringByObject(obj[18]));
                 detail.setIsPackageFree(ValueUtil.getIntegerByObject(obj[19]));
+                detail.setLimitScanner(ValueUtil.getIntegerByObject(obj[20]));
                 response.add(detail);
             }
         }
@@ -103,7 +104,8 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
             "       IS_DISPLAY_LOGO, " +
             "       NOTE, " +
             "       AVATAR_PATH, " +
-            "       IS_PACKAGE_FREE " +
+            "       IS_PACKAGE_FREE, " +
+            "       LIMIT_SCANNER " +
             "FROM EVENT_REQUEST_DETAILS details " +
             "WHERE details.STATUS = -1 " +
             "  AND ROWNUM < :limit ";

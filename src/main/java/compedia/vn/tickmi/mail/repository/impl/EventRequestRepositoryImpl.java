@@ -51,6 +51,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
                 dto.setIsDisplayLogo(ValueUtil.getIntegerByObject(obj[15]));
                 dto.setAvatarPath(ValueUtil.getStringByObject(obj[16]));
                 dto.setIsPackageFree(ValueUtil.getIntegerByObject(obj[17]));
+                dto.setLimitScanner(ValueUtil.getIntegerByObject(obj[18]));
                 response.add(dto);
             }
         }
@@ -168,7 +169,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             " where request.ID_EVENT_REQUEST = :id ";
 
 
-    private static String SQL_getEventRequestByStatus = "select ID_EVENT_REQUEST, " +
+    private static String SQL_getEventRequestByStatus = " select ID_EVENT_REQUEST, " +
             "       STATUS, " +
             "       QUANTITY, " +
             "       EVENT_ID, " +
@@ -185,7 +186,8 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             "       IS_DISPLAY_NAME_TICKET, " +
             "       IS_DISPLAY_LOGO, " +
             "       AVATAR_PATH, " +
-            "       IS_PACKAGE_FREE " +
+            "       IS_PACKAGE_FREE, " +
+            "       LIMIT_SCANNER " +
             "from EVENT_REQUEST evenRequest " +
             "where evenRequest.STATUS = -1 " +
             "  and ROWNUM < :limitRow ";
@@ -204,13 +206,10 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             "       eventRequest.EMAIL_GUEST, " +
             "       eventRequest.NOTE, " +
             "       eventRequest.AVATAR_PATH, " +
-            "       eventRequest.IS_PACKAGE_FREE " +
+            "       eventRequest.IS_PACKAGE_FREE, " +
+            "       eventRequest.LIMIT_SCANNER " +
             "FROM EVENT_REQUEST eventRequest " +
             "WHERE eventRequest.ID_EVENT_REQUEST in (:id) " +
             "  AND eventRequest.STATUS = 1 ";
-
-    private static String SQL_updateEventRequestById = "UPDATE EVENT_REQUEST request +" +
-            "    SET request.STATUS = :status  +" +
-            "    WHERE request.ID_EVENT_REQUEST = :id ";
 
 }
