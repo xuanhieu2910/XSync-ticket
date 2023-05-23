@@ -143,6 +143,7 @@ public class GenerateQREventRequestDetail implements Runnable {
             ticket.setAvatarPath(detail.getAvatarPath());
         }
         ticket.setLimitScanner(detail.getLimitScanner());
+        ticket.setNumberTicketScanned(DbConstant.DEFAULT_NUMBER_TICKET_SCANNED);
         return ticket;
     }
 
