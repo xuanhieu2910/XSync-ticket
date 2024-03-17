@@ -60,7 +60,7 @@ public class HandleTicketService {
 
     private static final Queue<EventRequest> queueEventRequest = new ConcurrentLinkedQueue<>();
     private static final Queue<EventRequestDetail> queueEventRequestDetails = new ConcurrentLinkedQueue<>();
-    private static final ExecutorService executor = Executors.newFixedThreadPool(50);
+    private static final ExecutorService executor = Executors.newFixedThreadPool(10);
     /**
      * Method to get data from DB EVENT_REQUEST -> push queue to handle process other
      */
