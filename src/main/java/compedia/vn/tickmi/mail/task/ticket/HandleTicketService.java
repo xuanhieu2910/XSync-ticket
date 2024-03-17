@@ -64,7 +64,7 @@ public class HandleTicketService {
     /**
      * Method to get data from DB EVENT_REQUEST -> push queue to handle process other
      */
-    @Scheduled(fixedRate = 3000)
+    @Scheduled(fixedRate = 2500)
     public void getEventRequestsLoop() throws InterruptedException {
         if (DbConstant.IS_FLAT_RUN_JOB) {
             try {
@@ -100,7 +100,7 @@ public class HandleTicketService {
     /***
      * Method to get event request detail -> set value -> push queue to handle process other
      */
-    @Scheduled(fixedRate = 3000)
+    @Scheduled(fixedRate = 2500)
     public void getEventRequestDetailLoop() {
         if (DbConstant.IS_FLAT_RUN_JOB) {
             try {

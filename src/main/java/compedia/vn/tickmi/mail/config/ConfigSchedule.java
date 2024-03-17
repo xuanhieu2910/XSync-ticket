@@ -33,7 +33,7 @@ public class ConfigSchedule {
 
     @Bean
     public void updateWholeTable() {
-        updateWholeEventRequest();
+//        updateWholeEventRequest();
         updateWholeEventRequestDetail();
         DbConstant.IS_FLAT_RUN_JOB = true;
     }
