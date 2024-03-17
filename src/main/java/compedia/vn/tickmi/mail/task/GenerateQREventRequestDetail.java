@@ -80,7 +80,7 @@ public class GenerateQREventRequestDetail implements Runnable {
                 return;
             }
             log.info("Update event request quantity gen : {}", eventRequest.getTicketGeneration());
-            if (eventRequest.getQuantity().equals(eventRequest.getTicketGeneration())) {
+            if (eventRequest.getTicketGeneration() >= eventRequest.getQuantity()) {
                 log.info("Quantity: " + eventRequest.getQuantity() + " - " + eventRequest.getTicketGeneration());
 
                 MailRequest mailRequest = createMailRequest(eventRequest, nameTicket);
