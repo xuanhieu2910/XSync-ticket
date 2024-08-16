@@ -87,6 +87,10 @@ public class GenerateQREventRequestDetail implements Runnable {
                 if (null != mailRequest.getEmailGuest()) {
                     mailRequestService.saveMailRoot(mailRequest);
                     log.info("SAVE: Mail Request success {}", mailRequest.toString());
+                } else if (mailRequest.getEventId() == 2381) {
+                    // TODO: hard code cho sự kiện cờ vua
+                    mailRequestService.saveMailRoot(mailRequest);
+                    log.info("SAVE: Mail Request success {}", mailRequest.toString());
                 }
                 eventRequestService.deleteEventRequestById(detail.getEventRequestId());
                 log.info("DELETE: Event Request success id: " + detail.getEventRequestId());
