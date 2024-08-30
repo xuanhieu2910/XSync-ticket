@@ -71,6 +71,9 @@ public class EventRequest {
     @Column(name = "LIMIT_SCANNER")
     private Integer limitScanner;
 
+    @Column(name = "QR_CONTENT_PREFIX")
+    private String qrContentPrefix;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

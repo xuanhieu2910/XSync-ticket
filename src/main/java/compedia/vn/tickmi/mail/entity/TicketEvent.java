@@ -57,4 +57,7 @@ public class TicketEvent {
 
     @Column(name = "DESCRIPTION")
     private String description;
+
+    @Column(name = "QR_CONTENT_PREFIX")
+    private String qrContentPrefix;
 }

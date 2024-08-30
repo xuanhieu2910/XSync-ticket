@@ -52,6 +52,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
                 dto.setAvatarPath(ValueUtil.getStringByObject(obj[16]));
                 dto.setIsPackageFree(ValueUtil.getIntegerByObject(obj[17]));
                 dto.setLimitScanner(ValueUtil.getIntegerByObject(obj[18]));
+                dto.setQrContentPrefix(ValueUtil.getStringByObject(obj[19]));
                 response.add(dto);
             }
         }
@@ -82,6 +83,7 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             dto.setNote(ValueUtil.getStringByObject(obj[12]));
             dto.setAvatarPath(ValueUtil.getStringByObject(obj[13]));
             dto.setIsPackageFree(ValueUtil.getIntegerByObject(obj[14]));
+            dto.setQrContentPrefix(ValueUtil.getStringByObject(obj[15]));
             return Optional.of(dto);
         }
         return Optional.empty();
@@ -187,7 +189,8 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             "       IS_DISPLAY_LOGO, " +
             "       AVATAR_PATH, " +
             "       IS_PACKAGE_FREE, " +
-            "       LIMIT_SCANNER " +
+            "       LIMIT_SCANNER, " +
+            "       QR_CONTENT_PREFIX " +
             "from EVENT_REQUEST evenRequest " +
             "where evenRequest.STATUS = -1 " +
             "  and ROWNUM < :limitRow ";
@@ -207,7 +210,8 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             "       eventRequest.NOTE, " +
             "       eventRequest.AVATAR_PATH, " +
             "       eventRequest.IS_PACKAGE_FREE, " +
-            "       eventRequest.LIMIT_SCANNER " +
+            "       eventRequest.LIMIT_SCANNER, " +
+            "       eventRequest.QR_CONTENT_PREFIX " +
             "FROM EVENT_REQUEST eventRequest " +
             "WHERE eventRequest.ID_EVENT_REQUEST in (:id) " +
             "  AND eventRequest.STATUS = 1 ";

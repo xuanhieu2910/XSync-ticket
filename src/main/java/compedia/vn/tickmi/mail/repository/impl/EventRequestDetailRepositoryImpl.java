@@ -54,6 +54,7 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
                 detail.setAvatarPath(ValueUtil.getStringByObject(obj[18]));
                 detail.setIsPackageFree(ValueUtil.getIntegerByObject(obj[19]));
                 detail.setLimitScanner(ValueUtil.getIntegerByObject(obj[20]));
+                detail.setQrContentPrefix(ValueUtil.getStringByObject(obj[21]));
                 response.add(detail);
             }
         }
@@ -105,7 +106,8 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
             "       NOTE, " +
             "       AVATAR_PATH, " +
             "       IS_PACKAGE_FREE, " +
-            "       LIMIT_SCANNER " +
+            "       LIMIT_SCANNER, " +
+            "       QR_CONTENT_PREFIX " +
             "FROM EVENT_REQUEST_DETAILS details " +
             "WHERE details.STATUS = -1 " +
             "  AND ROWNUM < :limit ";

@@ -80,6 +80,9 @@ public class EventRequestDetail {
     @Column(name = "LIMIT_SCANNER")
     private Integer limitScanner;
 
+    @Column(name = "QR_CONTENT_PREFIX")
+    private String qrContentPrefix;
+
     @Override
     public String toString() {
         return "EventRequestDetail{" +

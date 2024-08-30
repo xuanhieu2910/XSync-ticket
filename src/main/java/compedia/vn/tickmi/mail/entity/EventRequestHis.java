@@ -62,6 +62,9 @@ public class EventRequestHis {
     @Column(name = "IS_PACKAGE_FREE")
     private Integer isPackageFree;
 
+    @Column(name = "QR_CONTENT_PREFIX")
+    private String qrContentPrefix;
+
     @Override
     public String toString() {
         return "EventRequestHis{" +

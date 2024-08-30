@@ -10,6 +10,7 @@ import compedia.vn.tickmi.mail.utils.DbConstant;
 import compedia.vn.tickmi.mail.utils.GenerateUtils;
 import compedia.vn.tickmi.mail.utils.PropertiesUtil;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -33,7 +34,7 @@ public class GenerateQR {
     private final static String SEPARATOR =  File.separator;
 
 
-    public static String handlerGeneratePathQR(String ticketEventCode, Long eventId, String nameTicket,
+    public static String handlerGeneratePathQR(String qrContentPrefix, String ticketEventCode, Long eventId, String nameTicket,
                                                int flatLogo, int flatName, String pathLogo){
         log.info("Event code : " + ticketEventCode + " ,name ticket: " + nameTicket);
         String pathQR = null;
@@ -56,7 +57,7 @@ public class GenerateQR {
                 nameTicket + "." + DbConstant.EXTENSION_GENERATE_QR[0];
         log.info("PATH_RETURN : " + pathQR);
         log.debug("Create file success");
-        handleImageGenerateQR(filePathQrGen, ticketEventCode, nameTicket,eventId,flatLogo,flatName,pathLogo);
+        handleImageGenerateQR(qrContentPrefix, filePathQrGen, ticketEventCode, nameTicket,eventId,flatLogo,flatName,pathLogo);
         return pathQR;
     }
 
@@ -64,13 +65,19 @@ public class GenerateQR {
     /**
      * @param pathQR This have been generate from method handlerGeneratePathQR(params...)
      */
-    public static void handleImageGenerateQR(String pathQR, String codeTicketEvent, String guestName,Long eventId,
+    public static void handleImageGenerateQR(String qrContentPrefix, String pathQR, String codeTicketEvent, String guestName,Long eventId,
                                              int flatLogo, int flatName, String pathLogo) {
         try {
             log.info("---------------------------- GENERATE QR ----------------------");
             Map<EncodeHintType, Object> encodeHintTypeObjectMap = new HashMap<>();
             encodeHintTypeObjectMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-            QRCode code = Encoder.encode(codeTicketEvent+"\\"+eventId, ErrorCorrectionLevel.H, encodeHintTypeObjectMap);
+            String content = codeTicketEvent;
+            if (StringUtils.isNotBlank(qrContentPrefix) && (qrContentPrefix.toLowerCase().contains("http://") || qrContentPrefix.toLowerCase().contains("https://"))) {
+                content = qrContentPrefix + content;
+            } else {
+                content = content + "\\" + eventId;
+            }
+            QRCode code = Encoder.encode(content, ErrorCorrectionLevel.H, encodeHintTypeObjectMap);
             BufferedImage image = renderQRImage(code, DbConstant.WIDTH_QR, DbConstant.HEIGHT_QR, DbConstant.PADDING_QR,
                     guestName,flatLogo,flatName, pathLogo);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
