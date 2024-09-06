@@ -193,7 +193,8 @@ public class EventRequestRepositoryImpl implements EventRequestRepositoryCustom 
             "       QR_CONTENT_PREFIX " +
             "from EVENT_REQUEST evenRequest " +
             "where evenRequest.STATUS = -1 " +
-            "  and ROWNUM < :limitRow ";
+            "  and ROWNUM < :limitRow " +
+            "order by OBJECT_ID ";
 
     private static String SQL_findEventRequestById = "SELECT eventRequest.ID_EVENT_REQUEST, " +
             "       eventRequest.STATUS, " +

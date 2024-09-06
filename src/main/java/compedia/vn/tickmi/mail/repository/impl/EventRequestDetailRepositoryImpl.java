@@ -110,7 +110,8 @@ public class EventRequestDetailRepositoryImpl implements EventRequestRepositoryD
             "       QR_CONTENT_PREFIX " +
             "FROM EVENT_REQUEST_DETAILS details " +
             "WHERE details.STATUS = -1 " +
-            "  AND ROWNUM < :limit ";
+            "  AND ROWNUM < :limit " +
+            "ORDER BY OBJECT_ID ";
 
 
 }

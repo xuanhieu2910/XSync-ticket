@@ -14,7 +14,6 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -30,14 +29,15 @@ public class GenerateQREventRequestDetail implements Runnable {
     private XSync<Long> xSync;
     private EventRequestHisRepository eventRequestHisRepository;
     private EventRepository eventRepository;
+    private String nameTicket;
 
-
-    public GenerateQREventRequestDetail(EventRequestDetail detail, EventRequestService eventRequestService,
+    public GenerateQREventRequestDetail(EventRequestDetail detail, String nameTicket, EventRequestService eventRequestService,
                                         EventRequestDetailService eventRequestDetailService, MailRequestService mailRequestService,
                                         TicketService ticketService,
                                         XSync<Long> xSync, EventRequestHisRepository eventRequestHisRepository,
                                         EventRepository eventRepository) {
         this.detail = detail;
+        this.nameTicket = nameTicket;
         this.eventRequestService = eventRequestService;
         this.eventRequestDetailService = eventRequestDetailService;
         this.mailRequestService = mailRequestService;
@@ -49,31 +49,28 @@ public class GenerateQREventRequestDetail implements Runnable {
 
     @Override
     public void run() {
+
         Long eventRequestDetailId = detail.getId();
         log.info(" Event request detail id : " + eventRequestDetailId);
-        String nameTicket = String.format("%08d", Integer.parseInt(String.valueOf(detail.getType()) + eventRequestDetailId));
+
         try {
-            handleSyncTicket(nameTicket);
+            handleSyncTicket();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            handleSyncTicketFalse(nameTicket);
+            handleSyncTicketFalse();
         }
         eventRequestDetailService.deleteEventRequestDetail(eventRequestDetailId);
         log.info("Delete event request detail success id: {}", eventRequestDetailId);
     }
 
     @Transactional
-    public void handleSyncTicket(String nameTicket) {
+    public void handleSyncTicket() {
         xSync.execute(detail.getEventRequestId(), () -> {
             String pathQr = GenerateQR.handlerGeneratePathQR(detail.getQrContentPrefix(), detail.getCodeTicket(), detail.getEventId(), nameTicket,
                     detail.getIsDisplayLogo(), detail.getIsDisplayName(), detail.getPathLogo());
             Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN, nameTicket);
             ticketService.saveTicket(ticket);
             log.info("SAVE: ticket service success id {}", ticket.getTicketId());
-            if (null != pathQr) {
-                eventRepository.updateTotalGenTicketEvent(detail.getEventId());
-                log.info("UPDATE: Update total gen ticket success by event id {}", detail.getEventId());
-            }
             eventRequestService.updateEventRequestByIdEventRequestDetail(detail.getEventRequestId());
             EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);
             if (null == eventRequest) {
@@ -109,13 +106,15 @@ public class GenerateQREventRequestDetail implements Runnable {
     }
 
     @Transactional
-    public void handleSyncTicketFalse(String nameTicket) {
+    public void handleSyncTicketFalse() {
         eventRequestService.deleteEventRequestById(detail.getEventRequestId());
         log.error("CATCH: Delete Event Request by id: {} success!", detail.getEventRequestId());
 
         Ticket ticket = createTicket(detail, null, DbConstant.TICKET_FALSE, nameTicket);
         ticketService.saveTicket(ticket);
         log.error("CATCH: Save ticket {}", ticket.toString());
+
+        eventRepository.updateTotalGenTicketEvent(detail.getEventId(), -1);
 
         eventRequestService.updateStatusGenTicket(ticket.getObjectId(), ticket.getType(),
                 DbConstant.STATUS_PROVED_FALSE);

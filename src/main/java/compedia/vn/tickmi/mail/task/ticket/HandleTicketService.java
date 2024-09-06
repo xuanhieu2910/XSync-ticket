@@ -1,6 +1,7 @@
 package compedia.vn.tickmi.mail.task.ticket;
 
 import com.antkorwin.xsync.XSync;
+import compedia.vn.tickmi.mail.dto.EventDto;
 import compedia.vn.tickmi.mail.entity.EventRequest;
 import compedia.vn.tickmi.mail.entity.EventRequestDetail;
 import compedia.vn.tickmi.mail.repository.EventRepository;
@@ -88,7 +89,6 @@ public class HandleTicketService {
     /**
      * Method to handle from queue -> Set value -> Insert value to db EVENT_REQUEST_DETAIL
      */
-    @Async
     @Scheduled(fixedRate = 10)
     public void insertCacheEventRequestDetail() {
         if (!queueEventRequest.isEmpty()) {
@@ -127,17 +127,29 @@ public class HandleTicketService {
     /**
      * Handle to get data from event_request_detail -> process -> generate path QR
      */
-    @Async
     @Scheduled(fixedRate = 10)
-    public void generateQRPathImage(){
+    public void generateQRPathImage() {
         if (!queueEventRequestDetails.isEmpty()) {
             EventRequestDetail detail = queueEventRequestDetails.poll();
             if ( null == detail) {
                 return;
             }
-             Runnable worker = new GenerateQREventRequestDetail(detail,eventRequestService,eventRequestDetailService,
-                     mailRequestService,ticketService, xSync,eventRequestHisRepository,eventRepository);
-             executor.execute(worker);
+
+            EventDto eventDto = eventRepository.getTotalGenTicket(detail.getEventId());
+            if (eventDto == null) {
+                return;
+            }
+
+            int quantityLength = eventDto.getTotalQuantity() == null ? 1 : String.valueOf(eventDto.getTotalQuantity()).length();
+            int index = eventDto.getTotalGenTicketCreated() == null ? 1 : eventDto.getTotalGenTicketCreated() + 1;
+            String nameTicket = String.format("%0" + quantityLength + "d", index);
+
+            eventRepository.updateTotalGenTicketEvent(detail.getEventId(), 1);
+            log.info("UPDATE: Update total gen ticket success by event id {}", detail.getEventId());
+
+            Runnable worker = new GenerateQREventRequestDetail(detail, nameTicket, eventRequestService,eventRequestDetailService,
+                     mailRequestService, ticketService, xSync, eventRequestHisRepository, eventRepository);
+            executor.execute(worker);
         }
     }
 }
