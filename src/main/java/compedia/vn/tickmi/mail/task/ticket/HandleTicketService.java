@@ -143,6 +143,9 @@ public class HandleTicketService {
             int quantityLength = eventDto.getTotalQuantity() == null ? 1 : String.valueOf(eventDto.getTotalQuantity()).length();
             int index = eventDto.getTotalGenTicketCreated() == null ? 1 : eventDto.getTotalGenTicketCreated() + 1;
             String nameTicket = String.format("%0" + quantityLength + "d", index);
+            if (detail.getEventId() == 2448) {
+                nameTicket = detail.getNote();
+            }
 
             eventRepository.updateTotalGenTicketEvent(detail.getEventId(), 1);
             log.info("UPDATE: Update total gen ticket success by event id {}", detail.getEventId());
