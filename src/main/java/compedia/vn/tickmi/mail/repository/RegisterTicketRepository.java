@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface RegisterTicketRepository extends JpaRepository<RegisterTicket, Long>, EventRequestRepositoryCustom {
+public interface RegisterTicketRepository extends JpaRepository<RegisterTicket, Long> {
 
     @Query("SELECT u.stt FROM RegisterTicket u WHERE u.idRegisterTicket = (select rtd.idRegisterTicket from RegisterTicketDetails rtd where rtd.idRegisterTicketDetails = ?1)")
     String getStt(Long idRegisterTicketDetails);
