@@ -7,6 +7,7 @@ import compedia.vn.tickmi.mail.entity.EventRequestDetail;
 import compedia.vn.tickmi.mail.repository.EventRepository;
 import compedia.vn.tickmi.mail.repository.EventRequestHisRepository;
 import compedia.vn.tickmi.mail.repository.ProviderRepository;
+import compedia.vn.tickmi.mail.repository.RegisterTicketRepository;
 import compedia.vn.tickmi.mail.service.EventRequestDetailService;
 import compedia.vn.tickmi.mail.service.EventRequestService;
 import compedia.vn.tickmi.mail.service.MailRequestService;
@@ -55,6 +56,9 @@ public class HandleTicketService {
 
     @Autowired
     EventRepository eventRepository;
+
+    @Autowired
+    RegisterTicketRepository registerTicketRepository;
 
     @Autowired
     XSync<Long> xSync;
@@ -145,6 +149,9 @@ public class HandleTicketService {
             String nameTicket = String.format("%0" + quantityLength + "d", index);
             if (detail.getEventId() == 2448) {
                 nameTicket = detail.getNote();
+            } else if (detail.getEventId() == 2463) {
+                String stt = registerTicketRepository.getStt(detail.getObjectId());
+                nameTicket = "NSD24-" + String.format("%0" + quantityLength + "d", stt);
             }
 
             eventRepository.updateTotalGenTicketEvent(detail.getEventId(), 1);
