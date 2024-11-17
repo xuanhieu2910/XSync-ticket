@@ -4,6 +4,7 @@ import com.antkorwin.xsync.XSync;
 import compedia.vn.tickmi.mail.entity.*;
 import compedia.vn.tickmi.mail.repository.EventRepository;
 import compedia.vn.tickmi.mail.repository.EventRequestHisRepository;
+import compedia.vn.tickmi.mail.repository.SeatRepository;
 import compedia.vn.tickmi.mail.service.EventRequestDetailService;
 import compedia.vn.tickmi.mail.service.EventRequestService;
 import compedia.vn.tickmi.mail.service.MailRequestService;
@@ -30,12 +31,14 @@ public class GenerateQREventRequestDetail implements Runnable {
     private EventRequestHisRepository eventRequestHisRepository;
     private EventRepository eventRepository;
     private String nameTicket;
+    private SeatRepository seatRepository;
 
     public GenerateQREventRequestDetail(EventRequestDetail detail, String nameTicket, EventRequestService eventRequestService,
                                         EventRequestDetailService eventRequestDetailService, MailRequestService mailRequestService,
                                         TicketService ticketService,
                                         XSync<Long> xSync, EventRequestHisRepository eventRequestHisRepository,
-                                        EventRepository eventRepository) {
+                                        EventRepository eventRepository,
+                                        SeatRepository seatRepository) {
         this.detail = detail;
         this.nameTicket = nameTicket;
         this.eventRequestService = eventRequestService;
@@ -45,6 +48,7 @@ public class GenerateQREventRequestDetail implements Runnable {
         this.xSync = xSync;
         this.eventRequestHisRepository = eventRequestHisRepository;
         this.eventRepository = eventRepository;
+        this.seatRepository = seatRepository;
     }
 
     @Override
@@ -70,6 +74,10 @@ public class GenerateQREventRequestDetail implements Runnable {
                     detail.getIsDisplayLogo(), detail.getIsDisplayName(), detail.getPathLogo());
             Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN, nameTicket);
             ticketService.saveTicket(ticket);
+            // TODO: hard code cho sự kiện 2964
+            if (ticket.getEventId() != null && ticket.getEventId() == 321) {
+                seatRepository.updateUsedStatusBySeatCode(ticket.getNoteGuest(), ticket.getEventId());
+            }
             log.info("SAVE: ticket service success id {}", ticket.getTicketId());
             eventRequestService.updateEventRequestByIdEventRequestDetail(detail.getEventRequestId());
             EventRequest eventRequest = eventRequestService.findEventRequestById(detail.getEventRequestId()).orElse(null);

@@ -4,10 +4,7 @@ import com.antkorwin.xsync.XSync;
 import compedia.vn.tickmi.mail.dto.EventDto;
 import compedia.vn.tickmi.mail.entity.EventRequest;
 import compedia.vn.tickmi.mail.entity.EventRequestDetail;
-import compedia.vn.tickmi.mail.repository.EventRepository;
-import compedia.vn.tickmi.mail.repository.EventRequestHisRepository;
-import compedia.vn.tickmi.mail.repository.ProviderRepository;
-import compedia.vn.tickmi.mail.repository.RegisterTicketRepository;
+import compedia.vn.tickmi.mail.repository.*;
 import compedia.vn.tickmi.mail.service.EventRequestDetailService;
 import compedia.vn.tickmi.mail.service.EventRequestService;
 import compedia.vn.tickmi.mail.service.MailRequestService;
@@ -62,6 +59,9 @@ public class HandleTicketService {
 
     @Autowired
     XSync<Long> xSync;
+
+    @Autowired
+    SeatRepository seatRepository;
 
     private static final Queue<EventRequest> queueEventRequest = new ConcurrentLinkedQueue<>();
     private static final Queue<EventRequestDetail> queueEventRequestDetails = new ConcurrentLinkedQueue<>();
@@ -158,7 +158,7 @@ public class HandleTicketService {
             log.info("UPDATE: Update total gen ticket success by event id {}", detail.getEventId());
 
             Runnable worker = new GenerateQREventRequestDetail(detail, nameTicket, eventRequestService,eventRequestDetailService,
-                     mailRequestService, ticketService, xSync, eventRequestHisRepository, eventRepository);
+                     mailRequestService, ticketService, xSync, eventRequestHisRepository, eventRepository, seatRepository);
             executor.execute(worker);
         }
     }
