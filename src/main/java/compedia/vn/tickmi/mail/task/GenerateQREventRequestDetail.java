@@ -75,7 +75,7 @@ public class GenerateQREventRequestDetail implements Runnable {
             Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN, nameTicket);
             ticketService.saveTicket(ticket);
             // TODO: hard code cho sự kiện 2964
-            if (ticket.getEventId() != null && ticket.getEventId() == 321) {
+            if (ticket.getEventId() != null && ticket.getEventId() == 2964) {
                 seatRepository.updateUsedStatusBySeatCode(ticket.getNoteGuest(), ticket.getEventId());
             }
             log.info("SAVE: ticket service success id {}", ticket.getTicketId());
