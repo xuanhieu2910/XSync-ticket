@@ -152,6 +152,10 @@ public class HandleTicketService {
             } else if (detail.getEventId() == 2463) {
                 String stt = registerTicketRepository.getStt(detail.getObjectId());
                 nameTicket = "NSD24-" + String.format("%04d", Long.valueOf(stt));
+            } else if (detail.getEventId() == 4562) {
+                if (detail.getNote() != null && detail.getNote().contains("_")) {
+                    nameTicket = detail.getNote().substring(0, detail.getNote().indexOf("_"));
+                }
             }
 
             eventRepository.updateTotalGenTicketEvent(detail.getEventId(), 1);
