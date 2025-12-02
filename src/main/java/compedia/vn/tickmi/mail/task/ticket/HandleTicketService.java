@@ -13,6 +13,7 @@ import compedia.vn.tickmi.mail.task.CreateEventRequestDetail;
 import compedia.vn.tickmi.mail.task.GenerateQREventRequestDetail;
 import compedia.vn.tickmi.mail.utils.DbConstant;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -26,6 +27,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 @EnableScheduling
@@ -156,6 +159,11 @@ public class HandleTicketService {
                 if (detail.getNote() != null && detail.getNote().contains("_")) {
                     nameTicket = detail.getNote().substring(0, detail.getNote().indexOf("_"));
                 }
+            } else if (detail.getEventId() == 4661) {
+                String tmp = getNameTicket4661(detail.getNote());
+                if (StringUtils.isNotBlank(tmp)) {
+                    nameTicket = tmp;
+                }
             }
 
             eventRepository.updateTotalGenTicketEvent(detail.getEventId(), 1);
@@ -165,5 +173,20 @@ public class HandleTicketService {
                      mailRequestService, ticketService, xSync, eventRequestHisRepository, eventRepository, seatRepository);
             executor.execute(worker);
         }
+    }
+
+    private String getNameTicket4661(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            return null;
+        }
+
+        Pattern pattern = Pattern.compile("F\\d{5}");
+        Matcher matcher = pattern.matcher(text);
+
+        if (matcher.find()) {
+            return matcher.group();
+        }
+
+        return null;
     }
 }
