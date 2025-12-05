@@ -71,7 +71,7 @@ public class GenerateQREventRequestDetail implements Runnable {
     public void handleSyncTicket() {
         xSync.execute(detail.getEventRequestId(), () -> {
             String pathQr = GenerateQR.handlerGeneratePathQR(detail.getQrContentPrefix(), detail.getCodeTicket(), detail.getEventId(), nameTicket,
-                    detail.getIsDisplayLogo(), detail.getIsDisplayName(), detail.getPathLogo());
+                    detail.getIsDisplayLogo(), detail.getIsDisplayName(), detail.getPathLogo(), detail.getTicketEventId());
             Ticket ticket = createTicket(detail, pathQr, DbConstant.TICKET_NOT_CHECKIN, nameTicket);
             ticketService.saveTicket(ticket);
             // TODO: hard code cho sự kiện 2964

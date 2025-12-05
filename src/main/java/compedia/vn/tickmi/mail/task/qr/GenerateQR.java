@@ -35,14 +35,14 @@ public class GenerateQR {
 
 
     public static String handlerGeneratePathQR(String qrContentPrefix, String ticketEventCode, Long eventId, String nameTicket,
-                                               int flatLogo, int flatName, String pathLogo){
+                                               int flatLogo, int flatName, String pathLogo, Long eventTicketId){
         log.info("Event code : " + ticketEventCode + " ,name ticket: " + nameTicket);
         String pathQR = null;
         String root = PropertiesUtil.getProperty("vn.cpa.static.location.upload.gen_qr");
         String filePathOutPut = PropertiesUtil.getProperty("vn.cpa.static.location.export.qr");
         String todayFolder = SIMPLE_DATE_FORMAT.format(new Date());
         log.info("root: " + root + " - file path out put: " + filePathOutPut);
-        String filePathQrGen = root + SEPARATOR + eventId + SEPARATOR + todayFolder;
+        String filePathQrGen = root + SEPARATOR + eventId + SEPARATOR + todayFolder + SEPARATOR + eventTicketId;
         Path nameFolder =  Paths.get(filePathQrGen);
         if (Files.notExists(nameFolder)) {
             try {
@@ -53,7 +53,7 @@ public class GenerateQR {
             }
         }
         filePathQrGen = filePathQrGen + SEPARATOR + nameTicket + "." + DbConstant.EXTENSION_GENERATE_QR[0];
-        pathQR = filePathOutPut + SEPARATOR + eventId + SEPARATOR + todayFolder + SEPARATOR +
+        pathQR = filePathOutPut + SEPARATOR + eventId + SEPARATOR + todayFolder + SEPARATOR + eventTicketId + SEPARATOR +
                 nameTicket + "." + DbConstant.EXTENSION_GENERATE_QR[0];
         log.info("PATH_RETURN : " + pathQR);
         log.debug("Create file success");
