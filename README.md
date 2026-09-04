@@ -1,5 +1,5 @@
 # XSync-ticket
-<img width="1536" height="1024" alt="eb35f591-1333-45e1-a50a-e4408f87acfc" src="https://github.com/user-attachments/assets/f75a39b1-8e27-4bc6-9939-c43dfda1c752" />
+<img width="1535" height="966" alt="eb35f591-1333-45e1-a50a-e4408f87acfc" src="https://github.com/user-attachments/assets/289f8092-ba21-4ac1-8dca-31cda8f9331d" />
 A thread-safe and asynchronous processing architecture for handling large-scale object workloads such as ticket generation, email delivery, QR generation, and batch processing.
 
 > This README has been updated to document the core processing model and provide a reference for developers who want to implement similar large-scale asynchronous workflows.
